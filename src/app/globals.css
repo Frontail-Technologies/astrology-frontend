@@ -1,0 +1,500 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --midnight-950: #050b1f;
+  --midnight-900: #08132e;
+  --midnight-800: #0d1d3d;
+  --indigo-700: #172a59;
+
+  /* Dark-mode surface family — obsidian / warm charcoal / deep espresso (D-017). */
+  --obsidian-950: #0b0907;
+  --obsidian-footer: #070605;
+  --espresso-900: #16110d;
+  --espresso-800: #1d1610;
+  --espresso-700: #261c13;
+  --charcoal-border: #352719;
+  --editorial-900: #121018;
+
+  --gold-500: #c8922d;
+  --gold-400: #deaa52;
+  --gold-300: #efd19a;
+
+  --saffron-500: #df7f18;
+  --saffron-600: #c86b12;
+  --saffron-strong: #e8872a;
+
+  /* Committed-conversion accent — Marigold yellow (supersedes Saffron for conversion, D-016). */
+  --conversion-500: #f7b32f;
+  --conversion-600: #d79c29;
+
+  --ivory-50: #fffaf1;
+  --ivory-100: #f8efdf;
+  --surface: #ffffff;
+  --surface-muted: #f4eee3;
+
+  --text-dark-primary: #f8f0e4;
+  --text-dark-secondary: #beb2a2;
+  --text-dark-muted: #887c6d;
+  --text-light-primary: #172033;
+  /* Warm dark slate — readable secondary copy on Ivory, no blue-gray wash. */
+  --text-light-secondary: #5b5342;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
+
+  --background: var(--ivory-50);
+  --foreground: var(--text-light-primary);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--text-light-secondary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-light-primary);
+  --accent: var(--surface-muted);
+  --accent-foreground: var(--text-light-primary);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--text-light-primary);
+  --input: color-mix(in srgb, #1c1812 17%, var(--ivory-100));
+  --destructive: var(--error);
+  --border: color-mix(in srgb, #1c1812 12%, transparent);
+  --ring: var(--gold-500);
+  --brand-surface: var(--midnight-950);
+  --brand-foreground: var(--ivory-50);
+  --accent-gold: var(--gold-500);
+  --conversion: var(--conversion-500);
+  --radius: 0.75rem;
+  --sidebar: var(--ivory-50);
+  --sidebar-foreground: var(--text-light-primary);
+  --sidebar-primary: var(--conversion-500);
+  --sidebar-primary-foreground: var(--midnight-950);
+  --sidebar-accent: color-mix(in srgb, var(--gold-300) 24%, transparent);
+  --sidebar-accent-foreground: var(--text-light-primary);
+  --sidebar-border: color-mix(in srgb, var(--text-light-secondary) 22%, transparent);
+  --sidebar-ring: var(--gold-500);
+}
+
+@theme inline {
+  --color-midnight-950: var(--midnight-950);
+  --color-midnight-900: var(--midnight-900);
+  --color-midnight-800: var(--midnight-800);
+  --color-indigo-700: var(--indigo-700);
+  --color-obsidian-950: var(--obsidian-950);
+  --color-obsidian-footer: var(--obsidian-footer);
+  --color-espresso-900: var(--espresso-900);
+  --color-espresso-800: var(--espresso-800);
+  --color-espresso-700: var(--espresso-700);
+  --color-charcoal-border: var(--charcoal-border);
+  --color-editorial-900: var(--editorial-900);
+  --color-gold-500: var(--gold-500);
+  --color-gold-400: var(--gold-400);
+  --color-gold-300: var(--gold-300);
+  --color-saffron-500: var(--saffron-500);
+  --color-saffron-600: var(--saffron-600);
+  --color-saffron-strong: var(--saffron-strong);
+  --color-ivory-50: var(--ivory-50);
+  --color-ivory-100: var(--ivory-100);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-accent-gold: var(--accent-gold);
+  --color-conversion: var(--conversion);
+  --color-conversion-500: var(--conversion-500);
+  --color-conversion-600: var(--conversion-600);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cormorant);
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  /* Warm Ivory canvas with a very subtle top→bottom depth (light mode). */
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--gold-500) 12%, transparent), transparent 30rem),
+    linear-gradient(180deg, #fffdf7 0%, #fff8ec 45%, #f6ece0 100%);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* One continuous obsidian canvas — subtle warm atmosphere, no banded sections. */
+.dark body {
+  background:
+    radial-gradient(circle at 82% 3%, color-mix(in srgb, var(--gold-400) 9%, transparent), transparent 26rem),
+    radial-gradient(circle at 6% 26%, color-mix(in srgb, var(--gold-500) 4%, transparent), transparent 30rem),
+    linear-gradient(180deg, var(--obsidian-950) 0%, #100c09 44%, #0a0807 100%);
+}
+
+@media (max-width: 640px) {
+  .dark body {
+    background:
+      radial-gradient(circle at 88% 2%, color-mix(in srgb, var(--gold-400) 6%, transparent), transparent 18rem),
+      linear-gradient(180deg, var(--obsidian-950) 0%, #100c09 50%, #0a0807 100%);
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: inherit;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--gold-400) 44%, transparent);
+  color: var(--midnight-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ivory-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--midnight-800) 42%, var(--ivory-100));
+  border: 2px solid var(--ivory-100);
+  border-radius: 999px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--obsidian-950);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--gold-400) 26%, var(--espresso-800));
+  border: 2px solid var(--obsidian-950);
+}
+
+/* Horizontal snap rows (mobile carousels, tab strips) hide their scrollbar. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.dark-surface {
+  --foreground: var(--text-dark-primary);
+  --muted-foreground: var(--text-dark-secondary);
+  --popover: var(--espresso-900);
+  --popover-foreground: var(--text-dark-primary);
+  --accent: color-mix(in srgb, var(--gold-400) 18%, transparent);
+  --accent-foreground: var(--text-dark-primary);
+  --secondary: var(--espresso-800);
+  --secondary-foreground: var(--text-dark-primary);
+  --input: color-mix(in srgb, var(--gold-400) 26%, transparent);
+  --border: color-mix(in srgb, var(--gold-400) 24%, transparent);
+  background: var(--obsidian-950);
+  color: var(--text-dark-primary);
+}
+
+.light-surface {
+  background: var(--surface);
+  color: var(--text-light-primary);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Spiritual ambient motion system (D-018)
+   Subtle, respectful, cinematic. All motion is transform/opacity only and is
+   fully disabled under prefers-reduced-motion (see block below).
+   --------------------------------------------------------------------------- */
+@keyframes ambient-petal-fall {
+  0% {
+    transform: translate3d(0, -12%, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: calc(
+      var(--ambient-max-opacity, 0.42) * var(--ambient-opacity-scale, 1)
+    );
+  }
+  82% {
+    opacity: calc(
+      var(--ambient-max-opacity, 0.42) * var(--ambient-opacity-scale, 1)
+    );
+  }
+  100% {
+    transform: translate3d(var(--ambient-drift, 20px), 118vh, 0)
+      rotate(var(--ambient-spin, 200deg));
+    opacity: 0;
+  }
+}
+
+@keyframes ambient-mandala-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ambient-incense-rise {
+  0% {
+    transform: translate3d(0, 12%, 0) scale(0.9);
+    opacity: 0;
+  }
+  22% {
+    opacity: calc(
+      var(--ambient-max-opacity, 0.16) * var(--ambient-opacity-scale, 1)
+    );
+  }
+  70% {
+    opacity: calc(
+      var(--ambient-max-opacity, 0.16) * var(--ambient-opacity-scale, 1) * 0.5
+    );
+  }
+  100% {
+    transform: translate3d(var(--ambient-drift, 12px), -92%, 0) scale(1.28);
+    opacity: 0;
+  }
+}
+
+@keyframes ambient-diya-flicker {
+  0%,
+  100% {
+    transform: scaleY(1) scaleX(1) translateX(0);
+    opacity: 0.9;
+  }
+  32% {
+    transform: scaleY(1.04) scaleX(0.98) translateX(-0.5px);
+    opacity: 1;
+  }
+  64% {
+    transform: scaleY(0.97) scaleX(1.02) translateX(0.5px);
+    opacity: 0.82;
+  }
+}
+
+@keyframes ambient-particle-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: calc(
+      var(--ambient-max-opacity, 0.1) * var(--ambient-opacity-scale, 1)
+    );
+  }
+  50% {
+    transform: translate3d(
+      var(--ambient-drift-x, 16px),
+      var(--ambient-drift-y, -20px),
+      0
+    );
+    opacity: calc(
+      var(--ambient-max-opacity, 0.1) * var(--ambient-opacity-scale, 1) * 1.5
+    );
+  }
+}
+
+.ambient-petal {
+  animation: ambient-petal-fall var(--ambient-duration, 14s) linear
+    var(--ambient-delay, 0s) infinite;
+  will-change: transform, opacity;
+  /* Tiny warm depth so transparent petals separate from Ivory (light). */
+  filter: drop-shadow(0 2px 3px rgba(92, 58, 20, 0.1));
+}
+.ambient-mandala {
+  animation: ambient-mandala-rotate var(--ambient-duration, 72s) linear infinite;
+  will-change: transform;
+}
+.ambient-smoke {
+  animation: ambient-incense-rise var(--ambient-duration, 11s) ease-out
+    var(--ambient-delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+.ambient-flame {
+  animation: ambient-diya-flicker var(--ambient-duration, 2.2s) ease-in-out
+    infinite;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+.ambient-particle {
+  animation: ambient-particle-drift var(--ambient-duration, 18s) ease-in-out
+    var(--ambient-delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+/* Light and Dark are tuned separately: the per-element `--ambient-max-opacity`
+   is the LIGHT value (raised so decoration reads against Ivory); Dark scales it
+   back down so it stays subtle on Obsidian. */
+.dark .ambient-petal,
+.dark .ambient-smoke {
+  --ambient-opacity-scale: 0.82;
+}
+.dark .ambient-particle {
+  --ambient-opacity-scale: 0.62;
+}
+.dark .ambient-petal {
+  /* Warm rim instead of the light drop-shadow. */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* ---------------------------------------------------------------------------
+   Illustration presence (light mode gets restrained warm depth so transparent
+   PNGs do not dissolve into Ivory; dark keeps a soft neutral lift).
+   --------------------------------------------------------------------------- */
+.illustration-lift {
+  filter: drop-shadow(0 8px 14px rgba(92, 61, 22, 0.09));
+}
+.illustration-lift-lg {
+  filter: drop-shadow(0 10px 20px rgba(92, 61, 22, 0.12));
+}
+.dark .illustration-lift {
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.4));
+}
+.dark .illustration-lift-lg {
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.5));
+}
+
+/* Warm radial well behind an illustration (light); very faint gold in dark. */
+.illustration-well {
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--gold-500) 12%, transparent),
+    color-mix(in srgb, var(--gold-500) 4%, transparent) 45%,
+    transparent 70%
+  );
+}
+.dark .illustration-well {
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--gold-400) 10%, transparent),
+    transparent 68%
+  );
+}
+
+/* Responsive density — tablet ~-25%, mobile ~-45%. */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .ambient-hide-tablet {
+    display: none !important;
+  }
+}
+@media (max-width: 640px) {
+  .ambient-hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Ambient system: no motion at all; keep a calm static decorative frame. */
+  .ambient-petal,
+  .ambient-smoke {
+    display: none !important;
+  }
+  .ambient-mandala,
+  .ambient-flame,
+  .ambient-particle {
+    animation: none !important;
+  }
+}
+
+.dark {
+  /* Warm obsidian / espresso dark system (D-017). Blue Midnight is retired from
+     the public dark experience; Midnight tokens stay defined for rare accents. */
+  --background: var(--obsidian-950);
+  --foreground: var(--text-dark-primary);
+  --muted: var(--espresso-800);
+  --muted-foreground: var(--text-dark-secondary);
+  --popover: var(--espresso-900);
+  --popover-foreground: var(--text-dark-primary);
+  --accent: color-mix(in srgb, var(--gold-400) 18%, transparent);
+  --accent-foreground: var(--text-dark-primary);
+  --secondary: var(--espresso-800);
+  --secondary-foreground: var(--text-dark-primary);
+  --surface: var(--espresso-900);
+  --surface-muted: var(--espresso-800);
+  --input: color-mix(in srgb, var(--gold-400) 26%, transparent);
+  --border: color-mix(in srgb, var(--gold-400) 24%, transparent);
+  --ring: var(--gold-400);
+  --brand-surface: var(--obsidian-950);
+  --brand-foreground: var(--ivory-50);
+  --accent-gold: var(--gold-300);
+  --conversion: var(--conversion-500);
+  --sidebar: var(--obsidian-950);
+  --sidebar-foreground: var(--text-dark-primary);
+  --sidebar-primary: var(--conversion-500);
+  --sidebar-primary-foreground: var(--midnight-950);
+  --sidebar-accent: var(--espresso-800);
+  --sidebar-accent-foreground: var(--text-dark-primary);
+  --sidebar-border: color-mix(in srgb, var(--gold-400) 22%, transparent);
+  --sidebar-ring: var(--gold-400);
+}
