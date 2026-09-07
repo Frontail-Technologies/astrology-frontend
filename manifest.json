@@ -1,0 +1,39 @@
+{
+  "project": "Astrology Platform",
+  "status": "Foundation / Product Definition",
+  "locked": [
+    "Midnight Indigo + Warm Gold/Saffron + Ivory visual direction",
+    "Subtle cosmic/zodiac motifs",
+    "Premium, mystical, trustworthy, restrained visual tone",
+    "Orange/Saffron reserved primarily for conversion actions"
+  ],
+  "functional_scope_status": "PROPOSED pending product approval",
+  "brand_name": "TBD",
+  "files": [
+    "CLAUDE.md",
+    "README.md",
+    "assets/approved-hero-direction-reference.png",
+    "docs/ADMIN_SCOPE.md",
+    "docs/ARCHITECTURE.md",
+    "docs/CONTENT_AND_SAFETY.md",
+    "docs/DATA_MODEL.md",
+    "docs/DECISIONS.md",
+    "docs/DESIGN_NORTH_STAR.md",
+    "docs/DESIGN_SYSTEM.md",
+    "docs/DEVELOPMENT_RULES.md",
+    "docs/FEATURE_REGISTRY.md",
+    "docs/HERO_REFERENCE.md",
+    "docs/INTEGRATIONS.md",
+    "docs/OPEN_QUESTIONS.md",
+    "docs/PAGE_PATTERNS.md",
+    "docs/PHASES.md",
+    "docs/PRODUCT_FLOW.md",
+    "docs/PRODUCT_SCOPE.md",
+    "docs/PROJECT_OVERVIEW.md",
+    "docs/RESPONSIVE_RULES.md",
+    "docs/ROUTE_MAP.md",
+    "docs/SCREEN_REGISTRY.md",
+    "docs/UI_SETUP_CHECKLIST.md",
+    "docs/USER_JOURNEYS.md"
+  ]
+}
