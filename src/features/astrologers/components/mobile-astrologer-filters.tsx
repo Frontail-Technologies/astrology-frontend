@@ -103,7 +103,7 @@ export function MobileAstrologerFilters({
         <Button
           type="button"
           variant="outline"
-          className="h-11 flex-1 justify-center"
+          className="h-11 flex-1 justify-center border-slate-300/80 bg-white text-foreground dark:border-gold-400/18 dark:bg-midnight-800/70 dark:text-ivory-50"
         >
           <SlidersHorizontal aria-hidden="true" />
           Filters

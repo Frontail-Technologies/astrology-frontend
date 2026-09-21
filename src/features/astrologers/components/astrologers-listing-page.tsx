@@ -77,7 +77,7 @@ function SelectControl({
       <span className="sr-only">{label}</span>
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger
-          className="h-11 min-w-[168px] border-gold-500/22 bg-white font-medium dark:border-gold-400/22 dark:bg-surface-muted"
+          className="h-11 min-w-[168px] border-slate-300/80 bg-white font-medium text-foreground shadow-none dark:border-gold-400/18 dark:bg-midnight-800/70"
           aria-label={label}
         >
           <SelectValue />
@@ -270,7 +270,7 @@ export function AstrologersListingPage() {
               />
               <Select value={sort} onValueChange={(value) => setSort(value as SortValue)}>
                 <SelectTrigger
-                  className="h-11 flex-1 border-gold-500/22 bg-white font-medium dark:border-gold-400/22 dark:bg-surface-muted"
+                  className="h-11 flex-1 border-slate-300/80 bg-white font-medium text-foreground shadow-none dark:border-gold-400/18 dark:bg-midnight-800/70"
                   aria-label="Sort astrologers"
                 >
                   <SelectValue />

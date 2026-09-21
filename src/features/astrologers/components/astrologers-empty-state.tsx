@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function AstrologersEmptyState({ onClear }: { onClear: () => void }) {
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-border bg-surface px-6 py-10 text-center">
+    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-slate-300/70 bg-white px-6 py-10 text-center shadow-[0_2px_8px_rgba(23,32,51,0.05)] dark:border-gold-400/18 dark:bg-midnight-900 dark:shadow-none">
       <div className="grid size-12 place-items-center rounded-full border border-gold-500/25 bg-gold-300/16 text-gold-500 dark:text-gold-300">
         <SearchX className="size-5" aria-hidden="true" />
       </div>
