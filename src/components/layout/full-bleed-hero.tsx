@@ -60,6 +60,11 @@ type FullBleedHeroProps = {
    * content. Must be inert (`pointer-events-none`, `aria-hidden`).
    */
   ambientSlot?: ReactNode;
+  /**
+   * Right-hand hero subject rendered as real content (e.g. a portrait). In flow
+   * above the copy on mobile; absolutely placed on the right from `lg`.
+   */
+  aside?: ReactNode;
   labelledBy?: string;
 };
 
@@ -76,6 +81,7 @@ export function FullBleedHero({
   contentBoxClassName = "min-h-[520px] pb-12 pt-24 sm:min-h-[440px] sm:pt-24 lg:min-h-[500px] lg:pb-16",
   imagePositionClassName = "object-[72%_center] sm:object-[right_center]",
   ambientSlot,
+  aside,
   labelledBy,
 }: FullBleedHeroProps) {
   return (
@@ -195,6 +201,11 @@ export function FullBleedHero({
             contentClassName,
           )}
         >
+          {aside ? (
+            <div className="order-first mb-6 flex justify-center lg:absolute lg:inset-y-0 lg:right-8 lg:mb-0 lg:w-[38%] lg:items-center">
+              {aside}
+            </div>
+          ) : null}
           {children}
 
           {/* Subject PNG — in-flow below the copy (mobile / tablet) */}

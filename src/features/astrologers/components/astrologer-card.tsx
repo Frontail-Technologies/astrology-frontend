@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowRight, Languages } from "lucide-react";
-import { toast } from "sonner";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AstrologerListItem } from "../types/astrologer";
 
@@ -33,12 +33,6 @@ export function AstrologerCard({
   const shownSpecialties = astrologer.specialties.slice(0, 3);
   const remainingSpecialties =
     astrologer.specialties.length - shownSpecialties.length;
-
-  function handleViewProfile() {
-    toast(
-      `${astrologer.name}'s profile opens when astrologer pages are connected.`,
-    );
-  }
 
   if (variant === "compact") {
     return (
@@ -89,16 +83,16 @@ export function AstrologerCard({
         </div>
 
         <div className="relative mt-auto pt-6">
-          <Button
-            type="button"
-            variant="conversion"
-            onClick={handleViewProfile}
-            data-route={route}
+          <Link
+            href={route}
             aria-label={`View profile for ${astrologer.name}`}
-            className="w-full transition-all duration-200 hover:-translate-y-px"
+            className={cn(
+              buttonVariants({ variant: "conversion" }),
+              "w-full transition-all duration-200 hover:-translate-y-px",
+            )}
           >
             View Profile
-          </Button>
+          </Link>
         </div>
       </article>
     );
@@ -180,20 +174,20 @@ export function AstrologerCard({
       </div>
 
       <div className="relative mt-auto border-t border-border/70 pt-3.5 dark:border-gold-400/16">
-        <Button
-          type="button"
-          variant="conversion"
-          onClick={handleViewProfile}
-          data-route={route}
+        <Link
+          href={route}
           aria-label={`View profile for ${astrologer.name}`}
-          className="w-full transition-colors duration-200"
+          className={cn(
+            buttonVariants({ variant: "conversion" }),
+            "w-full transition-colors duration-200",
+          )}
         >
           View Profile
           <ArrowRight
             aria-hidden="true"
             className="transition-transform duration-200 group-hover:translate-x-0.5"
           />
-        </Button>
+        </Link>
       </div>
     </article>
   );
