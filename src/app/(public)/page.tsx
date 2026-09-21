@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { AstrologerGuidanceCta } from "@/features/homepage/components/astrologer-guidance-cta";
 import { AstrologersSection } from "@/features/homepage/components/astrologers-section";
 import { AstrologyGuidesSection } from "@/features/homepage/components/astrology-guides-section";
@@ -10,10 +13,16 @@ import { KundliCompatibilitySection } from "@/features/homepage/components/kundl
 import { OnlinePoojaSection } from "@/features/homepage/components/online-pooja-section";
 import { PanchangSection } from "@/features/homepage/components/panchang-section";
 
+// The Moon is Earth's satellite and needs its own moon.png. If the asset is not
+// present it is simply omitted — no other body is substituted for it.
+const MOON_AVAILABLE = existsSync(
+  join(process.cwd(), "public/assets/astrology/solar-system/moon.png"),
+);
+
 export default function HomePage() {
   return (
     <main>
-      <HomepageHero />
+      <HomepageHero moonAvailable={MOON_AVAILABLE} />
       <ExploreAstrologySection />
       <DailyHoroscopeSection />
       {/* <KundliCompatibilitySection /> */}

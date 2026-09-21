@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle2,
@@ -15,6 +14,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SpiritualAmbientLayer } from "@/components/shared/spiritual-ambient-layer";
+import { AnimatedSolarSystem } from "./animated-solar-system";
 import { cn } from "@/lib/utils";
 
 const astrologerAvatars = [
@@ -60,7 +60,7 @@ const valueBullets = [
   "Free Kundli & daily horoscope tools",
 ];
 
-export function HomepageHero() {
+export function HomepageHero({ moonAvailable = false }: { moonAvailable?: boolean }) {
   function handleTalkToAstrologer() {
     toast("Astrologer consultation experience is coming next.");
   }
@@ -129,12 +129,6 @@ export function HomepageHero() {
               Guidance for better decisions.
             </span>
           </h1>
-          <p
-            className="mt-5 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg"
-          >
-            Talk to experienced astrologers or explore Kundli, horoscope,
-            compatibility and Panchang in one modern astrology platform.
-          </p>
           <div className="mt-6 flex gap-3 flex-col">
             {valueBullets.map((item) => (
               <div
@@ -193,19 +187,8 @@ export function HomepageHero() {
             })}
           </div>
         </div>
-        <div className="relative mx-auto flex w-full max-w-[760px] items-center justify-center lg:justify-end">
-          <div
-            aria-hidden="true"
-            className="absolute inset-8 -z-10 rounded-full bg-gold-300/24 blur-3xl dark:bg-gold-400/12"
-          />
-          <Image
-            alt="Golden zodiac wheel and celestial astrology illustration"
-            className="h-auto w-full max-w-[360px] object-contain sm:max-w-[460px] lg:max-w-[680px] xl:max-w-[760px]"
-            height={1280}
-            priority
-            src="/assets/astrology/hero-zodiac-wheel.png"
-            width={1280}
-          />
+        <div className="relative mx-auto flex w-full max-w-[440px] items-center justify-center sm:max-w-[560px] lg:max-w-[820px] lg:justify-end xl:-mr-6">
+          <AnimatedSolarSystem moonAvailable={moonAvailable} />
         </div>
       </div>
     </section>

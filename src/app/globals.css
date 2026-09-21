@@ -445,6 +445,251 @@ h4 {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Animated solar system (homepage hero visual) — pure CSS, no JS.
+   The stage is a size container; every dimension is in cqw so the composition
+   scales with the hero column. Planets orbit inside a tilted, squashed "plane"
+   (rotate + scaleY) and are counter-transformed so they stay round and upright.
+   --------------------------------------------------------------------------- */
+.solar-stage {
+  container-type: inline-size;
+  --speed: 1;
+  --pm: 1;
+  --solar-tilt: -6deg;
+  --solar-squash: 0.44;
+}
+@media (max-width: 640px) {
+  .solar-stage {
+    --speed: 1.3;
+    --pm: 1.4;
+  }
+}
+.solar-plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--solar-tilt)) scaleY(var(--solar-squash));
+}
+.solar-orbit,
+.solar-arm,
+.solar-upright,
+.solar-undo,
+.solar-depth,
+.solar-sun {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.solar-orbit {
+  transform: rotate(calc(var(--phase) * 1deg));
+  will-change: transform;
+  animation:
+    solar-spin calc(var(--d) * 1s * var(--speed)) linear infinite,
+    solar-z calc(var(--d) * 1s * var(--speed)) linear infinite;
+  animation-delay:
+    calc(var(--pd) * 1s * var(--speed)), calc(var(--pd) * 1s * var(--speed));
+}
+.solar-arm {
+  transform: translateX(calc(var(--r) * 1cqw));
+}
+.solar-upright {
+  transform: rotate(calc(var(--phase) * -1deg));
+  will-change: transform;
+  animation: solar-spin-rev calc(var(--d) * 1s * var(--speed)) linear infinite;
+  animation-delay: calc(var(--pd) * 1s * var(--speed));
+}
+.solar-undo {
+  transform: scaleY(calc(1 / var(--solar-squash)))
+    rotate(calc(var(--solar-tilt) * -1));
+}
+.solar-depth {
+  transform: scale(var(--depth-scale));
+  opacity: var(--depth-op);
+  animation: solar-depth calc(var(--d) * 1s * var(--speed)) linear infinite;
+  animation-delay: calc(var(--pd) * 1s * var(--speed));
+}
+.solar-body {
+  position: absolute;
+  max-width: none;
+  width: calc(var(--size) * 1cqw * var(--pm));
+  height: calc(var(--size) * 1cqw * var(--pm));
+  left: calc(var(--size) * -0.5cqw * var(--pm));
+  top: calc(var(--size) * -0.5cqw * var(--pm));
+  pointer-events: none;
+  user-select: none;
+}
+/* Earth + Moon nested system: the Moon orbits EARTH (small, local, faster); the
+   whole group rides Earth's Sun-orbit. Local plane has its own gentle tilt. */
+.solar-moon-plane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--mt)) scaleY(var(--ms));
+}
+.solar-moon-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--gold-500) 22%, transparent);
+  width: calc(var(--mr) * 2cqw * var(--pm));
+  height: calc(var(--mr) * 2cqw * var(--pm));
+  left: calc(var(--mr) * -1cqw * var(--pm));
+  top: calc(var(--mr) * -1cqw * var(--pm));
+}
+.dark .solar-moon-ring {
+  border-color: color-mix(in srgb, var(--gold-400) 20%, transparent);
+}
+.solar-moon-earth,
+.solar-moon-orbit,
+.solar-moon-arm,
+.solar-moon-upright,
+.solar-moon-undo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.solar-moon-earth {
+  z-index: 2;
+  transform: scaleY(calc(1 / var(--ms))) rotate(calc(var(--mt) * -1));
+}
+.solar-moon-orbit {
+  transform: rotate(calc(var(--mphase) * 1deg));
+  will-change: transform;
+  animation:
+    solar-spin calc(var(--md) * 1s * var(--speed)) linear infinite,
+    solar-z calc(var(--md) * 1s * var(--speed)) linear infinite;
+  animation-delay:
+    calc(var(--mpd) * 1s * var(--speed)), calc(var(--mpd) * 1s * var(--speed));
+}
+.solar-moon-arm {
+  transform: translateX(calc(var(--mr) * 1cqw * var(--pm)));
+}
+.solar-moon-upright {
+  transform: rotate(calc(var(--mphase) * -1deg));
+  will-change: transform;
+  animation: solar-spin-rev calc(var(--md) * 1s * var(--speed)) linear infinite;
+  animation-delay: calc(var(--mpd) * 1s * var(--speed));
+}
+.solar-moon-undo {
+  transform: scaleY(calc(1 / var(--ms))) rotate(calc(var(--mt) * -1));
+}
+
+.solar-sun {
+  z-index: 2;
+  transform: scaleY(calc(1 / var(--solar-squash)))
+    rotate(calc(var(--solar-tilt) * -1));
+}
+.solar-glow {
+  position: absolute;
+  left: -34cqw;
+  top: -34cqw;
+  width: 68cqw;
+  height: 68cqw;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 176, 60, 0.55) 0%,
+    rgba(240, 140, 30, 0.26) 22%,
+    rgba(200, 110, 20, 0.1) 42%,
+    transparent 68%
+  );
+  opacity: 0.72;
+  animation: solar-glow 7s ease-in-out infinite alternate;
+}
+.solar-stars {
+  animation: solar-twinkle 7s ease-in-out infinite alternate;
+}
+.solar-stars-drift {
+  animation: solar-star-drift 70s ease-in-out infinite alternate;
+}
+
+@keyframes solar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes solar-spin-rev {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+/* Front half of the orbit (0-50%) sits above the Sun (z 2); back half below. */
+@keyframes solar-z {
+  0%,
+  49.9% {
+    z-index: 3;
+  }
+  50%,
+  100% {
+    z-index: 1;
+  }
+}
+/* Subtle depth: front = slightly larger + full opacity, back = a touch smaller
+   + softer. No blur, no grayscale, no large jumps. */
+@keyframes solar-depth {
+  0%,
+  50%,
+  100% {
+    transform: scale(0.975);
+    opacity: 0.89;
+  }
+  25% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.92);
+    opacity: 0.78;
+  }
+}
+@keyframes solar-glow {
+  from {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.88;
+    transform: scale(1.03);
+  }
+}
+@keyframes solar-twinkle {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes solar-star-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-10px, 6px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solar-stage *,
+  .solar-stage *::before,
+  .solar-stage *::after {
+    animation: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
