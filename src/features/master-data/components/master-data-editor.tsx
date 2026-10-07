@@ -1,0 +1,80 @@
+"use client";
+
+import { useSessionImagePreview } from "@/features/admin/hooks/use-session-image-preview";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ImagePlus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { masterDataLabels } from "../data/master-data";
+import { useMasterDataRepository } from "../hooks/use-master-data-repository";
+import type { CityRecord, CountryRecord, LanguageRecord, MasterDataRecord, MasterDataStatus, MasterDataType, StateRecord, TaxonomyRecord } from "../types/master-data";
+import { getMasterDataUsage, masterDataSlug } from "../utils/master-data";
+
+type Form = { name: string; nativeName: string; code: string; direction: "ltr" | "rtl"; status: MasterDataStatus; sortOrder: string; isDefault: boolean; isoCode: string; phoneCode: string; countryId: string; stateId: string; slug: string; description: string; imageSrc: string; technicalKey: string };
+const blank: Form = { name: "", nativeName: "", code: "", direction: "ltr", status: "active", sortOrder: "0", isDefault: false, isoCode: "", phoneCode: "", countryId: "", stateId: "", slug: "", description: "", imageSrc: "", technicalKey: "" };
+const commonSchema = z.object({ name: z.string().trim().min(1, "Name is required."), status: z.enum(["active", "inactive"]), sortOrder: z.coerce.number().int().min(0, "Sort order must be zero or greater.") });
+const schemas = {
+  languages: commonSchema.extend({ nativeName: z.string().trim().min(1, "Native name is required."), code: z.string().trim().min(2, "Locale code is required."), direction: z.enum(["ltr", "rtl"]) }),
+  countries: commonSchema.extend({ isoCode: z.string().trim().min(2, "ISO code is required.").max(3, "Use a valid ISO code.") }),
+  states: commonSchema.extend({ code: z.string().trim().min(1, "State code is required."), countryId: z.string().min(1, "Country is required.") }),
+  cities: commonSchema.extend({ stateId: z.string().min(1, "State is required.") }),
+  taxonomy: commonSchema.extend({ slug: z.string().trim().min(1, "Slug is required.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens.") }),
+};
+
+function formFromRecord(record?: MasterDataRecord): Form {
+  if (!record) return blank;
+  const form = { ...blank, name: record.name, status: record.status, sortOrder: String(record.sortOrder) };
+  if ("nativeName" in record) return { ...form, nativeName: record.nativeName, code: record.code, direction: record.direction, isDefault: record.isDefault };
+  if ("isoCode" in record) return { ...form, isoCode: record.isoCode, phoneCode: record.phoneCode ?? "" };
+  if ("countryId" in record) return { ...form, code: record.code, countryId: record.countryId };
+  if ("stateId" in record) return { ...form, stateId: record.stateId };
+  return { ...form, slug: record.slug, description: record.description ?? "", imageSrc: record.imageSrc ?? "", technicalKey: record.technicalKey ?? "" };
+}
+
+export function MasterDataEditor({ type, recordId }: { type: MasterDataType; recordId?: string }) {
+  const router = useRouter();
+  const repository = useMasterDataRepository();
+  const initialized = useRef(false);
+  const image = useSessionImagePreview({ onReject: (message) => toast.error(message) });
+  const [record, setRecord] = useState<MasterDataRecord | null>(null);
+  const [form, setForm] = useState<Form>(blank);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const set = <K extends keyof Form>(key: K, value: Form[K]) => setForm((current) => ({ ...current, [key]: value }));
+  useEffect(() => { if (!repository.ready || initialized.current) return; initialized.current = true; if (recordId) { const found = repository.get(type, recordId); if (found) { setRecord(found); setForm(formFromRecord(found)); } } else { const nextOrder = Math.max(0, ...(repository.list(type) as MasterDataRecord[]).map((item) => item.sortOrder)) + 1; setForm({ ...blank, sortOrder: String(nextOrder), countryId: repository.data.countries[0]?.id ?? "", stateId: repository.data.states[0]?.id ?? "" }); } }, [recordId, repository, type]);
+  const usage = record ? getMasterDataUsage(type, record.id, repository.data) : { count: 0, label: "records" };
+  const isTaxonomy = ["expertise", "specialties", "tags", "consultation-modes", "pooja-categories"].includes(type);
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const schema = type === "languages" ? schemas.languages : type === "countries" ? schemas.countries : type === "states" ? schemas.states : type === "cities" ? schemas.cities : schemas.taxonomy;
+    const result = schema.safeParse(form);
+    if (!result.success) { setErrors(Object.fromEntries(result.error.issues.map((issue) => [String(issue.path[0]), issue.message]))); return; }
+    const records = repository.list(type) as MasterDataRecord[];
+    const duplicateName = records.some((item) => item.id !== record?.id && item.name.toLowerCase() === form.name.trim().toLowerCase());
+    const uniqueValue = type === "languages" || type === "states" ? form.code : type === "countries" ? form.isoCode : isTaxonomy ? form.slug : "";
+    const duplicateIdentifier = uniqueValue && records.some((item) => item.id !== record?.id && (("code" in item && item.code.toLowerCase() === uniqueValue.toLowerCase()) || ("isoCode" in item && item.isoCode.toLowerCase() === uniqueValue.toLowerCase()) || ("slug" in item && item.slug.toLowerCase() === uniqueValue.toLowerCase())));
+    if (duplicateName || duplicateIdentifier) { setErrors(duplicateName ? { name: "A record with this name already exists." } : { [type === "countries" ? "isoCode" : type === "languages" || type === "states" ? "code" : "slug"]: "This value is already in use." }); return; }
+    if (type === "languages" && record && "isDefault" in record && record.isDefault && !form.isDefault) { setErrors({ isDefault: "Choose another default language before unsetting this one." }); return; }
+    const now = new Date().toISOString();
+    const shared = { id: record?.id ?? `${type}-${Date.now()}`, name: form.name.trim(), status: form.status, sortOrder: Number(form.sortOrder), createdAt: record?.createdAt ?? now, updatedAt: now };
+    let saved: MasterDataRecord;
+    if (type === "languages") saved = { ...shared, nativeName: form.nativeName.trim(), code: form.code.trim().toLowerCase(), direction: form.direction, isDefault: form.isDefault } as LanguageRecord;
+    else if (type === "countries") saved = { ...shared, isoCode: form.isoCode.trim().toUpperCase(), phoneCode: form.phoneCode.trim() || undefined } as CountryRecord;
+    else if (type === "states") saved = { ...shared, code: form.code.trim().toUpperCase(), countryId: form.countryId } as StateRecord;
+    else if (type === "cities") saved = { ...shared, stateId: form.stateId } as CityRecord;
+    else saved = { ...shared, slug: form.slug, description: form.description.trim() || undefined, imageSrc: type === "expertise" ? form.imageSrc || undefined : undefined, technicalKey: type === "consultation-modes" ? (record && "technicalKey" in record ? record.technicalKey : form.slug) : type === "pooja-categories" ? (record && "technicalKey" in record ? record.technicalKey : form.slug) : undefined } as TaxonomyRecord;
+    if (record) { repository.update(type, saved); toast.success(`${masterDataLabels[type].singular} updated`); } else { repository.create(type, saved); toast.success(`${masterDataLabels[type].singular} created`); }
+    router.push(`/admin/master-data/${type}`);
+  };
+  if (recordId && repository.ready && initialized.current && !record) return <Card><CardContent className="p-6 text-sm text-muted-foreground">Record not found.</CardContent></Card>;
+  const fieldError = (name: keyof Form) => errors[name] ? <p className="mt-1 text-xs text-destructive">{errors[name]}</p> : null;
+  return <form onSubmit={submit} noValidate className="mx-auto max-w-[1080px] space-y-4"><header className="flex flex-wrap items-center justify-between gap-3"><div><button type="button" onClick={() => router.push(`/admin/master-data/${type}`)} className="text-xs text-muted-foreground hover:text-foreground">Master Data / {masterDataLabels[type].plural}</button><h1 className="font-sans text-xl font-semibold">{record ? `Edit ${masterDataLabels[type].singular}` : `Add ${masterDataLabels[type].singular}`}</h1></div><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => router.push(`/admin/master-data/${type}`)}>Cancel</Button><Button type="submit" variant="conversion" size="sm">{record ? "Save changes" : `Create ${masterDataLabels[type].singular}`}</Button></div></header><div className="grid items-start gap-4 lg:grid-cols-[minmax(0,65fr)_minmax(17rem,35fr)]"><Card className="shadow-sm"><CardHeader className="border-b border-border px-5 py-3.5"><CardTitle className="text-sm">Basic information</CardTitle></CardHeader><CardContent className="space-y-4 p-5"><div><Label htmlFor="md-name">{type === "cities" ? "City name" : type === "languages" ? "Language name" : "Name"}</Label><Input id="md-name" value={form.name} onChange={(event) => { const name = event.target.value; setForm((current) => ({ ...current, name, slug: !record && isTaxonomy ? masterDataSlug(name) : current.slug })); }} aria-invalid={Boolean(errors.name)} />{fieldError("name")}</div>{type === "languages" ? <><div><Label htmlFor="md-native-name">Native name</Label><Input id="md-native-name" value={form.nativeName} onChange={(event) => set("nativeName", event.target.value)} />{fieldError("nativeName")}</div><div className="grid gap-4 sm:grid-cols-2"><div><Label htmlFor="md-code">Locale/code</Label><Input id="md-code" value={form.code} onChange={(event) => set("code", event.target.value)} />{fieldError("code")}</div><div><Label>Direction</Label><Select value={form.direction} onValueChange={(value) => set("direction", value as "ltr" | "rtl")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ltr">LTR</SelectItem><SelectItem value="rtl">RTL</SelectItem></SelectContent></Select></div></div><div className="flex items-center gap-2"><Checkbox id="md-default" checked={form.isDefault} onCheckedChange={(checked) => set("isDefault", checked === true)} /><Label htmlFor="md-default">Default language</Label></div>{fieldError("isDefault")}</> : null}{type === "countries" ? <div className="grid gap-4 sm:grid-cols-2"><div><Label htmlFor="md-iso">ISO code</Label><Input id="md-iso" value={form.isoCode} onChange={(event) => set("isoCode", event.target.value)} />{fieldError("isoCode")}</div><div><Label htmlFor="md-phone">Phone code</Label><Input id="md-phone" value={form.phoneCode} onChange={(event) => set("phoneCode", event.target.value)} placeholder="+91" /></div></div> : null}{type === "states" ? <div className="grid gap-4 sm:grid-cols-2"><div><Label htmlFor="md-code">State code</Label><Input id="md-code" value={form.code} onChange={(event) => set("code", event.target.value)} />{fieldError("code")}</div><div><Label>Country</Label><Select value={form.countryId} onValueChange={(value) => set("countryId", value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{repository.data.countries.map((country) => <SelectItem key={country.id} value={country.id}>{country.name}</SelectItem>)}</SelectContent></Select>{fieldError("countryId")}</div></div> : null}{type === "cities" ? <><div><Label>State</Label><Select value={form.stateId} onValueChange={(value) => set("stateId", value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{repository.data.countries.map((country) => <div key={country.id}><div className="px-2 py-1 text-xs font-semibold text-muted-foreground">{country.name}</div>{repository.data.states.filter((state) => state.countryId === country.id).map((state) => <SelectItem key={state.id} value={state.id}>{state.name}</SelectItem>)}</div>)}</SelectContent></Select>{fieldError("stateId")}</div><div><Label>Country</Label><Input readOnly value={repository.data.countries.find((country) => country.id === repository.data.states.find((state) => state.id === form.stateId)?.countryId)?.name ?? "Select a state"} /></div></> : null}{isTaxonomy ? <><div><Label htmlFor="md-slug">{type === "consultation-modes" ? "Technical key" : "Slug"}</Label><Input id="md-slug" value={type === "consultation-modes" && record ? form.technicalKey : form.slug} readOnly={Boolean(record)} onChange={(event) => set("slug", masterDataSlug(event.target.value))} className="font-mono text-xs" />{fieldError("slug")}</div><div><Label htmlFor="md-description">Description</Label><Textarea id="md-description" className="min-h-28 resize-y" value={form.description} onChange={(event) => set("description", event.target.value)} /></div>{type === "expertise" ? <div><Label>Icon / image</Label><div className="mt-2 flex items-center gap-3"><div className="grid size-16 place-items-center overflow-hidden rounded-md border border-border bg-muted">{form.imageSrc ? <img src={form.imageSrc} alt="" className="size-full object-cover" /> : <ImagePlus className="size-5 text-muted-foreground" />}</div><div className="flex flex-wrap gap-2"><Button variant="outline" size="sm" onClick={image.openPicker}><ImagePlus />Upload</Button>{form.imageSrc ? <Button variant="ghost" size="sm" onClick={() => { image.clear(); set("imageSrc", ""); }}><Trash2 />Remove</Button> : null}</div></div><input ref={image.inputRef} type="file" accept="image/*" className="sr-only" aria-label="Upload expertise image" onChange={(event) => { const url = image.handleInputChange(event); if (url) set("imageSrc", url); }} /><Input className="mt-2" value={form.imageSrc} onChange={(event) => set("imageSrc", event.target.value)} placeholder="https:// or /assets/..." aria-label="Expertise image URL or path" /></div> : null}</> : null}</CardContent></Card><aside className="space-y-4 lg:sticky lg:top-4"><Card className="shadow-sm"><CardHeader className="border-b border-border px-5 py-3.5"><CardTitle className="text-sm">Settings</CardTitle></CardHeader><CardContent className="space-y-4 p-5"><div><Label>Status</Label><Select value={form.status} onValueChange={(value) => set("status", value as MasterDataStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="inactive">Inactive</SelectItem></SelectContent></Select></div><div><Label htmlFor="md-order">Sort order</Label><Input id="md-order" type="number" min="0" step="1" value={form.sortOrder} onChange={(event) => set("sortOrder", event.target.value)} />{fieldError("sortOrder")}</div></CardContent></Card><Card className="shadow-sm"><CardHeader className="border-b border-border px-5 py-3.5"><CardTitle className="text-sm">Usage</CardTitle></CardHeader><CardContent className="p-5"><p className="text-2xl font-semibold tabular-nums">{usage.count}</p><p className="text-sm text-muted-foreground">{usage.label}</p>{usage.count ? <p className="mt-3 text-xs leading-5 text-muted-foreground">Referenced records are protected from deletion.</p> : null}</CardContent></Card><Card className="shadow-sm"><CardContent className="p-4"><div className="flex items-center justify-between gap-2"><div><p className="font-medium">{form.name || `${masterDataLabels[type].singular} name`}</p><p className="text-xs text-muted-foreground">{isTaxonomy ? form.slug || "slug" : type === "languages" ? form.code || "code" : "Reference item"}</p></div><Badge variant={form.status === "active" ? "online" : "muted"}>{form.status === "active" ? "Active" : "Inactive"}</Badge></div></CardContent></Card></aside></div></form>;
+}
