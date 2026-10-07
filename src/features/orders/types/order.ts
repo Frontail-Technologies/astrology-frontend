@@ -1,0 +1,3 @@
+export type OrderFulfillmentStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "returned";
+export type OrderPaymentStatus = "pending" | "paid" | "failed" | "refunded" | "partially-refunded";
+export type StoreOrder = { id: string; customerId: string; customerName: string; items: Array<{ productId: string; productNameSnapshot: string; imageSrc?: string; unitPriceInPaise: number; quantity: number }>; subtotalInPaise: number; discountInPaise?: number; shippingInPaise?: number; totalInPaise: number; paymentStatus: OrderPaymentStatus; fulfillmentStatus: OrderFulfillmentStatus; shippingAddress: string; tracking?: string; couponCode?: string; paymentId?: string; createdAt: string; updatedAt: string; events: Array<{ label: string; createdAt: string }> };
