@@ -47,6 +47,10 @@ export type CalculatorDetailDefinition = {
   relatedSlugs: string[];
 };
 
+export const calculatorCatalogStatusValues = ["available", "coming-soon"] as const;
+
+export type CalculatorCatalogStatus = (typeof calculatorCatalogStatusValues)[number];
+
 export type CalculatorDefinition = {
   slug: string;
   name: string;
@@ -55,7 +59,7 @@ export type CalculatorDefinition = {
   imageSrc: string;
   keywords: string[];
   featured?: boolean;
-  status: "available" | "coming-soon";
+  status: CalculatorCatalogStatus;
   detail?: CalculatorDetailDefinition;
 };
 

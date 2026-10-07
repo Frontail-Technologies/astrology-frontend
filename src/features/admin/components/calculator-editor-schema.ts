@@ -1,0 +1,10 @@
+import { z } from "zod";
+import { calculatorCategories } from "@/features/calculators/data/calculators";
+import type { CalculatorDefinition } from "@/features/calculators/types/calculator";
+import { calculatorCatalogStatusValues } from "@/features/calculators/types/calculator";
+const required = (message: string) => z.string().trim().min(1, { error: message });
+const categories = calculatorCategories.filter((item) => item.value !== "all").map((item) => item.value);
+export const calculatorEditorSchema = z.object({ name: required("Enter a name."), shortDescription: required("Enter a short description."), imageSrc: required("Provide an image URL or application asset path.").refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), { error: "Use an image URL or application asset path." }), category: z.string().refine((value) => categories.includes(value as typeof categories[number]), { error: "Choose a valid category." }), status: z.enum(calculatorCatalogStatusValues), intro: z.string().trim(), howItWorks: z.array(z.object({ text: z.string().trim() })) });
+export type CalculatorEditorValues = z.infer<typeof calculatorEditorSchema>;
+export function getCalculatorEditorDefaults(calculator: CalculatorDefinition): CalculatorEditorValues { return { name: calculator.name, shortDescription: calculator.shortDescription, imageSrc: calculator.imageSrc, category: calculator.category, status: calculator.status, intro: calculator.detail?.intro ?? "", howItWorks: calculator.detail?.howItWorks.map((text) => ({ text })) ?? [] }; }
+export function toCalculatorEditorPayload(calculator: CalculatorDefinition, values: CalculatorEditorValues, imageUpload?: File) { return { calculator: { ...calculator, name: values.name.trim(), shortDescription: values.shortDescription.trim(), imageSrc: values.imageSrc.trim(), category: values.category as CalculatorDefinition["category"], status: values.status, detail: calculator.detail ? { ...calculator.detail, intro: values.intro || undefined, howItWorks: values.howItWorks.map((item) => item.text.trim()).filter(Boolean) } : undefined }, imageUpload }; }

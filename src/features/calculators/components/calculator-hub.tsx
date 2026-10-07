@@ -147,7 +147,7 @@ export function CalculatorHub() {
                   "inline-flex shrink-0 items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold outline-none transition-colors duration-200",
                   "focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   selected
-                    ? "border-conversion-500 bg-conversion-500 text-midnight-950 hover:bg-conversion-600"
+                    ? "border-conversion-500 bg-conversion-500 text-white hover:bg-conversion-600 dark:text-midnight-950"
                     : "border-gold-500/20 bg-white text-foreground/70 hover:border-gold-500/40 hover:bg-gold-300/10 hover:text-foreground dark:border-gold-400/18 dark:bg-espresso-900 dark:text-ivory-50/72 dark:hover:border-gold-400/40 dark:hover:bg-espresso-700 dark:hover:text-ivory-50",
                 )}
               >
