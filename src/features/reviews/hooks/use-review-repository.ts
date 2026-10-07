@@ -1,0 +1,1 @@
+"use client"; import {useMockRepository} from "@/features/admin/hooks/use-mock-repository"; import {reviewSeed} from "../data/reviews"; import type {Review} from "../types/review"; export function useReviewRepository(){return useMockRepository<Review>("astrology-admin-reviews-v1",reviewSeed)}
