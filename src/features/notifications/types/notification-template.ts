@@ -1,0 +1,1 @@
+export type NotificationChannel="email"|"sms"|"whatsapp"|"push"; export type NotificationStatus="active"|"inactive"|"draft"; export type NotificationTemplate={id:string;name:string;channel:NotificationChannel;event:string;subject?:string;content:string;status:NotificationStatus;variables:string[];createdAt:string;updatedAt:string};
