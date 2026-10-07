@@ -69,7 +69,7 @@ export function PoojaProcess() {
                 />
               ) : null}
 
-              <span className="relative z-10 grid size-12 shrink-0 place-items-center rounded-full bg-conversion-500 text-midnight-950">
+              <span className="relative z-10 grid size-12 shrink-0 place-items-center rounded-full bg-conversion-500 text-white dark:text-midnight-950">
                 <Icon className="size-5" aria-hidden="true" />
               </span>
 

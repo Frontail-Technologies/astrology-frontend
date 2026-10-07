@@ -1,4 +1,5 @@
 import type {
+  PoojaCategory,
   PoojaCategoryOption,
   PoojaDefinition,
   PoojaRitualStep,
@@ -707,6 +708,14 @@ export const poojaCategories: PoojaCategoryOption[] = [
 ];
 
 export const featuredPoojas = poojas.filter((pooja) => pooja.featured);
+
+export function getPoojaCategoryLabel(category: PoojaCategory): string {
+  return poojaCategories.find((option) => option.value === category)?.label ?? category;
+}
+
+export function getPoojaStatusLabel(status: PoojaDefinition["status"]): string {
+  return status === "available" ? "Available" : "Coming soon";
+}
 
 export function getPoojaBySlug(slug: string): PoojaDefinition | undefined {
   return poojas.find((pooja) => pooja.slug === slug);

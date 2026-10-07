@@ -35,7 +35,7 @@ export function PoojaRitualOverview({
             ) : null}
             <span
               aria-hidden="true"
-              className="grid size-11 place-items-center rounded-full bg-conversion-500 font-display text-base font-semibold text-midnight-950 shadow-[0_6px_16px_-6px_color-mix(in_srgb,var(--conversion-600)_55%,transparent)] ring-1 ring-inset ring-conversion-600/25 lg:size-12 lg:text-[17px]"
+              className="grid size-11 place-items-center rounded-full bg-conversion-500 font-display text-base font-semibold text-white shadow-[0_6px_16px_-6px_color-mix(in_srgb,var(--conversion-600)_55%,transparent)] ring-1 ring-inset ring-conversion-600/25 dark:text-midnight-950 lg:size-12 lg:text-[17px]"
             >
               {String(index + 1).padStart(2, "0")}
             </span>

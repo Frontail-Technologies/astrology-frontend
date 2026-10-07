@@ -7,6 +7,27 @@ export type PoojaCategory =
   | "prosperity"
   | "shiva";
 
+export const poojaServiceStatusValues = ["available", "coming-soon"] as const;
+
+export type PoojaServiceStatus = (typeof poojaServiceStatusValues)[number];
+
+export const poojaManagementStatusValues = ["draft", "active", "archived"] as const;
+
+export type PoojaManagementStatus = (typeof poojaManagementStatusValues)[number];
+
+/**
+ * Optional Admin-managed and system metadata. Static catalog fixtures omit
+ * this until an Admin API provides genuine values.
+ */
+export type PoojaManagementMetadata = {
+  managementStatus?: PoojaManagementStatus;
+  estimatedDurationMinutes?: number;
+  priceInPaise?: number;
+  currency?: "INR";
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type PoojaQuickFact = {
   label: string;
   value: string;
@@ -45,8 +66,9 @@ export type PoojaDefinition = {
   imageSrc: string;
   categories: PoojaCategory[];
   featured?: boolean;
-  status: "available" | "coming-soon";
+  status: PoojaServiceStatus;
   detail: PoojaDetail;
+  management?: PoojaManagementMetadata;
 };
 
 export type PoojaCategoryValue = "all" | PoojaCategory;
