@@ -1,0 +1,1 @@
+"use client"; import {useMockRepository} from "@/features/admin/hooks/use-mock-repository"; import {supportTicketSeed} from "../data/support-tickets"; import type {SupportTicket} from "../types/support-ticket"; export function useSupportTicketRepository(){return useMockRepository<SupportTicket>("astrology-admin-support-tickets-v1",supportTicketSeed)}
