@@ -1,0 +1,2 @@
+import { notFound } from "next/navigation"; import { AdminBannerEditor } from "@/features/admin/components/admin-banner-editor"; import { bannerRepository } from "@/features/banners/repositories/banner-repository";
+export default async function BannerEditPage({ params }: { params: Promise<{ id: string }> }) { const banner = await bannerRepository.getById((await params).id); if (!banner) notFound(); return <AdminBannerEditor banner={banner} />; }

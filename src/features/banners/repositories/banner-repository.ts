@@ -1,0 +1,3 @@
+import { bannerSeed } from "../data/banners"; import type { Banner } from "../types/banner";
+let records = [...bannerSeed];
+export const bannerRepository = { list: async () => [...records], getById: async (id: string) => records.find((item) => item.id === id), create: async (item: Banner) => { records = [item, ...records]; return item; }, update: async (id: string, patch: Partial<Banner>) => { const current = records.find((item) => item.id === id); if (!current) throw new Error("Banner not found"); const next = { ...current, ...patch, updatedAt: new Date().toISOString() }; records = records.map((item) => item.id === id ? next : item); return next; }, delete: async (id: string) => { records = records.filter((item) => item.id !== id); } };
