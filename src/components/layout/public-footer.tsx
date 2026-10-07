@@ -23,6 +23,7 @@ const ASTROLOGY_LINKS: FooterLink[] = [
   { label: "Calculators", route: "/calculators", real: true },
   { label: "Astrology Services", route: "/services" },
   { label: "Online Pooja", route: "/pooja", real: true },
+  { label: "Store", route: "/shop", real: true },
 ]
 
 const CONSULTATION_LINKS: FooterLink[] = [
