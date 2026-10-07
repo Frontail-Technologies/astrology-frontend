@@ -1,5 +1,34 @@
 export type AstrologerAvailability = "bookable" | "soon";
 
+export type ConsultationMode = "Chat" | "Voice" | "Video";
+
+export type AstrologerManagementStatus = "draft" | "active" | "suspended" | "archived";
+
+export type AstrologerVerificationStatus = "unverified" | "pending" | "verified" | "rejected";
+
+export type AstrologerPricing = {
+  mode: ConsultationMode;
+  priceInPaise: number;
+  durationMinutes?: number;
+  currency: "INR";
+};
+
+/** Admin-owned lifecycle metadata. Timestamps are assigned by the future backend. */
+export type AstrologerManagementMetadata = {
+  managementStatus?: AstrologerManagementStatus;
+  verificationStatus?: AstrologerVerificationStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+/** Backend-derived operational data, deliberately outside the editorial profile. */
+export type AstrologerOperationalSummary = {
+  astrologerId: string;
+  liveAvailability?: { state: "online" | "offline" | "busy"; updatedAt?: string };
+  ratingSummary?: { average: number; reviewCount: number };
+  sessionStats?: { total: number; completed: number; cancelled: number };
+};
+
 export type AstrologerGuidanceArea = {
   title: string;
   description: string;
@@ -21,7 +50,7 @@ export type AstrologerDetail = {
   /** One sentence describing how this astrologer frames a consultation. */
   approachFocus: string;
   /** Planned formats — profile capabilities only, not live actions. */
-  consultationModes: string[];
+  consultationModes: ConsultationMode[];
   relatedSlugs: string[];
 };
 
@@ -36,6 +65,9 @@ export type AstrologerListItem = {
   specialties: string[];
   languages: string[];
   availability: AstrologerAvailability;
+  experienceYears?: number;
+  consultationPricing?: AstrologerPricing[];
+  management?: AstrologerManagementMetadata;
   detail?: AstrologerDetail;
 };
 
