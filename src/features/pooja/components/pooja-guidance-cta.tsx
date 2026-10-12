@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -57,16 +57,14 @@ export function PoojaGuidanceCta() {
             <ArrowRight aria-hidden="true" />
           </a>
           <Button
-            type="button"
+            asChild
             variant="conversion"
-            onClick={() =>
-              toast("Astrologer consultation experience is coming soon.")
-            }
-            data-route="/astrologers"
             className="transition-transform duration-200 hover:-translate-y-px"
           >
-            <MessagesSquare aria-hidden="true" />
-            Talk to Astrologer
+            <Link href="/astrologers">
+              <MessagesSquare aria-hidden="true" />
+              Find Astrologers
+            </Link>
           </Button>
         </div>
       </div>

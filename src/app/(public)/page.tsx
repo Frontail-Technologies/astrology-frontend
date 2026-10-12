@@ -8,7 +8,10 @@ import { AstrologyServicesSection } from "@/features/homepage/components/astrolo
 import { CalculatorsSection } from "@/features/homepage/components/calculators-section";
 import { DailyHoroscopeSection } from "@/features/homepage/components/daily-horoscope-section";
 import { ExploreAstrologySection } from "@/features/homepage/components/explore-astrology-section";
+import { GuidanceConcernGrid } from "@/features/homepage/components/guidance-concern-grid";
 import { HomepageHero } from "@/features/homepage/components/homepage-hero";
+import { HomepageFaq } from "@/features/homepage/components/homepage-faq";
+import { HomepageReviews } from "@/features/homepage/components/homepage-reviews";
 import { KundliCompatibilitySection } from "@/features/homepage/components/kundli-compatibility-section";
 import { OnlinePoojaSection } from "@/features/homepage/components/online-pooja-section";
 import { PanchangSection } from "@/features/homepage/components/panchang-section";
@@ -24,14 +27,17 @@ export default function HomePage() {
     <main>
       <HomepageHero moonAvailable={MOON_AVAILABLE} />
       <ExploreAstrologySection />
+      <GuidanceConcernGrid />
       <DailyHoroscopeSection />
       {/* <KundliCompatibilitySection /> */}
       <AstrologersSection />
+      <HomepageReviews />
       <OnlinePoojaSection />
       <AstrologyServicesSection />
       <CalculatorsSection />
       {/* <PanchangSection /> */}
       <AstrologyGuidesSection />
+      <HomepageFaq />
       <AstrologerGuidanceCta />
     </main>
   );

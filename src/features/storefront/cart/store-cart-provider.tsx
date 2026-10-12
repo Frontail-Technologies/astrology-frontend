@@ -42,6 +42,7 @@ type CartContextValue = {
   addItem: (productId: string, quantity: number) => AddResult;
   updateQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
+  removeItems: (productIds: string[]) => void;
   clearCart: () => void;
 };
 
@@ -179,6 +180,19 @@ export function StoreCartProvider({ children }: { children: ReactNode }) {
     (productId: string) => setItems((existing) => existing.filter((item) => item.productId !== productId)),
     [],
   );
+  const removeItems = useCallback(
+    (productIds: string[]) => {
+      const ids = new Set(productIds);
+      const next = items.filter((item) => !ids.has(item.productId));
+      setItems(next);
+      try {
+        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // The in-memory cart still updates when storage is unavailable.
+      }
+    },
+    [items],
+  );
   const clearCart = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartContextValue>(
@@ -193,9 +207,10 @@ export function StoreCartProvider({ children }: { children: ReactNode }) {
       addItem,
       updateQuantity,
       removeItem,
+      removeItems,
       clearCart,
     }),
-    [lines, hydrated, items, isOpen, getQuantity, addItem, updateQuantity, removeItem, clearCart],
+    [lines, hydrated, items, isOpen, getQuantity, addItem, updateQuantity, removeItem, removeItems, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

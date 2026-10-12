@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { cn } from "@/lib/utils";
 
@@ -54,18 +53,6 @@ export function AstrologerGuidanceCta() {
                 Browse Astrologers
                 <ArrowRight aria-hidden="true" />
               </Link>
-              <Button
-                type="button"
-                variant="conversion"
-                onClick={() =>
-                  toast("Astrologer consultation experience is coming soon.")
-                }
-                data-route="/astrologers"
-                className="shrink-0 transition-all duration-200 hover:-translate-y-px"
-              >
-                <MessagesSquare aria-hidden="true" />
-                Talk to Astrologer
-              </Button>
             </div>
           </div>
         </div>

@@ -15,9 +15,7 @@ import {
   Menu,
   Moon,
   Orbit,
-  Sparkles,
   Sun,
-  UserRound,
   X
 } from "lucide-react"
 
@@ -41,14 +39,10 @@ import {
 import { useTheme } from "@/components/providers/theme-provider"
 import { cn } from "@/lib/utils"
 import { Container } from "./container"
-
-type PublicNavItem = {
-  label: string
-  href: string
-  status: "implemented" | "planned"
-  group: "discover" | "consult" | "more"
-  icon: typeof Sparkles
-}
+import {
+  PublicHeaderNavItem,
+  type PublicNavItem,
+} from "./public-header-nav-item"
 
 type LanguageOption = {
   value: "en" | "hi"
@@ -61,9 +55,15 @@ const publicNavItems: PublicNavItem[] = [
   {
     label: "Horoscope",
     href: "/horoscope",
-    status: "planned",
+    status: "implemented",
     group: "discover",
-    icon: Sun
+    icon: Sun,
+    children: [
+      { label: "Horoscope overview", href: "/horoscope" },
+      { label: "Daily horoscope", href: "/horoscope/daily/taurus" },
+      { label: "Weekly horoscope", href: "/horoscope/weekly/taurus" },
+      { label: "Monthly horoscope", href: "/horoscope/monthly/taurus" },
+    ],
   },
   {
     label: "Kundli",
@@ -91,14 +91,25 @@ const publicNavItems: PublicNavItem[] = [
     href: "/calculators",
     status: "implemented",
     group: "discover",
-    icon: Calculator
+    icon: Calculator,
+    children: [
+      { label: "All calculators", href: "/calculators" },
+      { label: "Love compatibility", href: "/calculators/love-compatibility" },
+    ],
   },
   {
     label: "Online Pooja",
     href: "/pooja",
     status: "implemented",
     group: "discover",
-    icon: Flame
+    icon: Flame,
+    children: [
+      { label: "All poojas", href: "/pooja" },
+      { label: "Ganesh Pooja", href: "/pooja/ganesh-pooja" },
+      { label: "Satyanarayan Pooja", href: "/pooja/satyanarayan-pooja" },
+      { label: "Rudrabhishek", href: "/pooja/rudrabhishek" },
+      { label: "Navgraha Pooja", href: "/pooja/navgraha-pooja" },
+    ],
   },
   {
     label: "Astrologers",
@@ -110,19 +121,11 @@ const publicNavItems: PublicNavItem[] = [
   {
     label: "Articles",
     href: "/articles",
-    status: "planned",
-    group: "more",
+    status: "implemented",
+    group: "discover",
     icon: BookOpen
   }
 ]
-
-const signInItem = {
-  label: "Sign In",
-  href: "/sign-in",
-  status: "planned" as const,
-  group: "more" as const,
-  icon: UserRound
-}
 
 const languageOptions: LanguageOption[] = [
   {
@@ -140,10 +143,6 @@ const languageOptions: LanguageOption[] = [
 ]
 
 const currentLanguage = languageOptions[0]
-
-function isActive(pathname: string, item: PublicNavItem) {
-  return item.status === "implemented" && pathname === item.href
-}
 
 export function BrandMark() {
   return (
@@ -179,42 +178,6 @@ function Brand() {
         Astrology
       </span>
     </Link>
-  )
-}
-
-function DesktopNavItem({ item }: { item: PublicNavItem }) {
-  const pathname = usePathname()
-  const active = isActive(pathname, item)
-
-  const className = cn(
-    "group relative inline-flex h-10 items-center rounded-md px-1 text-[15px] font-medium outline-none transition-colors duration-200 ease-out",
-    "text-foreground/65 hover:text-foreground dark:text-ivory-50/70 dark:hover:text-ivory-50",
-    "focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-    "after:absolute after:inset-x-1 after:bottom-1 after:h-0.5 after:origin-center after:scale-x-0 after:rounded-full after:bg-conversion-500 after:transition-transform after:duration-200 after:ease-out hover:after:scale-x-100 focus-visible:after:scale-x-100",
-    active && "font-semibold text-foreground after:scale-x-100 dark:text-ivory-50",
-    item.status === "planned" && "cursor-default"
-  )
-
-  const labelClassName =
-    "inline-block translate-y-0 transition-transform duration-[250ms] ease-out group-hover:-translate-y-px group-focus-visible:-translate-y-px"
-
-  if (item.status === "implemented") {
-    return (
-      <Link className={className} href={item.href} aria-current={active ? "page" : undefined}>
-        <span className={labelClassName}>{item.label}</span>
-      </Link>
-    )
-  }
-
-  return (
-    <button
-      type="button"
-      className={className}
-      aria-disabled="true"
-      title={`${item.label} route is planned for a later screen`}
-    >
-      <span className={labelClassName}>{item.label}</span>
-    </button>
   )
 }
 
@@ -331,64 +294,15 @@ function LanguageDropdown({
 function TalkToAstrologerCta({ className }: { className?: string }) {
   return (
     <Button
-      aria-disabled="true"
+      asChild
       className={cn(
         "h-10 min-h-10 px-4 text-sm transition-all duration-200 hover:-translate-y-px hover:shadow-[0_6px_18px_color-mix(in_srgb,var(--conversion-500)_20%,transparent)] focus-visible:ring-offset-obsidian-950",
         className
       )}
-      title="Talk to Astrologer route is planned for a later screen"
-      type="button"
       variant="conversion"
     >
-      Talk to Astrologer
+      <Link href="/astrologers">Find Astrologers</Link>
     </Button>
-  )
-}
-
-function MobileMenuRow({ item }: { item: PublicNavItem | typeof signInItem }) {
-  const Icon = item.icon
-  const { setOpen, setOpenMobile } = useSidebar()
-  const className = cn(
-    "group relative flex min-h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-medium text-foreground/80 outline-none transition-colors duration-[250ms] ease-out dark:text-ivory-50/82",
-    "hover:bg-gold-300/15 hover:text-foreground focus-visible:bg-gold-300/15 focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:hover:bg-espresso-800 dark:hover:text-ivory-50 dark:focus-visible:bg-espresso-800 dark:focus-visible:text-ivory-50 dark:focus-visible:ring-offset-obsidian-950",
-    item.status === "planned" && "cursor-default"
-  )
-
-  const content = (
-    <>
-      <span className="grid size-8 place-items-center rounded-md bg-gold-300/20 text-gold-500 transition-colors duration-[250ms] group-hover:bg-gold-300/35 group-focus-visible:bg-gold-300/35 dark:bg-espresso-900/70 dark:text-gold-300 dark:group-hover:bg-espresso-700 dark:group-hover:text-gold-400 dark:group-focus-visible:bg-espresso-800 dark:group-focus-visible:text-gold-400">
-        <Icon className="size-4" aria-hidden="true" />
-      </span>
-      <span className="translate-x-0 transition-transform duration-[250ms] ease-out group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5">
-        {item.label}
-      </span>
-    </>
-  )
-
-  if (item.status === "implemented") {
-    return (
-      <Link
-        className={className}
-        href={item.href}
-        onClick={() => {
-          setOpen(false)
-          setOpenMobile(false)
-        }}
-      >
-        {content}
-      </Link>
-    )
-  }
-
-  return (
-    <button
-      type="button"
-      className={className}
-      aria-disabled="true"
-      title={`${item.label} route is planned for a later screen`}
-    >
-      {content}
-    </button>
   )
 }
 
@@ -472,8 +386,10 @@ function MobileNavGroup({
   items
 }: {
   label: string
-  items: Array<PublicNavItem | typeof signInItem>
+  items: PublicNavItem[]
 }) {
+  const { setOpen, setOpenMobile } = useSidebar()
+
   return (
     <div className="space-y-2">
       <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-400/82">
@@ -481,7 +397,15 @@ function MobileNavGroup({
       </p>
       <div className="space-y-1">
         {items.map((item) => (
-          <MobileMenuRow item={item} key={item.href} />
+          <PublicHeaderNavItem
+            item={item}
+            key={item.href}
+            onNavigate={() => {
+              setOpen(false)
+              setOpenMobile(false)
+            }}
+            variant="mobile"
+          />
         ))}
       </div>
     </div>
@@ -489,9 +413,8 @@ function MobileNavGroup({
 }
 
 function MobilePublicMenu() {
-  const discoverItems = publicNavItems.filter((item) => item.group === "discover")
-  const consultItems = publicNavItems.filter((item) => item.group === "consult")
-  const moreItems = [...publicNavItems.filter((item) => item.group === "more"), signInItem]
+  const discoverItems = publicNavItems.filter((item) => item.group === "discover" && item.status === "implemented")
+  const consultItems = publicNavItems.filter((item) => item.group === "consult" && item.status === "implemented")
 
   return (
     <SidebarProvider
@@ -540,11 +463,6 @@ function MobilePublicMenu() {
                 More
               </p>
               <MobileUtilityRows />
-              <div className="space-y-1">
-                {moreItems.map((item) => (
-                  <MobileMenuRow item={item} key={item.href} />
-                ))}
-              </div>
             </div>
           </nav>
         </SidebarContent>
@@ -557,7 +475,8 @@ function MobilePublicMenu() {
 }
 
 export function PublicHeader() {
-  const desktopItems = publicNavItems.filter((item) => item.group !== "more")
+  const pathname = usePathname()
+  const desktopItems = publicNavItems.filter((item) => item.group !== "more" && item.status === "implemented")
 
   return (
     <header
@@ -574,11 +493,16 @@ export function PublicHeader() {
           className="hidden size-1.5 rounded-full bg-gold-400/80 shadow-[0_0_10px_color-mix(in_srgb,var(--gold-400)_45%,transparent)] lg:block"
         />
         <nav
-          className="hidden flex-1 items-center justify-center gap-4 lg:flex xl:gap-6"
+          className="hidden flex-1 items-center justify-center gap-3 lg:flex xl:gap-6"
           aria-label="Primary public navigation"
         >
           {desktopItems.map((item) => (
-            <DesktopNavItem item={item} key={item.href} />
+            <PublicHeaderNavItem
+              item={item}
+              key={item.href}
+              pathname={pathname}
+              variant="desktop"
+            />
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -586,19 +510,6 @@ export function PublicHeader() {
             <ThemeUtilityButton />
             <LanguageDropdown />
           </div>
-          <Button
-            aria-label="Sign in"
-            className={cn(
-              "hidden gap-1.5 bg-transparent px-2 text-[15px] font-medium transition-colors duration-200 hover:bg-transparent md:inline-flex",
-              "text-foreground/70 hover:text-foreground focus-visible:ring-offset-background",
-              "dark:text-ivory-50/72 dark:hover:text-ivory-50"
-            )}
-            type="button"
-            variant="ghost"
-          >
-            <UserRound aria-hidden="true" />
-            Sign In
-          </Button>
           <TalkToAstrologerCta className="hidden lg:inline-flex" />
           <div className="lg:hidden">
             <MobilePublicMenu />

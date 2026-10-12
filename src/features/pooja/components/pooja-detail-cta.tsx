@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
@@ -53,16 +52,14 @@ export function PoojaDetailCta() {
           </div>
           <div className="flex flex-col gap-3 sm:shrink-0 sm:flex-row">
             <Button
-              type="button"
+              asChild
               variant="conversion"
-              data-route="/astrologers"
-              onClick={() =>
-                toast("Astrologer consultation experience is coming soon.")
-              }
               className="transition-transform duration-200 hover:-translate-y-px"
             >
-              <MessagesSquare aria-hidden="true" />
-              Talk to Astrologer
+              <Link href="/astrologers">
+                <MessagesSquare aria-hidden="true" />
+                Find Astrologers
+              </Link>
             </Button>
             <Link
               href="/pooja"

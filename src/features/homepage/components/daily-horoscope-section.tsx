@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { SectionChakra } from "@/components/shared/section-chakra";
 import { cn } from "@/lib/utils";
+import { horoscopeSeedData } from "@/features/horoscopes/data/horoscopes";
 import { SectionHeading } from "./section-heading";
 
 type ZodiacSign = {
@@ -92,15 +94,15 @@ const ZODIAC_SIGNS: ZodiacSign[] = [
 ];
 
 export function DailyHoroscopeSection() {
-  const [activeSlug, setActiveSlug] = useState("aries");
+  const [activeSlug, setActiveSlug] = useState("taurus");
   const active =
     ZODIAC_SIGNS.find((sign) => sign.slug === activeSlug) ?? ZODIAC_SIGNS[0];
+  const activeEntry = horoscopeSeedData.find(
+    (entry) => entry.period === "daily" && entry.sign === active.slug && entry.status === "published",
+  );
 
   function selectSign(sign: ZodiacSign) {
     setActiveSlug(sign.slug);
-    toast(
-      `${sign.name} horoscope opens when the Horoscope experience is connected.`,
-    );
   }
 
   return (
@@ -120,9 +122,14 @@ export function DailyHoroscopeSection() {
       <Container className="max-w-[1440px] py-12 sm:py-14 lg:py-14">
         <SectionHeading
           eyebrow="Horoscope"
-          title="Your Daily Horoscope"
+          title="Horoscope Preview"
           headingId="daily-horoscope-heading"
-          description="Explore today's guidance by zodiac sign and see what each sign is focused on right now."
+          description="Explore sample daily guidance from 2 October 2026 by zodiac sign."
+          action={
+            <Link className="inline-flex items-center gap-2 text-sm font-semibold text-conversion-500 hover:text-conversion-600" href="/horoscope">
+              View all horoscopes <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          }
         />
 
         <div
@@ -138,7 +145,6 @@ export function DailyHoroscopeSection() {
                 key={sign.slug}
                 type="button"
                 onClick={() => selectSign(sign)}
-                data-route={`/horoscope/${sign.slug}`}
                 aria-pressed={isActive}
                 className={cn(
                   "group flex min-h-[100px] flex-col items-center justify-start gap-0.5 px-1 text-center outline-none",
@@ -176,6 +182,17 @@ export function DailyHoroscopeSection() {
               </button>
             );
           })}
+        </div>
+        <div aria-live="polite" className="mt-8 rounded-lg border border-border bg-surface p-5 sm:p-6">
+          <h3 className="font-display text-xl font-semibold text-foreground">{active.name}</h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {activeEntry?.overview ?? "No sample horoscope is available for this sign."}
+          </p>
+          {activeEntry ? (
+            <Link className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-conversion-500 hover:text-conversion-600" href={`/horoscope/daily/${active.slug}`}>
+              Read {active.name} horoscope <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          ) : null}
         </div>
       </Container>
     </section>

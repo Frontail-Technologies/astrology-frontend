@@ -167,7 +167,7 @@ export function StoreHeader() {
 
           <StoreBrand />
 
-          <StoreSearch className="hidden max-w-2xl flex-1 md:block" />
+          <StoreSearch className="hidden max-w-2xl flex-1 md:flex" />
 
           <div className="ml-auto flex items-center md:ml-0">
             <ThemeButton />
@@ -179,7 +179,9 @@ export function StoreHeader() {
           </div>
         </div>
 
-        <StoreSearch className="pb-3 md:hidden" />
+        <div className="pb-3 md:hidden">
+          <StoreSearch />
+        </div>
       </Container>
 
       <nav

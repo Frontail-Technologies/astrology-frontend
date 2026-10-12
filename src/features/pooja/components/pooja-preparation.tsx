@@ -26,8 +26,7 @@ export function PoojaDetailsPrep({
           </h3>
         </div>
         <p className="mt-2 text-[13px] leading-6 text-muted-foreground">
-          The request form is not connected yet. When it is, you can expect to
-          share information along these lines.
+          These details are typically requested when arranging a Pooja.
         </p>
         <ul className="mt-4 space-y-2.5">
           {requiredDetails.map((item) => (
@@ -56,8 +55,8 @@ export function PoojaDetailsPrep({
           </h3>
         </div>
         <p className="mt-2 text-[13px] leading-6 text-muted-foreground">
-          A few simple things to keep in mind. Any specific preparation guidance
-          is shared before the request is confirmed.
+          A few simple things to keep in mind. Specific preparation guidance
+          is shared before a Pooja is arranged.
         </p>
         <ul className="mt-4 space-y-2.5">
           {preparationNotes.map((note) => (

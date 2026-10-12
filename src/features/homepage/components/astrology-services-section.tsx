@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
-import { toast } from "sonner";
 
 import { Container } from "@/components/layout/container";
 import { cn } from "@/lib/utils";
@@ -62,12 +62,9 @@ export function AstrologyServicesSection() {
         >
           {SERVICE_TILES.map(({ label, slug }) => (
             <li key={slug} className="w-[46%] shrink-0 snap-start sm:w-auto">
-              <button
-                type="button"
-                data-route={`/services/${slug}`}
-                onClick={() =>
-                  toast(`${label} opens when this service is connected.`)
-                }
+              <Link
+                href="/astrologers"
+                aria-label={`Find astrologers for ${label}`}
                 className={cn(
                   "group flex h-full w-full flex-col rounded-2xl border border-gold-500/16 bg-white p-3 text-center",
                   "shadow-[0_1px_2px_rgba(23,32,51,0.04)] transition-[transform,border-color] duration-200 ease-out",
@@ -88,7 +85,7 @@ export function AstrologyServicesSection() {
                 <span className="mt-2.5 text-[13px] font-semibold leading-tight text-foreground">
                   {label}
                 </span>
-              </button>
+              </Link>
             </li>
           ))}
         </ul>

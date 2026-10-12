@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
@@ -9,7 +10,6 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,18 +57,10 @@ const trustItems = [
 
 const valueBullets = [
   "Personal astrology guidance",
-  "Free Kundli & daily horoscope tools",
+  "Explore astrology tools and zodiac signs",
 ];
 
 export function HomepageHero({ moonAvailable = false }: { moonAvailable?: boolean }) {
-  function handleTalkToAstrologer() {
-    toast("Astrologer consultation experience is coming next.");
-  }
-
-  function handleExploreTools() {
-    toast("Astrology tools experience is coming next.");
-  }
-
   return (
     <section
       className="relative isolate overflow-hidden bg-background text-foreground transition-colors duration-300"
@@ -93,7 +85,7 @@ export function HomepageHero({ moonAvailable = false }: { moonAvailable?: boolea
           >
             <div
               className="-space-x-2.5 flex"
-              aria-label="Available astrologers"
+              aria-label="Astrologer profiles"
             >
               {astrologerAvatars.map((avatar, index) => (
                 <Avatar
@@ -118,7 +110,7 @@ export function HomepageHero({ moonAvailable = false }: { moonAvailable?: boolea
                 className="size-2 rounded-full bg-success"
                 aria-hidden="true"
               />
-              Astrologers available now
+              Explore astrologer profiles
             </span>
           </div>
           <h1 className="max-w-[720px] font-display text-[42px] font-semibold leading-[0.95] tracking-normal sm:text-5xl lg:text-[62px] xl:text-[66px]">
@@ -147,23 +139,25 @@ export function HomepageHero({ moonAvailable = false }: { moonAvailable?: boolea
           </div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button
+              asChild
               className="h-11 px-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_8px_22px_color-mix(in_srgb,var(--saffron-500)_20%,transparent)]"
-              onClick={handleTalkToAstrologer}
-              type="button"
               variant="conversion"
             >
-              <MessagesSquare aria-hidden="true" />
-              Talk to Astrologer
-              <ArrowRight aria-hidden="true" />
+              <Link href="/astrologers">
+                <MessagesSquare aria-hidden="true" />
+                Find Astrologers
+                <ArrowRight aria-hidden="true" />
+              </Link>
             </Button>
             <Button
+              asChild
               className="h-11 border-gold-500/35 px-5 text-foreground transition-all duration-200 hover:-translate-y-px hover:bg-gold-300/20 dark:border-gold-400/35 dark:hover:bg-gold-300/10"
-              onClick={handleExploreTools}
-              type="button"
               variant="outline"
             >
-              <Sparkles aria-hidden="true" />
-              Explore Astrology Tools
+              <Link href="/calculators">
+                <Sparkles aria-hidden="true" />
+                Explore Astrology Tools
+              </Link>
             </Button>
           </div>
           <div

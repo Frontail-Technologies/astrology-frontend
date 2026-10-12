@@ -8,18 +8,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export function StoreSearch({ className, onSubmitted }: { className?: string; onSubmitted?: () => void }) {
+export function StoreSearch({
+  className,
+  onSubmitted,
+}: {
+  className?: string;
+  onSubmitted?: () => void;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
 
   return (
     <form
       role="search"
-      className={cn("relative", className)}
+      className={cn(
+        "relative flex h-12 w-full min-w-0 max-w-full items-center gap-2 overflow-hidden rounded-lg border border-input bg-surface p-1 shadow-sm",
+        className,
+      )}
       onSubmit={(event) => {
         event.preventDefault();
         const q = query.trim();
-        router.push(q ? `/shop/search?q=${encodeURIComponent(q)}` : "/shop/search");
+        router.push(
+          q ? `/shop/search?q=${encodeURIComponent(q)}` : "/shop/search",
+        );
         onSubmitted?.();
       }}
     >
@@ -32,9 +43,14 @@ export function StoreSearch({ className, onSubmitted }: { className?: string; on
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Search rudraksha, gemstones, remedies..."
         aria-label="Search the store"
-        className="h-12 w-full rounded-lg bg-surface pl-11 pr-28 text-base shadow-sm"
+        className="h-full min-w-0 flex-1 truncate border-0 bg-transparent pl-10 pr-2 text-base shadow-none placeholder:truncate focus-visible:ring-0"
       />
-      <Button type="submit" size="sm" variant="conversion" className="absolute right-1.5 top-1/2 h-9 min-h-9 -translate-y-1/2 px-5">
+      <Button
+        type="submit"
+        size="sm"
+        variant="conversion"
+        className="h-10 min-h-10 w-[92px] shrink-0 px-3"
+      >
         Search
       </Button>
     </form>

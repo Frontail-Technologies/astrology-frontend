@@ -88,7 +88,7 @@ export function CalculatorWorkspace({ calculator }: CalculatorWorkspaceProps) {
 
         {detail.form === "love-compatibility" ? (
           <LoveCompatibilityForm
-            submitLabel={detail.submitLabel}
+            submitLabel="Review Birth Details"
             onValidSubmit={handleLoveSubmit}
           />
         ) : null}

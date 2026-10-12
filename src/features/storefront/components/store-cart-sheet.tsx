@@ -81,6 +81,7 @@ function CartLineRow({ line, onNavigate }: { line: CartLine; onNavigate: () => v
 export function StoreCartSheet() {
   const { lines, itemCount, subtotalInPaise, isOpen, setOpen, clearCart } = useStoreCart();
   const close = () => setOpen(false);
+  const hasUnavailableLines = lines.some((line) => line.status !== "ok");
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -115,9 +116,20 @@ export function StoreCartSheet() {
                 <span className="text-sm font-medium text-foreground">Subtotal</span>
                 <span className="text-xl font-semibold tabular-nums text-foreground">{formatStorePrice(subtotalInPaise)}</span>
               </div>
-              <p className="text-xs leading-5 text-muted-foreground">Checkout is coming soon. Your cart is saved on this device.</p>
-              <Button variant="conversion" size="lg" onClick={close}>
-                Continue shopping
+              {hasUnavailableLines ? (
+                <p className="text-xs leading-5 text-destructive">Remove or adjust unavailable items before proceeding to checkout.</p>
+              ) : null}
+              {hasUnavailableLines ? (
+                <Button variant="conversion" size="lg" disabled>
+                  Proceed to checkout
+                </Button>
+              ) : (
+                <Button asChild variant="conversion" size="lg" onClick={close}>
+                  <Link href="/shop/checkout">Proceed to checkout</Link>
+                </Button>
+              )}
+              <Button asChild variant="outline" size="sm" onClick={close}>
+                <Link href="/shop/search">Continue shopping</Link>
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>

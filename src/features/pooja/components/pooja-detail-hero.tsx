@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,7 @@ import type { PoojaDefinition } from "../types/pooja";
 
 const HERO_POINTS = [
   "Clear ritual overview",
-  "Simple online request",
+  "Online requests opening soon",
   "Guided preparation",
 ];
 
@@ -76,24 +76,22 @@ export function PoojaDetailHero({ pooja }: PoojaDetailHeroProps) {
         <Button
           type="button"
           variant="conversion"
-          data-route={`/pooja/${pooja.slug}/request`}
-          onClick={() => toast("Pooja request flow will be connected next.")}
+          disabled
+          title="Pooja requests are not available yet"
           className="transition-transform duration-200 hover:-translate-y-px"
         >
-          Request This Pooja
-          <ArrowRight aria-hidden="true" />
+          Requests opening soon
         </Button>
         <Button
-          type="button"
+          asChild
           variant="outline"
-          data-route="/astrologers"
-          onClick={() =>
-            toast("Astrologer consultation experience is coming soon.")
-          }
           className="border-gold-500/40 bg-ivory-50/70 text-foreground transition-colors duration-200 hover:border-gold-500/60 hover:bg-ivory-50 dark:border-gold-400/40 dark:bg-espresso-900/50 dark:hover:bg-espresso-800 dark:hover:text-ivory-50"
         >
-          <MessagesSquare aria-hidden="true" />
-          Talk to Astrologer
+          <Link href="/astrologers">
+            <MessagesSquare aria-hidden="true" />
+            Find Astrologers
+            <ArrowRight aria-hidden="true" />
+          </Link>
         </Button>
       </div>
     </FullBleedHero>

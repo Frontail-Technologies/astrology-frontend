@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -12,7 +13,6 @@ import {
   SearchX,
   Sun,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
@@ -284,17 +284,15 @@ export function CalculatorHub() {
               </p>
             </div>
             <Button
-              type="button"
+              asChild
               variant="conversion"
-              onClick={() =>
-                toast("Astrologer consultation experience is coming soon.")
-              }
-              data-route="/astrologers"
               className="shrink-0 transition-all duration-200 hover:-translate-y-px"
             >
-              <MessagesSquare aria-hidden="true" />
-              Talk to Astrologer
-              <ArrowRight aria-hidden="true" />
+              <Link href="/astrologers">
+                <MessagesSquare aria-hidden="true" />
+                Find Astrologers
+                <ArrowRight aria-hidden="true" />
+              </Link>
             </Button>
           </div>
         </section>

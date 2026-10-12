@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { toast } from "sonner";
 
 import { isCalculatorReady } from "../data/calculators";
 import type { CalculatorDefinition } from "../types/calculator";
@@ -68,23 +67,15 @@ export function RelatedCalculators({ calculators }: RelatedCalculatorsProps) {
                     {calculator.name}
                   </Link>
                 ) : (
-                  <button
-                    type="button"
-                    data-route={route}
-                    onClick={() => toast(`${calculator.name} is coming next.`)}
-                    aria-label={`Open ${calculator.name}`}
-                    className="text-left outline-none after:absolute after:inset-0 after:content-['']"
-                  >
-                    {calculator.name}
-                  </button>
+                  <span>{calculator.name}</span>
                 )}
               </h3>
               <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-muted-foreground">
                 {calculator.shortDescription}
               </p>
               <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-gold-500 dark:text-gold-300">
-                Open Calculator
-                <ArrowRight aria-hidden="true" className="size-3.5" />
+                {ready ? "Open Calculator" : "Coming soon"}
+                {ready ? <ArrowRight aria-hidden="true" className="size-3.5" /> : null}
               </span>
             </article>
           );

@@ -40,11 +40,11 @@ export function CalculatorResultPanel({
             </span>
             <div>
               <p className="font-display text-xl font-semibold text-foreground sm:text-2xl">
-                Your Compatibility Result Will Appear Here
+                Review Your Birth Details
               </p>
               <p className="mt-1.5 max-w-md text-sm leading-6 text-muted-foreground">
-                Once you submit the details, your compatibility analysis will be
-                generated here.
+                Enter both birth dates to review the information you provided.
+                Compatibility analysis is not available yet.
               </p>
               <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-gold-500/16 bg-white/70 p-3 dark:border-gold-400/14 dark:bg-espresso-800/60">
                 <LockKeyhole
@@ -53,10 +53,9 @@ export function CalculatorResultPanel({
                 />
                 <p className="text-[12.5px] leading-5 text-muted-foreground">
                   <span className="font-semibold text-foreground/80">
-                    The astrology calculation service is not connected yet.
+                    No compatibility score is available.
                   </span>{" "}
-                  Your submitted details are ready for calculation once the
-                  astrology engine is connected.
+                  This preview does not generate an interpretation.
                 </p>
               </div>
             </div>
@@ -83,11 +82,10 @@ export function CalculatorResultPanel({
             />
             <p className="text-[13px] leading-6 text-foreground/80">
               <span className="font-semibold text-foreground">
-                Compatibility calculation service is not connected yet.
+                Birth details reviewed.
               </span>{" "}
-              Your submitted details are ready for calculation once the astrology
-              engine is connected. No score or interpretation is generated until
-              then.
+              The information below reflects what you entered. No compatibility
+              score or interpretation is available.
             </p>
           </div>
 
@@ -104,7 +102,7 @@ export function CalculatorResultPanel({
                   >
                     {label}
                     <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                      Pending
+                      Unavailable
                     </span>
                   </li>
                 ))}

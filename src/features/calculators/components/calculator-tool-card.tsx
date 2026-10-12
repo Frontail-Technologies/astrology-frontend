@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { toast } from "sonner";
 
 import { isCalculatorReady } from "../data/calculators";
 import type { CalculatorDefinition } from "../types/calculator";
@@ -38,25 +37,14 @@ export function CalculatorToolCard({ calculator }: CalculatorToolCardProps) {
               {calculator.name}
             </Link>
           ) : (
-            <button
-              type="button"
-              data-route={route}
-              onClick={() => toast(`${calculator.name} is coming next.`)}
-              aria-label={`Open ${calculator.name}`}
-              className="text-left outline-none after:absolute after:inset-0 after:content-['']"
-            >
-              {calculator.name}
-            </button>
+            <span>{calculator.name}</span>
           )}
         </h3>
         <p className="mt-0.5 text-[12px] leading-[1.45] text-muted-foreground">
           {calculator.shortDescription}
         </p>
       </div>
-      <ArrowRight
-        aria-hidden="true"
-        className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold-500 dark:group-hover:text-gold-300"
-      />
+      {ready ? <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" /> : <span className="shrink-0 text-xs text-muted-foreground">Soon</span>}
     </article>
   );
 }

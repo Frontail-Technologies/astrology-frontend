@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { FullBleedHero } from "@/components/layout/full-bleed-hero";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const HERO_POINTS = [
   "Guided ritual details",
-  "Simple booking process",
+  "Online requests opening soon",
   "Clear preparation guidance",
 ];
 
@@ -34,11 +34,11 @@ export function PoojaHero() {
         id="pooja-hero-heading"
         className="mt-3 font-display text-[34px] font-semibold leading-[1.08] text-foreground sm:text-[42px] lg:text-[46px]"
       >
-        Book Meaningful Online Poojas &amp; Rituals
+        Explore Online Poojas &amp; Rituals
       </h1>
       <p className="mt-3 max-w-lg text-[15px] leading-6 text-muted-foreground">
         Explore guided Vedic rituals and Poojas with clear preparation details
-        and a simple booking experience.
+        before online requests open.
       </p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -53,16 +53,14 @@ export function PoojaHero() {
           <ArrowRight aria-hidden="true" />
         </a>
         <Button
-          type="button"
+          asChild
           variant="outline"
-          onClick={() =>
-            toast("Astrologer consultation experience is coming soon.")
-          }
-          data-route="/astrologers"
           className="border-gold-500/40 bg-ivory-50/70 text-foreground transition-colors duration-200 hover:border-gold-500/60 hover:bg-ivory-50 dark:border-gold-400/40 dark:bg-espresso-900/50 dark:text-ivory-50 dark:hover:bg-espresso-800 dark:hover:text-ivory-50"
         >
-          <MessagesSquare aria-hidden="true" />
-          Talk to Astrologer
+          <Link href="/astrologers">
+            <MessagesSquare aria-hidden="true" />
+            Find Astrologers
+          </Link>
         </Button>
       </div>
 

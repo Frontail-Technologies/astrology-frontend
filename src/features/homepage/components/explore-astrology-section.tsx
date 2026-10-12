@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,7 @@ const consultation = {
   title: "Talk to Astrologer",
   description:
     "Connect with an experienced astrologer for personal guidance.",
-  /** Preserved for future activation once the destination route ships. */
   route: "/astrologers",
-  previewMessage: "Astrologer consultation experience is coming soon.",
 };
 
 const consultationAvatars = [
@@ -32,29 +30,22 @@ const tools: AstrologyServiceCardProps[] = [
     title: "Kundli",
     description: "Understand your birth chart and planetary placements.",
     emblem: "kundli",
-    route: "/kundli",
-    previewMessage: "The Kundli experience is coming soon.",
   },
   {
     title: "Horoscope",
     description: "Explore daily guidance for your zodiac sign.",
     emblem: "horoscope",
-    route: "/horoscope",
-    previewMessage: "The Horoscope experience is coming soon.",
+    href: "/horoscope",
   },
   {
     title: "Compatibility",
     description: "Explore relationship compatibility using birth details.",
     emblem: "compatibility",
-    route: "/compatibility",
-    previewMessage: "The Compatibility experience is coming soon.",
   },
   {
     title: "Panchang",
     description: "Check tithi, nakshatra and important daily timings.",
     emblem: "panchang",
-    route: "/panchang",
-    previewMessage: "The Panchang experience is coming soon.",
   },
 ];
 
@@ -117,17 +108,18 @@ function FeaturedConsultationCard() {
             aria-hidden="true"
             className="size-2 rounded-full bg-success"
           />
-          Astrologers available now
+          Explore astrologer profiles
         </span>
         <Button
-          type="button"
+          asChild
           variant="conversion"
-          onClick={() => toast(consultation.previewMessage)}
           className="h-11 w-full px-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_8px_22px_color-mix(in_srgb,var(--conversion-500)_22%,transparent)] sm:w-auto"
         >
-          <MessagesSquare aria-hidden="true" />
-          Talk to Astrologer
-          <ArrowRight aria-hidden="true" />
+          <Link href={consultation.route}>
+            <MessagesSquare aria-hidden="true" />
+            Find Astrologers
+            <ArrowRight aria-hidden="true" />
+          </Link>
         </Button>
       </div>
     </article>

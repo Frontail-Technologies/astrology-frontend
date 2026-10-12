@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessagesSquare } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import type { PoojaDefinition } from "../types/pooja";
@@ -58,30 +58,27 @@ export function PoojaRequestSummary({ pooja }: PoojaRequestSummaryProps) {
           <Button
             type="button"
             variant="conversion"
-            data-route={`/pooja/${pooja.slug}/request`}
-            onClick={() => toast("Pooja request flow will be connected next.")}
+            disabled
+            title="Pooja requests are not available yet"
             className="w-full transition-transform duration-200 hover:-translate-y-px"
           >
-            Request This Pooja
-            <ArrowRight aria-hidden="true" />
+            Requests opening soon
           </Button>
           <Button
-            type="button"
+            asChild
             variant="outline"
-            data-route="/astrologers"
-            onClick={() =>
-              toast("Astrologer consultation experience is coming soon.")
-            }
             className="w-full border-gold-500/40 text-foreground transition-colors duration-200 hover:border-gold-500/60 hover:bg-gold-300/15 dark:border-gold-400/40 dark:hover:bg-gold-300/10"
           >
-            <MessagesSquare aria-hidden="true" />
-            Talk to Astrologer
+            <Link href="/astrologers">
+              <MessagesSquare aria-hidden="true" />
+              Find Astrologers
+              <ArrowRight aria-hidden="true" />
+            </Link>
           </Button>
         </div>
 
         <p className="mt-3 text-[11.5px] leading-5 text-muted-foreground">
-          No payment is taken at this step. You can review everything before the
-          request is confirmed.
+          Explore the ritual details while online requests are unavailable.
         </p>
       </div>
     </div>

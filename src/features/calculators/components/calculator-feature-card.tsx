@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { toast } from "sonner";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { isCalculatorReady } from "../data/calculators";
 import type { CalculatorDefinition } from "../types/calculator";
@@ -56,20 +55,7 @@ export function CalculatorFeatureCard({ calculator }: CalculatorFeatureCardProps
             />
           </Link>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => toast(`${calculator.name} is coming next.`)}
-            data-route={route}
-            aria-label={`Open ${calculator.name}`}
-            className={OPEN_BTN_CLASS}
-          >
-            Open Calculator
-            <ArrowRight
-              aria-hidden="true"
-              className="transition-transform duration-200 group-hover:translate-x-0.5"
-            />
-          </Button>
+          <span className="text-sm font-medium text-muted-foreground">Calculator coming soon</span>
         )}
       </div>
     </article>

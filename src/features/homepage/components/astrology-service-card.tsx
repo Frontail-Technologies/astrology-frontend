@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import {
@@ -18,9 +18,7 @@ export type AstrologyServiceCardProps = {
   title: string;
   description: string;
   emblem: ServiceEmblemKey;
-  /** Preserved for future activation once the destination route ships. */
-  route: string;
-  previewMessage: string;
+  href?: string;
 };
 
 const EMBLEMS: Record<ServiceEmblemKey, React.ComponentType<EmblemProps>> = {
@@ -34,8 +32,7 @@ export function AstrologyServiceCard({
   title,
   description,
   emblem,
-  route,
-  previewMessage,
+  href,
 }: AstrologyServiceCardProps) {
   const Emblem = EMBLEMS[emblem];
 
@@ -52,22 +49,11 @@ export function AstrologyServiceCard({
     >
       <div className="flex items-start justify-between gap-2">
         <Emblem size={60} />
-        <ArrowRight
-          aria-hidden="true"
-          className="mt-2 size-[18px] shrink-0 text-foreground/50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold-500 dark:text-ivory-50/55 dark:group-hover:text-gold-300"
-        />
+        <span className="text-xs font-medium text-muted-foreground">{href ? "Explore" : "Coming soon"}</span>
       </div>
       <div className="space-y-1">
         <h3 className="font-sans text-[15px] font-semibold text-foreground lg:text-base">
-          <button
-            type="button"
-            data-route={route}
-            onClick={() => toast(previewMessage)}
-            aria-label={`${title} — preview`}
-            className="outline-none after:absolute after:inset-0 after:content-['']"
-          >
-            {title}
-          </button>
+          {href ? <Link className="inline-flex items-center gap-2 hover:text-gold-500" href={href}>{title} <ArrowRight aria-hidden="true" className="size-3.5" /></Link> : title}
         </h3>
         <p className="text-[13px] leading-5 text-muted-foreground lg:text-sm lg:leading-6">
           {description}

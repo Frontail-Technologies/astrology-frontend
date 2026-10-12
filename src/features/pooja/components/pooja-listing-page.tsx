@@ -5,14 +5,11 @@ import { HeartHandshake, LifeBuoy, ScrollText, Sprout } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
-import { DiyaFlameAccent } from "@/components/shared/diya-flame-accent";
-import { SectionChakra } from "@/components/shared/section-chakra";
 import { featuredPoojas, poojas } from "../data/poojas";
 import type { PoojaCategoryValue } from "../types/pooja";
 import { PoojaCard } from "./pooja-card";
 import { PoojaGuidanceCta } from "./pooja-guidance-cta";
 import { PoojaHero } from "./pooja-hero";
-import { PoojaProcess } from "./pooja-process";
 import { PoojaPurposeFilter } from "./pooja-purpose-filter";
 
 const ASSURANCE = [
@@ -33,7 +30,7 @@ const ASSURANCE = [
   },
   {
     icon: LifeBuoy,
-    title: "Support Before Booking",
+    title: "Help Choosing a Ritual",
     text: "Ask questions before you decide.",
   },
 ];
@@ -83,7 +80,7 @@ export function PoojaListingPage() {
             Poojas by Purpose
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-            Browse the full list of available rituals by what you are exploring.
+            Browse rituals by the purpose you are exploring.
           </p>
 
           <div className="mt-5">
@@ -112,15 +109,6 @@ export function PoojaListingPage() {
             </div>
           )}
         </section>
-
-        <div className="relative mt-14 overflow-hidden">
-          <SectionChakra
-            spin={false}
-            className="-z-10 -left-40 -bottom-44 w-[26rem]"
-          />
-          <DiyaFlameAccent className="left-[-0.75rem] top-1 sm:left-[-1.5rem] sm:top-0" />
-          <PoojaProcess />
-        </div>
 
         <section
           aria-label="Service assurance"

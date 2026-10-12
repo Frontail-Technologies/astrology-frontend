@@ -16,7 +16,7 @@ export const buttonVariants = cva(
         ghost: "bg-transparent text-foreground hover:bg-surface-muted",
         destructive: "bg-error text-ivory-50 hover:bg-error/90",
       },
-      size: { default: "h-11", sm: "h-9 px-3 text-sm", lg: "h-12 px-5 text-base", icon: "size-11 p-0" },
+      size: { xs: "h-8 min-h-8 px-2.5 text-xs", default: "h-11", sm: "h-9 px-3 text-sm", lg: "h-12 px-5 text-base", icon: "size-11 p-0" },
     },
     defaultVariants: { variant: "default", size: "default" },
   }
