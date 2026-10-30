@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 
 import { Toaster } from "@/components/feedback/toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { themeStorageKey } from "@/lib/theme";
 import "./globals.css";
 
@@ -54,8 +55,10 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          {children}
-          <Toaster />
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
