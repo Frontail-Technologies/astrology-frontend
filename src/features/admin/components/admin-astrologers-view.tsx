@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RotateCcw, Search } from "lucide-react";
+import Link from "next/link";
+import { Plus, RotateCcw, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -77,6 +78,7 @@ export function AdminAstrologersView() {
           <h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">Astrologers</h1>
           <span className="shrink-0 text-sm text-muted-foreground">{resultLabel}</span>
         </div>
+        <Link href="/admin/astrologers/new" className={buttonVariants({ variant: "conversion", size: "sm" })}><Plus aria-hidden="true" />New Astrologer</Link>
       </div>
 
       {astrologers.length === 0 ? (

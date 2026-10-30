@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RotateCcw, Search } from "lucide-react";
+import Link from "next/link";
+import { Plus, RotateCcw, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -73,6 +74,7 @@ export function AdminPoojasView() {
           <h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">Poojas</h1>
           <span className="hidden shrink-0 text-sm text-muted-foreground md:inline">{resultLabel}</span>
         </div>
+        <Link href="/admin/poojas/new" className={buttonVariants({ variant: "conversion", size: "sm" })}><Plus aria-hidden="true" />New Pooja</Link>
       </div>
 
       {poojas.length === 0 ? (

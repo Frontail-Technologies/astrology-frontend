@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { astrologers } from "@/features/astrologers/data/astrologers";
 import { useConsultationRepository } from "@/features/consultations/hooks/use-consultation-repository";
@@ -52,7 +56,8 @@ function formatDateTime(iso?: string) {
 }
 
 export function AdminConsultationDetailView({ consultationId }: { consultationId: string }) {
-  const { records: consultations, ready } = useConsultationRepository();
+  const { records: consultations, ready, update } = useConsultationRepository();
+  const [confirmCancel, setConfirmCancel] = useState(false);
   const { records: customers } = useCustomerRepository();
 
   if (!ready) {
@@ -68,6 +73,11 @@ export function AdminConsultationDetailView({ consultationId }: { consultationId
 
   const customer = customers.find((c) => c.id === consultation.customerId);
   const astrologer = astrologers.find((a) => a.id === consultation.astrologerId);
+  const setBookingStatus = (bookingStatus: ConsultationBookingStatus) => {
+    update({ ...consultation, bookingStatus, updatedAt: new Date().toISOString() });
+    toast.success(`Consultation ${BOOKING_LABELS[bookingStatus].toLowerCase()}`);
+  };
+  const status = consultation.bookingStatus ?? "pending";
 
   return (
     <section className="max-w-3xl space-y-4">
@@ -87,11 +97,22 @@ export function AdminConsultationDetailView({ consultationId }: { consultationId
             </h1>
           </div>
         </div>
-        {consultation.bookingStatus && (
-          <Badge variant={BOOKING_VARIANTS[consultation.bookingStatus]}>
-            {BOOKING_LABELS[consultation.bookingStatus]}
-          </Badge>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {consultation.bookingStatus && (
+            <Badge variant={BOOKING_VARIANTS[consultation.bookingStatus]}>
+              {BOOKING_LABELS[consultation.bookingStatus]}
+            </Badge>
+          )}
+          {status === "pending" ? (
+            <Button size="sm" variant="outline" onClick={() => setBookingStatus("confirmed")}>Confirm</Button>
+          ) : null}
+          {status === "confirmed" ? (
+            <Button size="sm" className="!bg-primary !text-primary-foreground hover:!bg-primary/90" onClick={() => setBookingStatus("completed")}>Mark completed</Button>
+          ) : null}
+          {status === "pending" || status === "confirmed" ? (
+            <Button size="sm" variant="outline" className="text-destructive" onClick={() => setConfirmCancel(true)}>Cancel</Button>
+          ) : null}
+        </div>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -195,6 +216,19 @@ export function AdminConsultationDetailView({ consultationId }: { consultationId
           </Link>
         )}
       </div>
+
+      <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel this consultation?</AlertDialogTitle>
+            <AlertDialogDescription>The customer and astrologer will see it as cancelled. Refunds are handled from Payments.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { setBookingStatus("cancelled"); setConfirmCancel(false); }}>Cancel consultation</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

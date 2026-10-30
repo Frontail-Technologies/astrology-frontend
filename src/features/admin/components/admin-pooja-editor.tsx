@@ -1,6 +1,7 @@
 "use client";
 
 import { useSessionImagePreview } from "../hooks/use-session-image-preview";
+import { AdminImageUploadStatus } from "./shared/admin-image-upload-status";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -50,9 +51,13 @@ function RemoveButton({ label, onClick }: { label: string; onClick: () => void }
   return <Button type="button" variant="ghost" size="sm" className="size-9 shrink-0 p-0 text-muted-foreground hover:text-destructive" aria-label={label} onClick={onClick}><Trash2 aria-hidden="true" /></Button>;
 }
 
-export function AdminPoojaEditor({ pooja }: { pooja: PoojaDefinition }) {
+const blankPooja: PoojaDefinition = { slug: "", name: "", shortDescription: "", imageSrc: "", categories: [], status: "coming-soon", detail: { overview: [], quickFacts: [], ritualSteps: [], requiredDetails: [], preparationNotes: [], relatedSlugs: [] } };
+
+export function AdminPoojaEditor({ pooja: initial }: { pooja?: PoojaDefinition }) {
+  const isNew = !initial;
+  const pooja = initial ?? blankPooja;
   const router = useRouter();
-  const image = useSessionImagePreview();
+  const image = useSessionImagePreview({ upload: true, onUploaded: (uploaded) => setValue("imageSrc", uploaded.url, { shouldDirty: true, shouldValidate: true }) });
   const [failedSrc, setFailedSrc] = useState<string | undefined>();
   const [showDiscard, setShowDiscard] = useState(false);
   const [apiBoundaryMessage, setApiBoundaryMessage] = useState<string | null>(null);
@@ -97,12 +102,12 @@ export function AdminPoojaEditor({ pooja }: { pooja: PoojaDefinition }) {
 
   function onSubmit(formValues: PoojaEditorValues) {
     toPoojaEditorPayload(pooja, formValues, image.file);
-    setApiBoundaryMessage("Saving Pooja changes requires the Admin API.");
+    setApiBoundaryMessage(isNew ? "Creating poojas requires the Admin API." : "Saving Pooja changes requires the Admin API.");
   }
 
   function cancel() {
     if (hasUnsavedChanges) setShowDiscard(true);
-    else router.push(`/admin/poojas/${pooja.slug}`);
+    else router.push(isNew ? "/admin/poojas" : `/admin/poojas/${pooja.slug}`);
   }
 
   const selectedCategoryLabels = (values.categories as PoojaDefinition["categories"]).map(getPoojaCategoryLabel).join(", ") || "\u2014";
@@ -113,8 +118,8 @@ export function AdminPoojaEditor({ pooja }: { pooja: PoojaDefinition }) {
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="w-full max-w-[1240px] space-y-4">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3"><h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">Edit Pooja</h1></div>
-        <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={cancel}>Cancel</Button><Button type="submit" size="sm" disabled={!hasUnsavedChanges || !isValid}>Save changes</Button></div>
+        <div className="flex min-w-0 items-center gap-3"><h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">{isNew ? "New Pooja" : "Edit Pooja"}</h1></div>
+        <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={cancel}>Cancel</Button><Button type="submit" size="sm" disabled={!hasUnsavedChanges || !isValid}>{isNew ? "Create pooja" : "Save changes"}</Button></div>
       </header>
 
       {apiBoundaryMessage ? <Card className="border-warning/30 shadow-sm"><CardContent className="p-4 text-sm text-foreground">{apiBoundaryMessage}</CardContent></Card> : null}
@@ -127,8 +132,8 @@ export function AdminPoojaEditor({ pooja }: { pooja: PoojaDefinition }) {
                 <ImageOff className="size-5" aria-hidden="true" />
                 {previewSrc && !previewFailed ? <img src={previewSrc} alt={values.name || "Pooja preview"} className="absolute inset-0 size-full object-cover" onError={() => setFailedSrc(previewSrc)} /> : null}
               </div>
-              <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={image.openPicker}><ImageUp aria-hidden="true" />Upload image</Button>{image.hasLocalFile ? <Button type="button" variant="ghost" size="sm" onClick={image.clear}><X aria-hidden="true" />Remove local image</Button> : null}</div>
-              <input ref={image.inputRef} type="file" accept="image/*" aria-label="Upload Pooja image" className="sr-only" onChange={image.handleInputChange} />
+              <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={image.openPicker}><ImageUp aria-hidden="true" />Upload image</Button>{image.hasLocalFile ? <Button type="button" variant="ghost" size="sm" onClick={image.clear}><X aria-hidden="true" />Remove image</Button> : null}<AdminImageUploadStatus state={image.uploadState} /></div>
+              <input ref={image.inputRef} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload Pooja image" className="sr-only" onChange={image.handleInputChange} />
             </div>
             <FieldError message={image.error ?? undefined} />
             <div className="grid gap-3 sm:grid-cols-2"><div className="grid gap-1 sm:col-span-2"><Label htmlFor="name">Name</Label><Input id="name" aria-invalid={Boolean(errors.name)} {...register("name")} /><FieldError message={errors.name?.message} /></div><div className="grid gap-1 sm:col-span-2"><Label htmlFor="imageSrc">Image URL</Label><Input id="imageSrc" aria-invalid={Boolean(errors.imageSrc)} {...register("imageSrc")} /><FieldError message={errors.imageSrc?.message} /></div><div className="grid gap-1 sm:col-span-2"><Label htmlFor="shortDescription">Short description</Label><Textarea id="shortDescription" aria-invalid={Boolean(errors.shortDescription)} {...register("shortDescription")} /><FieldError message={errors.shortDescription?.message} /></div><div className="grid gap-1"><Label>Slug</Label><Input value={pooja.slug} readOnly aria-label="Slug" /></div></div>
@@ -158,7 +163,7 @@ export function AdminPoojaEditor({ pooja }: { pooja: PoojaDefinition }) {
         </div>
         <AdminDetailStickyRail className="order-first xl:order-none"><div className="xl:hidden"><Card className="shadow-sm"><CardContent className="p-2"><AdminEditorSectionNav sections={sections} activeId={activeId} onNavigate={scrollToSection} /></CardContent></Card></div><div className="hidden xl:block"><Card className="shadow-sm"><CardContent className="p-2"><AdminEditorSectionNav sections={sections} activeId={activeId} onNavigate={scrollToSection} /></CardContent></Card></div><Card className="shadow-sm"><CardContent className="space-y-1.5 p-3 text-sm"><p className="text-xs text-muted-foreground">Content completeness</p><p className="font-semibold text-foreground">{liveCompleteness.percentage}%</p><p className="text-xs text-muted-foreground">{liveCompleteness.completed} of {liveCompleteness.total} fields</p></CardContent></Card></AdminDetailStickyRail>
       </div>
-      <AlertDialog open={showDiscard} onOpenChange={setShowDiscard}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle><AlertDialogDescription>Your local changes will be lost.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="whitespace-nowrap">Continue editing</AlertDialogCancel><AlertDialogAction className="whitespace-nowrap" onClick={() => router.push(`/admin/poojas/${pooja.slug}`)}>Discard changes</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+      <AlertDialog open={showDiscard} onOpenChange={setShowDiscard}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle><AlertDialogDescription>Your local changes will be lost.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="whitespace-nowrap">Continue editing</AlertDialogCancel><AlertDialogAction className="whitespace-nowrap" onClick={() => router.push(isNew ? "/admin/poojas" : `/admin/poojas/${pooja.slug}`)}>Discard changes</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </form>
   );
 }

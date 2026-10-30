@@ -1,6 +1,7 @@
 "use client";
 
 import { useSessionImagePreview } from "../hooks/use-session-image-preview";
+import { AdminImageUploadStatus } from "./shared/admin-image-upload-status";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -48,9 +49,13 @@ function initialFallback(name: string) {
   return name.trim().split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
 }
 
-export function AdminAstrologerEditor({ astrologer }: { astrologer: AstrologerListItem }) {
+const blankAstrologer: AstrologerListItem = { id: "", slug: "", name: "", initials: "", avatarSrc: "", primaryExpertise: "", expertiseKey: "", specialties: [], languages: [], availability: "soon" };
+
+export function AdminAstrologerEditor({ astrologer: initial }: { astrologer?: AstrologerListItem }) {
+  const isNew = !initial;
+  const astrologer = initial ?? blankAstrologer;
   const router = useRouter();
-  const avatar = useSessionImagePreview();
+  const avatar = useSessionImagePreview({ upload: true, onUploaded: (uploaded) => setValue("avatarSrc", uploaded.url, { shouldDirty: true, shouldValidate: true }) });
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [showDiscard, setShowDiscard] = useState(false);
   const [apiBoundaryMessage, setApiBoundaryMessage] = useState<string | null>(null);
@@ -109,19 +114,19 @@ export function AdminAstrologerEditor({ astrologer }: { astrologer: AstrologerLi
 
   function onSubmit(formValues: AstrologerEditorValues) {
     toAstrologerEditorPayload(formValues, avatar.file);
-    setApiBoundaryMessage("Saving astrologer changes requires the Admin API.");
+    setApiBoundaryMessage(isNew ? "Creating astrologers requires the Admin API." : "Saving astrologer changes requires the Admin API.");
   }
 
   function cancel() {
     if (isDirty) setShowDiscard(true);
-    else router.push(`/admin/astrologers/${astrologer.slug}`);
+    else router.push(isNew ? "/admin/astrologers" : `/admin/astrologers/${astrologer.slug}`);
   }
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="w-full max-w-[1240px] space-y-4">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3"><h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">Edit Astrologer</h1></div>
-        <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={cancel}>Cancel</Button><Button type="submit" size="sm" disabled={!isDirty || !isValid}>Save changes</Button></div>
+        <div className="flex min-w-0 items-center gap-3"><h1 className="truncate font-sans text-xl font-semibold tracking-tight text-foreground">{isNew ? "New Astrologer" : "Edit Astrologer"}</h1></div>
+        <div className="flex items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={cancel}>Cancel</Button><Button type="submit" size="sm" disabled={!isDirty || !isValid}>{isNew ? "Create astrologer" : "Save changes"}</Button></div>
       </header>
 
       {apiBoundaryMessage ? <Card className="border-warning/30 shadow-sm"><CardContent className="p-4 text-sm text-foreground">{apiBoundaryMessage}</CardContent></Card> : null}
@@ -131,8 +136,8 @@ export function AdminAstrologerEditor({ astrologer }: { astrologer: AstrologerLi
           <Section id="identity" title="Identity">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <Avatar className="size-11"><AvatarImage src={previewSrc} alt={values.name || "Astrologer avatar"} /><AvatarFallback>{initialFallback(values.name)}</AvatarFallback></Avatar>
-              <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={avatar.openPicker}><ImageUp aria-hidden="true" />Upload image</Button>{avatar.hasLocalFile ? <Button type="button" variant="ghost" size="sm" onClick={avatar.clear}><X aria-hidden="true" />Remove local image</Button> : null}</div>
-              <input ref={avatar.inputRef} type="file" accept="image/*" aria-label="Upload avatar image" className="sr-only" onChange={avatar.handleInputChange} />
+              <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={avatar.openPicker}><ImageUp aria-hidden="true" />Upload image</Button>{avatar.hasLocalFile ? <Button type="button" variant="ghost" size="sm" onClick={avatar.clear}><X aria-hidden="true" />Remove image</Button> : null}<AdminImageUploadStatus state={avatar.uploadState} /></div>
+              <input ref={avatar.inputRef} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload avatar image" className="sr-only" onChange={avatar.handleInputChange} />
             </div>
             <FieldError message={avatar.error ?? undefined} />
             <div className="grid gap-3 sm:grid-cols-2"><div className="grid gap-1 sm:col-span-2"><Label htmlFor="name">Name</Label><Input id="name" aria-invalid={Boolean(errors.name)} {...register("name")} /><FieldError message={errors.name?.message} /></div><div className="grid gap-1 sm:col-span-2"><Label htmlFor="avatarSrc">Image URL</Label><Input id="avatarSrc" placeholder="https://example.com/avatar.jpg" aria-invalid={Boolean(errors.avatarSrc)} {...register("avatarSrc")} /><FieldError message={errors.avatarSrc?.message} /></div><div className="grid gap-1"><Label htmlFor="role">Role</Label><Input id="role" aria-invalid={Boolean(errors.role)} {...register("role")} /><FieldError message={errors.role?.message} /></div><div className="grid gap-1"><Label>Slug</Label><Input value={astrologer.slug} readOnly aria-label="Slug" /></div></div>
@@ -157,7 +162,7 @@ export function AdminAstrologerEditor({ astrologer }: { astrologer: AstrologerLi
         <AdminDetailStickyRail className="order-first xl:order-none"><div className="hidden xl:block"><Card className="shadow-sm"><CardContent className="p-2"><AdminEditorSectionNav sections={sections} activeId={activeId} onNavigate={scrollToSection} /></CardContent></Card></div><Card className="shadow-sm"><CardContent className="space-y-1.5 p-3 text-sm"><p className="text-xs text-muted-foreground">Profile completeness</p><p className="font-semibold text-foreground">{profileCompleteness.percentage}%</p><p className="text-xs text-muted-foreground">{profileCompleteness.completed} of {profileCompleteness.total} fields</p></CardContent></Card></AdminDetailStickyRail>
       </div>
 
-      <AlertDialog open={showDiscard} onOpenChange={setShowDiscard}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle><AlertDialogDescription>Your local changes will be lost.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="whitespace-nowrap">Continue editing</AlertDialogCancel><AlertDialogAction className="whitespace-nowrap" onClick={() => router.push(`/admin/astrologers/${astrologer.slug}`)}>Discard changes</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+      <AlertDialog open={showDiscard} onOpenChange={setShowDiscard}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle><AlertDialogDescription>Your local changes will be lost.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="whitespace-nowrap">Continue editing</AlertDialogCancel><AlertDialogAction className="whitespace-nowrap" onClick={() => router.push(isNew ? "/admin/astrologers" : `/admin/astrologers/${astrologer.slug}`)}>Discard changes</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </form>
   );
 }
