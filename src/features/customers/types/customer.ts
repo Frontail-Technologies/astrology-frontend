@@ -15,7 +15,7 @@ export type Customer = {
   name?: string;
   email?: string;
   phone?: string;
-  birthDetails?: CustomerBirthDetails;
+  birthDetails?: CustomerBirthDetails | null;
   accountStatus?: CustomerAccountStatus;
   createdAt?: string;
   updatedAt?: string;

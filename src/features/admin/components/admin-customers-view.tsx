@@ -30,7 +30,7 @@ const STATUS_VARIANTS: Record<CustomerAccountStatus, "online" | "unavailable" | 
 };
 
 export function AdminCustomersView() {
-  const { records: customers } = useCustomerRepository();
+  const { records: customers, ready, error, reload } = useCustomerRepository();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | CustomerAccountStatus>("all");
 
@@ -132,6 +132,25 @@ export function AdminCustomersView() {
   const resultLabel = hasActiveFilters
     ? `${filtered.length} of ${customers.length}`
     : `${customers.length} customers`;
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-48 items-center justify-center text-sm text-muted-foreground">
+        Loading customers...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="shadow-sm">
+        <CardContent className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
+          <p className="text-sm text-muted-foreground">{error.message}</p>
+          <Button variant="outline" size="sm" onClick={reload}>Try again</Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <section className="space-y-5">

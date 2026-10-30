@@ -7,13 +7,15 @@ import { ArrowLeft, CalendarDays } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCustomerRepository } from "@/features/customers/hooks/use-customer-repository";
-import { useConsultationRepository } from "@/features/consultations/hooks/use-consultation-repository";
-import { astrologers } from "@/features/astrologers/data/astrologers";
+import { useCustomerDetail, useUpdateCustomerStatus } from "@/features/customers/hooks/use-customer-repository";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { CustomerAccountStatus } from "@/features/customers/types/customer";
+import { ApiError } from "@/lib/api/api-error";
 
 const STATUS_LABELS: Record<CustomerAccountStatus, string> = {
   active: "Active",
@@ -40,27 +42,37 @@ function formatDate(iso?: string) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "long" }).format(new Date(iso));
 }
 
-function formatDateTime(iso?: string) {
+function formatDateTime(iso?: string | null) {
   if (!iso) return "—";
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
 }
 
 export function AdminCustomerDetailView({ customerId }: { customerId: string }) {
-  const { records: customers, ready } = useCustomerRepository();
-  const { records: consultations } = useConsultationRepository();
+  const { customer, ready, error, reload } = useCustomerDetail(customerId);
+  const statusMutation = useUpdateCustomerStatus(customerId);
+  const [pendingStatus, setPendingStatus] = useState<CustomerAccountStatus | null>(null);
 
   if (!ready) {
     return (
       <div className="flex min-h-48 items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading customer...</p>
       </div>
     );
   }
 
-  const customer = customers.find((c) => c.id === customerId);
-  if (!customer) notFound();
+  if (error instanceof ApiError && error.status === 404) notFound();
+  if (error || !customer) {
+    return (
+      <Card className="shadow-sm">
+        <CardContent className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
+          <p className="text-sm text-muted-foreground">{error?.message ?? "Could not load customer"}</p>
+          <Button variant="outline" size="sm" onClick={reload}>Try again</Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  const customerConsultations = consultations.filter((c) => c.customerId === customerId);
+  const customerConsultations = customer.consultations;
 
   return (
     <section className="max-w-4xl space-y-4">
@@ -80,12 +92,50 @@ export function AdminCustomerDetailView({ customerId }: { customerId: string }) 
             </h1>
           </div>
         </div>
-        {customer.accountStatus && (
-          <Badge variant={STATUS_VARIANTS[customer.accountStatus]}>
-            {STATUS_LABELS[customer.accountStatus]}
-          </Badge>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {customer.accountStatus && (
+            <Badge variant={STATUS_VARIANTS[customer.accountStatus]}>
+              {STATUS_LABELS[customer.accountStatus]}
+            </Badge>
+          )}
+          {customer.accountStatus !== "active" ? (
+            <Button size="sm" variant="outline" onClick={() => setPendingStatus("active")}>Reactivate</Button>
+          ) : null}
+          {customer.accountStatus !== "suspended" && customer.accountStatus !== "archived" ? (
+            <Button size="sm" variant="outline" className="text-destructive" onClick={() => setPendingStatus("suspended")}>Suspend</Button>
+          ) : null}
+          {customer.accountStatus !== "archived" ? (
+            <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => setPendingStatus("archived")}>Archive</Button>
+          ) : null}
+        </div>
       </header>
+
+      <AlertDialog open={Boolean(pendingStatus)} onOpenChange={(open) => !open && setPendingStatus(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{pendingStatus === "active" ? "Reactivate this customer?" : pendingStatus === "suspended" ? "Suspend this customer?" : "Archive this customer?"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingStatus === "active" ? "They will be able to sign in and book consultations again." : pendingStatus === "suspended" ? "They will be signed out and blocked from signing in until reactivated." : "The account is hidden from active lists and cannot sign in."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={statusMutation.isPending}
+              onClick={() => {
+                if (!pendingStatus) return;
+                statusMutation.mutate(pendingStatus, {
+                  onSuccess: () => toast.success(`Customer ${STATUS_LABELS[pendingStatus].toLowerCase()}`),
+                  onError: (mutationError) => toast.error(mutationError.message || "Could not update status"),
+                  onSettled: () => setPendingStatus(null),
+                });
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <div className="space-y-4">
@@ -149,12 +199,11 @@ export function AdminCustomerDetailView({ customerId }: { customerId: string }) 
               ) : (
                 <div className="divide-y divide-border">
                   {customerConsultations.map((con) => {
-                    const astrologer = astrologers.find((a) => a.id === con.astrologerId);
                     return (
                       <div key={con.id} className="flex items-center justify-between gap-3 py-3">
                         <div>
                           <p className="text-sm font-medium">
-                            {astrologer?.name ?? con.astrologerId}
+                            {con.astrologerName ?? con.astrologerId}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {con.mode} · {formatDateTime(con.scheduledAt)}
@@ -163,18 +212,16 @@ export function AdminCustomerDetailView({ customerId }: { customerId: string }) 
                         <div className="flex items-center gap-2">
                           <Badge
                             variant={
-                              con.bookingStatus === "completed"
+                              con.status === "completed"
                                 ? "verified"
-                                : con.bookingStatus === "confirmed"
+                                : ["accepted", "scheduled", "in_progress"].includes(con.status)
                                   ? "online"
-                                  : con.bookingStatus === "cancelled"
+                                  : con.status === "cancelled" || con.status === "rejected"
                                     ? "unavailable"
                                     : "pending"
                             }
                           >
-                            {con.bookingStatus
-                              ? con.bookingStatus.charAt(0).toUpperCase() + con.bookingStatus.slice(1)
-                              : "—"}
+                            {con.status.replace("_", " ").replace(/^./, (value) => value.toUpperCase())}
                           </Badge>
                           <Link
                             href={`/admin/consultations/${con.id}`}
@@ -230,7 +277,7 @@ export function AdminCustomerDetailView({ customerId }: { customerId: string }) 
                 <div className="flex justify-between gap-2">
                   <dt className="text-muted-foreground">Completed</dt>
                   <dd className="font-medium">
-                    {customerConsultations.filter((c) => c.bookingStatus === "completed").length}
+                    {customer.consultationSummary.completed}
                   </dd>
                 </div>
               </dl>
