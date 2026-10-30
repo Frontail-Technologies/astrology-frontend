@@ -19,6 +19,7 @@ export const adminNavigation = [
     items: [
       { href: "/admin/consultations", label: "Consultations", icon: "consultations" as const },
       { href: "/admin/poojas", label: "Poojas", icon: "poojas" as const },
+      { href: "/admin/pooja-requests", label: "Pooja Requests", icon: "poojaRequests" as const },
       { href: "/admin/calculators", label: "Calculators", icon: "calculators" as const },
     ],
   },
@@ -50,7 +51,13 @@ export const adminNavigation = [
   },
   {
     label: "Finance",
-    items: [{ href: "/admin/payments", label: "Payments", icon: "payments" as const }],
+    items: [
+      { href: "/admin/payments", label: "Payments", icon: "payments" as const },
+      { href: "/admin/wallets", label: "Wallets", icon: "wallets" as const },
+      { href: "/admin/chat-sessions", label: "Chat Sessions", icon: "chatSessions" as const },
+      { href: "/admin/earnings", label: "Earnings", icon: "earnings" as const },
+      { href: "/admin/payouts", label: "Payouts", icon: "payouts" as const },
+    ],
   },
   {
     label: "Master Data",
@@ -61,6 +68,7 @@ export const adminNavigation = [
     items: [
       { href: "/admin/notifications", label: "Notifications", icon: "notifications" as const },
       { href: "/admin/settings", label: "Settings", icon: "settings" as const },
+      { href: "/admin/audit-logs", label: "Audit Log", icon: "auditLogs" as const },
     ],
   },
 ] as const;

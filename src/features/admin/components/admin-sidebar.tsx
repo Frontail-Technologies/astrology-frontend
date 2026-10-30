@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, Calculator, CreditCard, LayoutDashboard, Package, Settings, Sparkles, Tags, TicketPercent, UsersRound, Images, ShoppingBag, Star, Bell, LifeBuoy, Newspaper, Sun, Database, MessagesSquare, BarChart3 } from "lucide-react";
+import { CalendarDays, Calculator, CreditCard, LayoutDashboard, Package, Settings, Sparkles, Tags, TicketPercent, UsersRound, Images, ShoppingBag, Star, Bell, LifeBuoy, Newspaper, Sun, Database, MessagesSquare, BarChart3, LogOut, CalendarCheck, Wallet, Timer, Coins, Landmark, ScrollText } from "lucide-react";
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -20,6 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { adminNavigation, getActiveAdminNavItem } from "../config/admin-navigation";
+import { useAdminAuth } from "../auth/admin-auth-context";
 
 const icons = {
   dashboard: LayoutDashboard,
@@ -44,10 +45,18 @@ const icons = {
   masterData: Database,
   chats: MessagesSquare,
   reports: BarChart3,
+  poojaRequests: CalendarCheck,
+  wallets: Wallet,
+  chatSessions: Timer,
+  earnings: Coins,
+  payouts: Landmark,
+  auditLogs: ScrollText,
 };
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout, user } = useAdminAuth();
   const activeHref = getActiveAdminNavItem(pathname)?.href;
   const { setOpenMobile } = useSidebar();
 
@@ -101,6 +110,18 @@ export function AdminSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter className="hidden border-t border-sidebar-border p-2.5 lg:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2">
+        <div className="flex min-w-0 items-center justify-between gap-2 group-data-[collapsible=icon]:hidden">
+          <span className="min-w-0 truncate text-xs text-sidebar-foreground/65">{user?.email}</span>
+          <button
+            type="button"
+            className="grid size-8 shrink-0 place-items-center rounded-md text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            aria-label="Sign out"
+            title="Sign out"
+            onClick={() => void logout().finally(() => router.replace("/admin/login"))}
+          >
+            <LogOut className="size-4" aria-hidden="true" />
+          </button>
+        </div>
         <SidebarTrigger
           className="size-8 self-end group-data-[collapsible=icon]:self-center"
           aria-label="Toggle sidebar"
