@@ -1,1 +1,5 @@
-import {AdminNotificationEditor} from "@/features/admin/components/admin-notification-editor"; export default function Page(){return <AdminNotificationEditor/>}
+import { AdminNotificationEditor } from "@/features/admin/components/notifications/admin-notification-editor";
+
+export default function NewNotificationTemplatePage() {
+  return <AdminNotificationEditor />;
+}

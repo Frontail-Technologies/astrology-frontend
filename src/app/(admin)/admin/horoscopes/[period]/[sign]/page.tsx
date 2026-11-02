@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
-import { AdminHoroscopeEditor } from "@/features/admin/components/admin-horoscope-editor";
-import { zodiacSigns } from "@/features/horoscopes/data/horoscopes";
-import type { HoroscopePeriod, ZodiacSign } from "@/features/horoscopes/types/horoscope";
 
-const periods: HoroscopePeriod[] = ["daily", "weekly", "monthly"];
+import { AdminHoroscopeEditor } from "@/features/admin/components/horoscopes/admin-horoscope-editor";
+import { isHoroscopePeriod, isZodiacSign } from "@/features/horoscopes/constants/horoscope-status";
+import { normalizeGridDate } from "@/features/horoscopes/state/horoscope-grid-state";
+
 export default async function HoroscopeEditorPage({ params, searchParams }: { params: Promise<{ period: string; sign: string }>; searchParams: Promise<{ date?: string }> }) {
   const { period, sign } = await params;
   const { date } = await searchParams;
-  if (!periods.includes(period as HoroscopePeriod) || !zodiacSigns.some((item) => item.key === sign) || !date) notFound();
-  return <AdminHoroscopeEditor period={period as HoroscopePeriod} sign={sign as ZodiacSign} date={date} />;
+  if (!isHoroscopePeriod(period) || !isZodiacSign(sign)) notFound();
+  const start = normalizeGridDate(period, date);
+  if (!start) notFound();
+  return <AdminHoroscopeEditor period={period} sign={sign} date={start} />;
 }

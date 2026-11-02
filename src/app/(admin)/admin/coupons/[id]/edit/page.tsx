@@ -1,2 +1,6 @@
-import { notFound } from "next/navigation"; import { AdminCouponEditor } from "@/features/admin/components/admin-coupon-editor"; import { couponRepository } from "@/features/coupons/repositories/coupon-repository";
-export default async function CouponEditPage({ params }: { params: Promise<{ id: string }> }) { const coupon = await couponRepository.getById((await params).id); if (!coupon) notFound(); return <AdminCouponEditor coupon={coupon} />; }
+import { AdminCouponEditor } from "@/features/admin/components/coupons/admin-coupon-editor";
+
+export default async function CouponEditPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <AdminCouponEditor couponId={id} />;
+}

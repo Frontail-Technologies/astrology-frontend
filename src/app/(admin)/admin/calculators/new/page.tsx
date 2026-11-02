@@ -1,3 +1,5 @@
-import { AdminCalculatorEditor } from "@/features/admin/components/admin-calculator-editor";
+import { AdminCalculatorEditor } from "@/features/admin/components/calculators/admin-calculator-editor";
 
-export default function AdminNewCalculatorPage() { return <AdminCalculatorEditor />; }
+export default function NewCalculatorPage() {
+  return <AdminCalculatorEditor />;
+}

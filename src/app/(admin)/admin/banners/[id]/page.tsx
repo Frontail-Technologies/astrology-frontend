@@ -1,2 +1,6 @@
-import { notFound, redirect } from "next/navigation"; import { bannerRepository } from "@/features/banners/repositories/banner-repository";
-export default async function BannerPage({ params }: { params: Promise<{ id: string }> }) { const banner = await bannerRepository.getById((await params).id); if (!banner) notFound(); redirect(`/admin/banners/${banner.id}/edit`); }
+import { AdminBannerDetailView } from "@/features/admin/components/banners/admin-banner-detail-view";
+
+export default async function BannerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <AdminBannerDetailView id={id} />;
+}

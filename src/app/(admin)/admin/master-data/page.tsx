@@ -1,2 +1,5 @@
-import { MasterDataOverview } from "@/features/master-data/components/master-data-overview";
-export default function MasterDataPage() { return <MasterDataOverview />; }
+import { AdminMasterDataOverview } from "@/features/admin/components/master-data/admin-master-data-overview";
+
+export default function MasterDataPage() {
+  return <AdminMasterDataOverview />;
+}

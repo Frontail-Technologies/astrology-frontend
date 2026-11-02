@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { AdminShell } from "@/features/admin/components/admin-shell";
+import { AdminShell } from "@/features/admin/components/layout/admin-shell";
 import { AdminAuthGuard } from "@/features/admin/auth/admin-auth-guard";
 import { AdminAuthProvider } from "@/features/admin/auth/admin-auth-context";
 

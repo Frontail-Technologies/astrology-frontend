@@ -1,0 +1,192 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { CalendarClock } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  POOJA_REQUEST_CONFLICT_HINTS,
+  poojaRequestStatusLabels,
+  poojaRequestStatusVariants,
+  poojaRequestTransitionDescriptions,
+  poojaRequestTransitionLabels,
+  poojaRequestTransitionOrder,
+} from "@/features/pooja-requests/constants/pooja-request-status";
+import { usePoojaRequestDetail, usePoojaRequestSchedule, usePoojaRequestStatusUpdate } from "@/features/pooja-requests/hooks/use-pooja-request-admin";
+import type { ManagedPoojaRequest } from "@/features/pooja-requests/types/pooja-request-admin";
+import { formatDateOnly, formatDateTime, formatINR, formatOptionalDateTime } from "../../lib/format";
+import { AdminConfirmDialog } from "../shared/admin-confirm-dialog";
+import { AdminDateTimeInput } from "../shared/admin-datetime-input";
+import { DetailRow } from "../shared/admin-detail-row";
+import { AdminDetailStickyRail } from "../shared/admin-detail-sticky-rail";
+import { AdminPageHeader } from "../shared/admin-page-header";
+import { AdminSectionCard } from "../shared/admin-section-card";
+import { AdminDetailFrame } from "../shared/admin-server-list";
+import { AdminStatusBadge } from "../shared/admin-status-badge";
+import { AdminTransitionActions } from "../shared/admin-transition-actions";
+import { useConfirmAction } from "../shared/use-confirm-action";
+
+function ConflictHint({ code }: { code: string | undefined }) {
+  const hint = code ? POOJA_REQUEST_CONFLICT_HINTS[code] : undefined;
+  return hint ? <p className="rounded-[calc(var(--radius)-2px)] border border-warning/30 bg-warning/10 p-3 text-sm">{hint}</p> : null;
+}
+
+function Paragraph({ title, text }: { title: string; text: string | null }) {
+  if (!text) return null;
+  return (
+    <AdminSectionCard title={title}>
+      <p className="whitespace-pre-line text-sm leading-6">{text}</p>
+    </AdminSectionCard>
+  );
+}
+
+function ScheduleAction({ request }: { request: ManagedPoojaRequest }) {
+  const schedule = usePoojaRequestSchedule(request.id);
+  const confirm = useConfirmAction<"schedule">(schedule);
+  const [when, setWhen] = useState<string | null>(null);
+  const rescheduling = request.status === "scheduled";
+  const label = rescheduling ? "Reschedule" : "Schedule";
+  const open = () => {
+    setWhen(request.scheduledStartAt ?? null);
+    confirm.open("schedule");
+  };
+  return (
+    <>
+      <Button type="button" size="sm" variant="outline" className="w-full justify-start bg-surface" disabled={!request.canSchedule || schedule.isPending} onClick={open}>
+        <CalendarClock aria-hidden="true" />
+        {label}
+      </Button>
+      {!request.canSchedule ? <p className="text-xs text-muted-foreground">Accept the request before scheduling it.</p> : null}
+      <AdminConfirmDialog
+        {...confirm.dialogProps}
+        title={rescheduling ? "Reschedule pooja?" : "Schedule pooja?"}
+        description={
+          rescheduling
+            ? `Currently ${formatOptionalDateTime(request.scheduledStartAt)}. The customer is notified of the new time.`
+            : "The request moves to Scheduled and the customer sees this date and time."
+        }
+        confirmLabel={rescheduling ? "Save new time" : "Schedule"}
+        confirmDisabled={!when || (rescheduling && when === request.scheduledStartAt)}
+        onConfirm={() => {
+          if (when) schedule.mutate({ scheduledStartAt: when }, { onSuccess: confirm.close });
+        }}
+      >
+        <div className="grid gap-1.5">
+          <Label htmlFor="pooja-request-when">Date and time (your local time)</Label>
+          <AdminDateTimeInput id="pooja-request-when" value={when} onChange={setWhen} disabled={schedule.isPending} />
+          {request.requestedDate ? <p className="text-xs text-muted-foreground">Customer preferred {formatDateOnly(request.requestedDate)}.</p> : null}
+        </div>
+        <ConflictHint code={schedule.error?.code} />
+      </AdminConfirmDialog>
+    </>
+  );
+}
+
+function RequestActions({ request }: { request: ManagedPoojaRequest }) {
+  const update = usePoojaRequestStatusUpdate(request.id);
+  return (
+    <div className="grid gap-3">
+      <ScheduleAction request={request} />
+      <AdminTransitionActions
+        allowed={request.allowedTransitions}
+        labels={poojaRequestTransitionLabels}
+        descriptions={poojaRequestTransitionDescriptions}
+        variants={{ accepted: "conversion", completed: "conversion", rejected: "destructive", cancelled: "destructive" }}
+        order={poojaRequestTransitionOrder}
+        mutation={update}
+        onConfirm={(status, _reason, close) => update.mutate({ status }, { onSuccess: close })}
+        finalStateText={`This request is ${poojaRequestStatusLabels[request.status].toLowerCase()}; no further changes are possible.`}
+        className="grid"
+      >
+        {() => <ConflictHint code={update.error?.code} />}
+      </AdminTransitionActions>
+    </div>
+  );
+}
+
+export function AdminPoojaRequestDetailView({ requestId }: { requestId: string }) {
+  const detail = usePoojaRequestDetail(requestId);
+  return (
+    <AdminDetailFrame ready={detail.ready} error={detail.error} onRetry={detail.reload} noun="pooja request">
+      {() => {
+        const request = detail.data!;
+        const customerLabel = request.customerName || request.email || request.phone;
+        const address = [request.addressLine1, request.addressLine2, `${request.city}, ${request.state}${request.postalCode ? ` ${request.postalCode}` : ""}`, request.country].filter(Boolean);
+        return (
+          <div className="space-y-5">
+            <AdminPageHeader
+              title={request.poojaName}
+              description={`Requested by ${customerLabel}`}
+              backHref="/admin/pooja-requests"
+              backLabel="Pooja requests"
+              meta={
+                <>
+                  <AdminStatusBadge status={request.status} labels={poojaRequestStatusLabels} variants={poojaRequestStatusVariants} />
+                  <span className="tabular-nums">Requested {formatDateTime(request.createdAt)}</span>
+                  {request.scheduledStartAt ? <span className="tabular-nums">Scheduled {formatDateTime(request.scheduledStartAt)}</span> : null}
+                </>
+              }
+            />
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+              <div className="min-w-0 space-y-5">
+                <AdminSectionCard title="Booking">
+                  <div className="divide-y divide-border">
+                    <DetailRow label="Pooja" value={<Link className="hover:underline" href={`/admin/poojas/${request.poojaId}`}>{request.poojaName}</Link>} />
+                    <DetailRow label="Amount" value={request.pricePaise === null ? "On request" : formatINR(request.pricePaise)} />
+                    <DetailRow label="Preferred date" value={request.requestedDate ? formatDateOnly(request.requestedDate) : "Flexible"} />
+                    <DetailRow label="Scheduled for" value={formatOptionalDateTime(request.scheduledStartAt, "Not scheduled")} />
+                  </div>
+                </AdminSectionCard>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <AdminSectionCard title="Customer">
+                    <div className="divide-y divide-border">
+                      <DetailRow label="Name" value={<Link className="hover:underline" href={`/admin/customers/${request.customerUserId}`}>{customerLabel}</Link>} />
+                      <DetailRow label="Phone" value={<a className="hover:underline" href={`tel:${request.phone.replace(/[^+\d]/g, "")}`}>{request.phone}</a>} />
+                      <DetailRow label="Email" value={request.email ? <a className="break-all hover:underline" href={`mailto:${request.email}`}>{request.email}</a> : "—"} />
+                    </div>
+                  </AdminSectionCard>
+                  <AdminSectionCard title="Ritual address">
+                    <address className="text-sm not-italic leading-6">
+                      {address.map((line) => (
+                        <span key={line} className="block">
+                          {line}
+                        </span>
+                      ))}
+                    </address>
+                  </AdminSectionCard>
+                </div>
+                <Paragraph title="Intention (sankalp)" text={request.intent} />
+                <Paragraph title="Customer notes" text={request.notes} />
+                <AdminSectionCard title="Timeline">
+                  <div className="divide-y divide-border">
+                    <DetailRow label="Requested" value={formatDateTime(request.createdAt)} />
+                    <DetailRow label="Accepted" value={formatOptionalDateTime(request.acceptedAt)} />
+                    <DetailRow label="Scheduled start" value={formatOptionalDateTime(request.scheduledStartAt)} />
+                    <DetailRow label="Completed" value={formatOptionalDateTime(request.completedAt)} />
+                    {request.cancelledAt ? <DetailRow label="Cancelled" value={formatDateTime(request.cancelledAt)} /> : null}
+                    {request.rejectedAt ? <DetailRow label="Rejected" value={formatDateTime(request.rejectedAt)} /> : null}
+                    <DetailRow label="Last updated" value={formatDateTime(request.updatedAt)} />
+                  </div>
+                </AdminSectionCard>
+              </div>
+              <AdminDetailStickyRail className="order-first xl:order-none">
+                <AdminSectionCard title="Next steps">
+                  <RequestActions request={request} />
+                </AdminSectionCard>
+                <AdminSectionCard title="Summary">
+                  <div className="divide-y divide-border">
+                    <DetailRow label="Amount" value={<span className="tabular-nums">{request.pricePaise === null ? "On request" : formatINR(request.pricePaise)}</span>} />
+                    <DetailRow label="City" value={`${request.city}, ${request.state}`} />
+                    <DetailRow label="Preferred date" value={request.requestedDate ? formatDateOnly(request.requestedDate) : "Flexible"} />
+                  </div>
+                </AdminSectionCard>
+              </AdminDetailStickyRail>
+            </div>
+          </div>
+        );
+      }}
+    </AdminDetailFrame>
+  );
+}

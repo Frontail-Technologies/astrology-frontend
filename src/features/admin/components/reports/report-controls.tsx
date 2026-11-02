@@ -1,56 +1,76 @@
 "use client";
 
+import { useState } from "react";
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { RangePreset, RangeState } from "../../insights/date-range";
+import {
+  ADMIN_RANGE_PRESETS,
+  adminRangePresetLabels,
+  isValidCustomRange,
+  todayKey,
+  type AdminRangePreset,
+  type AdminRangeState,
+} from "@/features/admin/data/admin-range";
 
-const presetLabels: Record<RangePreset, string> = {
-  "7d": "Last 7 days",
-  "30d": "Last 30 days",
-  "90d": "Last 90 days",
-  custom: "Custom range",
-};
-
+/**
+ * Preset + custom date range control. Presets apply immediately; a custom range is held as a local draft and only
+ * applied (and written to the URL by the caller) once both dates form a valid range.
+ */
 export function ReportRangeControl({
   value,
   onChange,
 }: {
-  value: RangeState;
-  onChange: (next: RangeState) => void;
+  value: AdminRangeState;
+  onChange: (next: AdminRangeState) => void;
 }) {
+  const max = todayKey();
+  const [draft, setDraft] = useState(value);
+  const [synced, setSynced] = useState(value);
+  if (synced !== value) {
+    setSynced(value);
+    setDraft(value);
+  }
+  const change = (next: AdminRangeState) => {
+    setDraft(next);
+    if (next.preset !== "custom" || isValidCustomRange(next.customFrom, next.customTo)) onChange(next);
+  };
+  const incomplete = draft.preset === "custom" && !isValidCustomRange(draft.customFrom, draft.customTo);
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Select value={value.preset} onValueChange={(preset) => onChange({ ...value, preset: preset as RangePreset })}>
-        <SelectTrigger className="h-9 w-40" aria-label="Date range">
-          <SelectValue>{presetLabels[value.preset]}</SelectValue>
+      <Select value={draft.preset} onValueChange={(preset) => change({ ...draft, preset: preset as AdminRangePreset })}>
+        <SelectTrigger className="h-9 w-40 bg-surface text-sm" aria-label="Date range">
+          <SelectValue>{adminRangePresetLabels[draft.preset]}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {(Object.keys(presetLabels) as RangePreset[]).map((preset) => (
+          {ADMIN_RANGE_PRESETS.map((preset) => (
             <SelectItem key={preset} value={preset}>
-              {presetLabels[preset]}
+              {adminRangePresetLabels[preset]}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      {value.preset === "custom" ? (
+      {draft.preset === "custom" ? (
         <>
           <Input
             type="date"
-            className="h-9 w-36"
+            className="h-9 min-h-9 w-36 bg-surface text-sm"
             aria-label="From date"
-            value={value.customFrom}
-            max={value.customTo || undefined}
-            onChange={(event) => onChange({ ...value, customFrom: event.target.value })}
+            value={draft.customFrom}
+            max={draft.customTo || max}
+            onChange={(event) => change({ ...draft, customFrom: event.target.value })}
           />
           <span className="text-xs text-muted-foreground">to</span>
           <Input
             type="date"
-            className="h-9 w-36"
+            className="h-9 min-h-9 w-36 bg-surface text-sm"
             aria-label="To date"
-            value={value.customTo}
-            min={value.customFrom || undefined}
-            onChange={(event) => onChange({ ...value, customTo: event.target.value })}
+            value={draft.customTo}
+            min={draft.customFrom || undefined}
+            max={max}
+            onChange={(event) => change({ ...draft, customTo: event.target.value })}
           />
+          {incomplete ? <span className="w-full text-xs text-muted-foreground sm:w-auto">Choose both dates (up to two years) to apply.</span> : null}
         </>
       ) : null}
     </div>
@@ -72,7 +92,7 @@ export function ReportFilterSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={`h-9 ${className}`} aria-label={label}>
+      <SelectTrigger className={`h-9 bg-surface text-sm ${className}`} aria-label={label}>
         <SelectValue>{options.find((option) => option.value === value)?.label}</SelectValue>
       </SelectTrigger>
       <SelectContent>

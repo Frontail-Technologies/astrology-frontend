@@ -20,10 +20,14 @@ type AdminAuthContextValue = {
 
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 const adminSessionKey = ["admin", "session"] as const;
+const subscribeNothing = () => () => {};
 
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const hasSession = useSyncExternalStore(subscribeToAdminSession, hasStoredSession, () => false);
+  // During hydration the server snapshot (no session) is used; never report "ready, signed out" until the stored
+  // session has actually been read, or a reload or deep link to any Admin page bounces to the login screen.
+  const hydrated = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const sessionQuery = useQuery({
     queryKey: adminSessionKey,
     enabled: hasSession,
@@ -63,7 +67,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     await logoutMutation.mutateAsync();
   }, [logoutMutation]);
   const user = sessionQuery.data ?? null;
-  const ready = !hasSession || sessionQuery.isSuccess || sessionQuery.isError;
+  const ready = hydrated && (!hasSession || sessionQuery.isSuccess || sessionQuery.isError);
   const value = useMemo(() => ({ user, ready, login, logout }), [login, logout, ready, user]);
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

@@ -3,18 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 
-import { ACCEPTED_IMAGE_TYPES, uploadAdminImage, type UploadedImage } from "@/features/media/media-api";
+import { uploadAdminImage, type UploadedImage } from "@/features/media/media-api";
+import { ACCEPTED_IMAGE_TYPES, IMAGE_TOO_LARGE_MESSAGE, IMAGE_TYPE_MESSAGE, MAX_IMAGE_BYTES } from "@/features/media/media-constraints";
 
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-export const IMAGE_TOO_LARGE_MESSAGE = "Choose an image smaller than 5 MB.";
+export { IMAGE_TOO_LARGE_MESSAGE, IMAGE_TYPE_MESSAGE, MAX_IMAGE_BYTES };
 
 /**
  * Owns only the session lifecycle of one local image: the File, its object URL
  * (created, revoked on replace/clear/unmount) and the file-input plumbing.
  * Canonical URLs, form fields and payloads stay with the feature.
  */
-export const IMAGE_TYPE_MESSAGE = "Use a JPEG, PNG or WebP image.";
-
 export type ImageUploadState = "idle" | "uploading" | "uploaded" | "failed";
 
 export function useSessionImagePreview({

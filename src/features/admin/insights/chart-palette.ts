@@ -14,24 +14,6 @@ export const toneColor: Record<InsightTone, string> = {
   neutral: "var(--chart-neutral)",
 };
 
-export const activitySeriesConfig = {
-  consultations: { label: "Consultations", color: "var(--chart-consultations)" },
-  orders: { label: "Orders", color: "var(--chart-orders)" },
-  payments: { label: "Successful payments", color: "var(--chart-payments)" },
-} satisfies ChartConfig;
-
-export const consultationSeriesConfig = {
-  consultations: { label: "Consultations", color: "var(--chart-consultations)" },
-} satisfies ChartConfig;
-
-export const orderValueSeriesConfig = {
-  orderValue: { label: "Order value", color: "var(--chart-orders)" },
-} satisfies ChartConfig;
-
-export const newCustomerSeriesConfig = {
-  newCustomers: { label: "New customers", color: "var(--chart-customers)" },
-} satisfies ChartConfig;
-
 export const contentStatusConfig = {
   live: { label: "Published / approved", color: "var(--chart-success)" },
   inProgress: { label: "Scheduled / pending", color: "var(--chart-pending)" },

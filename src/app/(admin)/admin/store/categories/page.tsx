@@ -1,3 +1,3 @@
-import { AdminStoreCategoriesView } from "@/features/admin/components/admin-store-categories-view";
+import { AdminStoreCategoriesView } from "@/features/admin/components/store/admin-store-categories-view";
 
 export default function AdminStoreCategoriesPage() { return <AdminStoreCategoriesView />; }

@@ -1,1 +1,5 @@
-import {AdminNotificationsView} from "@/features/admin/components/admin-notifications-view"; export default function Page(){return <AdminNotificationsView/>}
+import { AdminNotificationsView } from "@/features/admin/components/notifications/admin-notifications-view";
+
+export default function NotificationTemplatesPage() {
+  return <AdminNotificationsView />;
+}

@@ -3,6 +3,7 @@
 import { Pie, PieChart } from "recharts";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AdminChartEmpty } from "./admin-empty-state";
 import { chartDataFromRows, configFromRows, type DistributionRow } from "../../insights/chart-palette";
 
 export function AdminDonutChart({
@@ -19,11 +20,7 @@ export function AdminDonutChart({
   const total = rows.reduce((sum, row) => sum + row.value, 0);
 
   if (total === 0) {
-    return (
-      <div className="grid h-[220px] place-items-center rounded-md bg-muted/30 text-sm text-muted-foreground">
-        {emptyLabel}
-      </div>
-    );
+    return <AdminChartEmpty label={emptyLabel} />;
   }
 
   const config = configFromRows(rows);
@@ -41,7 +38,8 @@ export function AdminDonutChart({
               nameKey="key"
               innerRadius="64%"
               outerRadius="92%"
-              strokeWidth={2}
+              stroke="var(--surface)"
+              strokeWidth={data.length > 1 ? 2 : 0}
               paddingAngle={data.length > 1 ? 2 : 0}
             />
           </PieChart>

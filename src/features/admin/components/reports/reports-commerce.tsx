@@ -1,167 +1,215 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { CreditCard, Package, ReceiptText, RotateCcw, ShoppingBag, TrendingUp } from "lucide-react";
+import { BadgePercent, CreditCard, IndianRupee, Landmark, Package, ReceiptText, RotateCcw, ShoppingBag, TrendingUp, Wallet, XCircle } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 
-import { Badge } from "@/components/ui/badge";
-import { formatCompactINR, formatINR } from "../../lib/format";
-import { orderValueSeriesConfig } from "../../insights/chart-palette";
-import type { DateRange } from "../../insights/date-range";
-import { getCommerceReport, type CommerceFilters } from "../../insights/report-selectors";
-import type { InsightsSnapshot } from "../../insights/use-insights-data";
+import { earningStatusRows, orderStatusRows, payoutStatusRows } from "@/features/insights/constants/insights-status";
+import { useFinanceReport, useStoreReport } from "@/features/insights/hooks/use-insights-admin";
+import { distributionRows, paymentSuccessRate, type InsightRow } from "@/features/insights/lib/insights-view-models";
+import type { RangeQuery, StoreReport } from "@/features/insights/types/insights-admin";
+import { formatINR } from "../../lib/format";
+import { toneClasses } from "../../insights/tones";
+import { AdminBarChart } from "../shared/admin-bar-chart";
 import { AdminDataTable } from "../shared/admin-data-table";
 import { AdminDataTableColumnHeader } from "../shared/admin-data-table-column-header";
-import { AdminBarChart } from "../shared/admin-bar-chart";
 import { AdminDonutChart } from "../shared/admin-donut-chart";
-import { AdminTimeSeriesChart } from "../shared/admin-time-series-chart";
 import { AdminInsightCard } from "../shared/admin-insight-card";
+import { AdminSectionHeading } from "../shared/admin-section-heading";
 import { AdminMetricCard } from "../shared/admin-metric-card";
-import { ReportFilterSelect } from "./report-controls";
+import { ReportQueryState } from "./report-query-state";
 
-type Report = ReturnType<typeof getCommerceReport>;
-type ProductRow = Report["topProducts"][number];
-type CouponRow = Report["coupons"][number];
+type ProductRow = StoreReport["topProducts"][number];
+type CouponRow = StoreReport["couponUsage"][number];
+type LowStockRow = StoreReport["lowStock"][number];
 
-const label = (value: string) => value[0].toUpperCase() + value.slice(1).replace("-", " ");
+const num = (value: number) => <span className="tabular-nums">{value}</span>;
+const money = (paise: number) => <span className="tabular-nums">{formatINR(paise)}</span>;
 
-export function ReportsCommerce({ snapshot, range }: { snapshot: InsightsSnapshot; range: DateRange }) {
-  const [filters, setFilters] = useState<CommerceFilters>({ orderStatus: "all", paymentStatus: "all" });
-  const report = getCommerceReport(snapshot, range, filters);
-  const hasProductChart = report.topProducts.length >= 2;
-  const productChartRows = report.topProducts.slice(0, 6).map((product) => ({
-    key: product.id,
-    label: product.name,
-    value: product.units,
-    tone: "orange" as const,
-  }));
+/** Paise amounts per status (bar charts here only format counts, so money splits are listed). */
+function MoneyBreakdown({ rows, total }: { rows: InsightRow[]; total?: { label: string; value: number } }) {
+  return (
+    <ul className="grid gap-2 text-sm">
+      {rows.map((row) => (
+        <li key={row.key} className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2 text-foreground">
+            <span className={`size-2.5 rounded-[2px] ${toneClasses[row.tone].dot}`} aria-hidden="true" />
+            {row.label}
+          </span>
+          <span className="font-medium tabular-nums">{formatINR(row.value)}</span>
+        </li>
+      ))}
+      {total ? (
+        <li className="flex items-center justify-between gap-3 border-t border-border pt-2 text-muted-foreground">
+          <span>{total.label}</span>
+          <span className="font-medium tabular-nums text-foreground">{formatINR(total.value)}</span>
+        </li>
+      ) : null}
+    </ul>
+  );
+}
+
+export function ReportsCommerce({ range }: { range: RangeQuery }) {
+  const store = useStoreReport(range);
+  const finance = useFinanceReport(range);
 
   const productColumns = useMemo<ColumnDef<ProductRow>[]>(
     () => [
-      { accessorKey: "name", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Product" />, enableHiding: false, cell: ({ row }) => <span className="font-medium">{row.original.name}</span> },
-      { accessorKey: "units", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Units sold" />, cell: ({ row }) => <span className="tabular-nums">{row.original.units}</span> },
-      { accessorKey: "valueInPaise", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Order value" />, cell: ({ row }) => <span className="tabular-nums">{formatINR(row.original.valueInPaise)}</span> },
+      {
+        accessorKey: "productName",
+        header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Product" />,
+        enableHiding: false,
+        cell: ({ row }) =>
+          row.original.productId ? (
+            <Link href={`/admin/store/products/${row.original.productId}`} className="font-medium hover:underline">
+              {row.original.productName}
+            </Link>
+          ) : (
+            <span className="font-medium">{row.original.productName}</span>
+          ),
+      },
+      { accessorKey: "quantity", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Units" />, cell: ({ row }) => num(row.original.quantity) },
+      { accessorKey: "revenuePaise", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Revenue" />, cell: ({ row }) => money(row.original.revenuePaise) },
     ],
     [],
   );
 
   const couponColumns = useMemo<ColumnDef<CouponRow>[]>(
     () => [
-      { accessorKey: "code", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Coupon" />, enableHiding: false, cell: ({ row }) => <span className="font-mono text-xs font-semibold">{row.original.code}</span> },
-      { accessorKey: "uses", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Uses" />, cell: ({ row }) => <span className="tabular-nums">{row.original.uses}</span> },
       {
-        id: "discount",
-        enableSorting: false,
-        header: () => <span>Discount</span>,
+        accessorKey: "code",
+        header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Coupon" />,
+        enableHiding: false,
         cell: ({ row }) => (
-          <span>{row.original.discountType === "percentage" ? `${row.original.discountValue}%` : formatINR(row.original.discountValue)}</span>
+          <Link href={`/admin/coupons/${row.original.couponId}`} className="font-mono text-xs font-semibold hover:underline">
+            {row.original.code}
+          </Link>
         ),
       },
-      { accessorKey: "status", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Status" />, cell: ({ row }) => <Badge variant={row.original.status === "active" ? "online" : "muted"}>{label(row.original.status)}</Badge> },
+      { accessorKey: "redemptions", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Redemptions" />, cell: ({ row }) => num(row.original.redemptions) },
+      { accessorKey: "discountPaise", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Discount given" />, cell: ({ row }) => money(row.original.discountPaise) },
+    ],
+    [],
+  );
+
+  const lowStockColumns = useMemo<ColumnDef<LowStockRow>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => <AdminDataTableColumnHeader column={column} label="Product" />,
+        enableHiding: false,
+        cell: ({ row }) => (
+          <Link href={`/admin/store/products/${row.original.productId}`} className="font-medium hover:underline">
+            {row.original.name}
+          </Link>
+        ),
+      },
+      { accessorKey: "inventoryQuantity", header: ({ column }) => <AdminDataTableColumnHeader column={column} label="In stock" />, cell: ({ row }) => num(row.original.inventoryQuantity) },
     ],
     [],
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <ReportFilterSelect
-          label="Filter by order status"
-          value={filters.orderStatus}
-          onChange={(orderStatus) => setFilters((f) => ({ ...f, orderStatus: orderStatus as CommerceFilters["orderStatus"] }))}
-          options={[
-            { value: "all", label: "All order statuses" },
-            ...["pending", "processing", "shipped", "delivered", "cancelled", "returned"].map((s) => ({ value: s, label: label(s) })),
-          ]}
-          className="w-48"
-        />
-        <ReportFilterSelect
-          label="Filter by payment status"
-          value={filters.paymentStatus}
-          onChange={(paymentStatus) => setFilters((f) => ({ ...f, paymentStatus: paymentStatus as CommerceFilters["paymentStatus"] }))}
-          options={[
-            { value: "all", label: "All payment statuses" },
-            ...["success", "pending", "failed", "refunded", "partially-refunded"].map((s) => ({ value: s, label: label(s) })),
-          ]}
-          className="w-52"
-        />
-      </div>
+    <ReportQueryState queries={[store, finance] as const} label="the commerce report">
+      {([s, f]) => {
+        const successRate = paymentSuccessRate(f);
+        const earnings = distributionRows(earningStatusRows, f.earningsByStatusPaise);
+        const paymentRows: InsightRow[] = [
+          { key: "succeeded", label: "Succeeded", value: f.successfulPayments.count, tone: "green" },
+          { key: "failed", label: "Failed", value: f.failedPayments.count, tone: "red" },
+        ];
+        return (
+          <div className="space-y-5">
+            <section className="space-y-3" aria-label="Store">
+              <AdminSectionHeading title="Store" />
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <AdminMetricCard label="Orders" value={s.ordersCount} secondary="Placed in period, any status" icon={ShoppingBag} tone="orange" href="/admin/orders" />
+                <AdminMetricCard
+                  label="Revenue"
+                  value={formatINR(s.finalRevenuePaise)}
+                  secondary={`${formatINR(s.subtotalPaise)} subtotal + ${formatINR(s.shippingPaise)} shipping`}
+                  icon={ReceiptText}
+                  tone="orange"
+                />
+                <AdminMetricCard label="Average order value" value={formatINR(s.averageOrderValuePaise)} secondary="Confirmed to delivered orders" icon={TrendingUp} tone="blue" />
+                <AdminMetricCard label="Discounts" value={formatINR(s.discountsPaise)} secondary="On revenue-counted orders" icon={BadgePercent} tone="purple" href="/admin/coupons" />
+                <AdminMetricCard label="Refunded" value={formatINR(s.refundedPaise)} secondary="Order refunds recorded in period" icon={RotateCcw} tone="neutral" />
+                <AdminMetricCard
+                  label="Low-stock products"
+                  value={s.lowStock.length}
+                  secondary={`Current stock ≤ ${s.lowStockThreshold}`}
+                  icon={Package}
+                  tone="amber"
+                  href="/admin/store/products"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Revenue, discounts and average order value count confirmed, processing, shipped and delivered orders.</p>
+            </section>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <AdminMetricCard label="Orders" value={report.orderCount} icon={ShoppingBag} tone="orange" href="/admin/orders" />
-        <AdminMetricCard
-          label="Gross order value"
-          value={formatINR(report.grossInPaise)}
-          secondary="Excludes cancelled and returned"
-          icon={ReceiptText}
-          tone="orange"
-        />
-        <AdminMetricCard
-          label="Average order value"
-          value={report.averageOrderInPaise === null ? "—" : formatINR(report.averageOrderInPaise)}
-          icon={TrendingUp}
-          tone="blue"
-        />
-        <AdminMetricCard
-          label="Successful payments"
-          value={formatINR(report.successVolumeInPaise)}
-          secondary={`${report.successCount} transactions`}
-          icon={CreditCard}
-          tone="green"
-          href="/admin/payments"
-        />
-        <AdminMetricCard label="Refunded amount" value={formatINR(report.refundedInPaise)} icon={RotateCcw} tone="neutral" />
-        <AdminMetricCard
-          label="Low-stock products"
-          value={report.lowStock}
-          secondary="Current stock"
-          icon={Package}
-          tone="amber"
-          href="/admin/store/products"
-        />
-      </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <AdminInsightCard title="Order status">
+                <AdminDonutChart rows={distributionRows(orderStatusRows, s.ordersByStatus)} centerLabel="Orders" />
+              </AdminInsightCard>
+              <div className="min-w-0 space-y-2">
+                <AdminInsightCard title="Top products" flush>
+                <AdminDataTable className="rounded-none border-0" columns={productColumns} data={s.topProducts} emptyState={<span>No products sold in this period</span>} />
+              </AdminInsightCard>
+              </div>
+            </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
-        <AdminInsightCard title="Order value over time" className="xl:col-span-2">
-          <AdminTimeSeriesChart
-            data={report.valueSeries}
-            config={orderValueSeriesConfig}
-            valueFormatter={(rupees) => formatINR(Math.round(rupees * 100))}
-            axisFormatter={formatCompactINR}
-          />
-        </AdminInsightCard>
-        <AdminInsightCard title="Order status">
-          <AdminDonutChart rows={report.orderRows} centerLabel="Orders" />
-        </AdminInsightCard>
-      </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="min-w-0 space-y-2">
+                <AdminInsightCard title="Coupon usage" flush>
+                <AdminDataTable className="rounded-none border-0" columns={couponColumns} data={s.couponUsage} emptyState={<span>No coupon redemptions in this period</span>} />
+              </AdminInsightCard>
+              </div>
+              <div className="min-w-0 space-y-2">
+                <AdminInsightCard title="Low stock" flush>
+                <AdminDataTable className="rounded-none border-0" columns={lowStockColumns} data={s.lowStock} emptyState={<span>No published products are low on stock</span>} />
+              </AdminInsightCard>
+              </div>
+            </div>
 
-      <div className={`grid gap-4 ${hasProductChart ? "md:grid-cols-2" : ""}`}>
-        <AdminInsightCard title="Payment status">
-          <AdminBarChart rows={report.paymentRows} />
-        </AdminInsightCard>
-        {hasProductChart ? (
-          <AdminInsightCard title="Top products by units sold">
-            <AdminBarChart horizontal rows={productChartRows} />
-          </AdminInsightCard>
-        ) : null}
-      </div>
+            <section className="space-y-3" aria-label="Finance">
+              <AdminSectionHeading title="Finance" />
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <AdminMetricCard
+                  label="Successful payments"
+                  value={formatINR(f.successfulPayments.amountPaise)}
+                  secondary={`${f.successfulPayments.count} payments${successRate === null ? "" : ` · ${successRate}% success rate`}`}
+                  icon={CreditCard}
+                  tone="green"
+                  href="/admin/payments?status=succeeded"
+                />
+                <AdminMetricCard
+                  label="Failed payments"
+                  value={f.failedPayments.count}
+                  secondary={f.failedPayments.amountPaise === null ? "Created in period" : `${formatINR(f.failedPayments.amountPaise)} attempted`}
+                  icon={XCircle}
+                  tone="red"
+                  href="/admin/payments?status=failed"
+                />
+                <AdminMetricCard label="Wallet top-ups" value={formatINR(f.walletTopupsPaise)} secondary={`${formatINR(f.customerWalletBalancesPaise)} held in wallets now`} icon={Wallet} tone="blue" href="/admin/wallets" />
+                <AdminMetricCard label="Platform commission" value={formatINR(f.platformCommissionRevenuePaise)} secondary="Fees on paid chat earnings" icon={IndianRupee} tone="green" href="/admin/earnings" />
+                <AdminMetricCard label="Payouts paid" value={formatINR(f.paidPayoutsPaise)} secondary={`${f.payoutsByStatus.paid} payouts created in period`} icon={Landmark} tone="teal" href="/admin/payouts?status=paid" />
+              </div>
+            </section>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="min-w-0 space-y-2">
-          <h2 className="text-sm font-semibold text-foreground">Top products</h2>
-          <AdminDataTable columns={productColumns} data={report.topProducts} emptyState={<span>No data for this period</span>} />
-        </div>
-        <div className="min-w-0 space-y-2">
-          <h2 className="text-sm font-semibold text-foreground">
-            Coupon usage{" "}
-            <span className="font-normal text-muted-foreground">
-              · {report.couponUses} total uses, all time. <Link href="/admin/coupons" className="underline underline-offset-2">Manage</Link>
-            </span>
-          </h2>
-          <AdminDataTable columns={couponColumns} data={report.coupons} emptyState={<span>No coupons</span>} />
-        </div>
-      </div>
-    </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <AdminInsightCard title="Payment outcomes">
+                <AdminBarChart rows={paymentRows} emptyLabel="No payments in this period" />
+              </AdminInsightCard>
+              <AdminInsightCard title="Payouts by status">
+                <AdminBarChart rows={distributionRows(payoutStatusRows, f.payoutsByStatus)} emptyLabel="No payouts in this period" />
+              </AdminInsightCard>
+              <AdminInsightCard title="Astrologer earnings by status" className="md:col-span-2 xl:col-span-1">
+                <MoneyBreakdown rows={earnings} total={{ label: "Total earned in period", value: earnings.reduce((sum, row) => sum + row.value, 0) }} />
+              </AdminInsightCard>
+            </div>
+          </div>
+        );
+      }}
+    </ReportQueryState>
   );
 }

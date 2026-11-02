@@ -1,4 +1,4 @@
-import { AdminOrderDetailView } from "@/features/admin/components/admin-order-detail-view";
+import { AdminOrderDetailView } from "@/features/admin/components/orders/admin-order-detail-view";
 export default async function Page({
   params,
 }: {

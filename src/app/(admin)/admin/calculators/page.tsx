@@ -1,5 +1,5 @@
-import { AdminCalculatorsView } from "@/features/admin/components/admin-calculators-view";
+import { AdminCalculatorsView } from "@/features/admin/components/calculators/admin-calculators-view";
 
-export default function AdminCalculatorsPage() {
+export default function CalculatorsPage() {
   return <AdminCalculatorsView />;
 }

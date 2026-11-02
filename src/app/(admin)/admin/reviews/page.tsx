@@ -1,1 +1,5 @@
-import {AdminReviewsView} from "@/features/admin/components/admin-reviews-view"; export default function Page(){return <AdminReviewsView/>}
+import { AdminReviewsView } from "@/features/admin/components/reviews/admin-reviews-view";
+
+export default function ReviewsPage() {
+  return <AdminReviewsView />;
+}

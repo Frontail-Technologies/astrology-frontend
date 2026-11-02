@@ -1,4 +1,4 @@
-import { AdminPoojasView } from "@/features/admin/components/admin-poojas-view";
+import { AdminPoojasView } from "@/features/admin/components/poojas/admin-poojas-view";
 
 export default function AdminPoojasPage() {
   return <AdminPoojasView />;

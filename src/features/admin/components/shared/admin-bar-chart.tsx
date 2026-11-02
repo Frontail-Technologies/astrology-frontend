@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
+import { AdminChartEmpty } from "./admin-empty-state";
 import { chartDataFromRows, configFromRows, type DistributionRow } from "../../insights/chart-palette";
 
 export function AdminBarChart({
@@ -18,11 +19,7 @@ export function AdminBarChart({
   emptyLabel?: string;
 }) {
   if (rows.every((row) => row.value === 0)) {
-    return (
-      <div className={cn("grid place-items-center rounded-md bg-muted/30 text-sm text-muted-foreground", className)}>
-        {emptyLabel}
-      </div>
-    );
+    return <AdminChartEmpty label={emptyLabel} />;
   }
 
   const config = configFromRows(rows);
@@ -36,7 +33,7 @@ export function AdminBarChart({
         margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
         accessibilityLayer
       >
-        <CartesianGrid vertical={horizontal} horizontal={!horizontal} strokeDasharray="3 3" />
+        <CartesianGrid vertical={horizontal} horizontal={!horizontal} stroke="var(--border)" />
         {horizontal ? (
           <>
             <XAxis type="number" tickLine={false} axisLine={false} allowDecimals={false} />

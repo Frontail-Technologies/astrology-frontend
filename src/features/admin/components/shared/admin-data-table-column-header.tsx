@@ -35,7 +35,7 @@ export function AdminDataTableColumnHeader<TData extends RowData, TValue>({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-2 h-8 gap-1.5 px-2 font-semibold text-muted-foreground hover:text-foreground"
+      className="-ml-2 h-8 min-h-8 gap-1 px-2 text-xs font-medium text-muted-foreground hover:bg-surface hover:text-foreground"
       onClick={toggleSort}
     >
       {label}

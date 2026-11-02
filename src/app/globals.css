@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+/* Admin is a light-only operational theme: `dark:` utilities never apply inside it (no effect on public routes). */
+@custom-variant dark (&:is(.dark *):not(:where([data-theme="admin"], [data-theme="admin"] *)));
 
 :root {
   --midnight-950: #050b1f;
@@ -80,6 +81,9 @@
 }
 
 @theme inline {
+  /* `--primary` is only defined in the admin scope (switch/checkbox/tab selected states); elsewhere it stays unset. */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-midnight-950: var(--midnight-950);
   --color-midnight-900: var(--midnight-900);
   --color-midnight-800: var(--midnight-800);
@@ -766,54 +770,79 @@ h4 {
   --sidebar-ring: var(--gold-400);
 }
 
-/* Admin owns a deliberate light operational theme without changing public routes. */
+/* Admin owns a deliberate light operational theme without changing public routes.
+ * Midnight Indigo frames navigation, Warm Gold marks the active place, Saffron is reserved for the one committed
+ * action on a screen, and content sits on calm light surfaces. Inter is the only admin typeface. */
 [data-theme="admin"] {
-  --background: #f7f5f2;
-  --foreground: #1c1d21;
+  --background: #f6f5f2;
+  --foreground: #181b24;
   --surface: #ffffff;
-  --surface-muted: #f1efec;
-  --muted: #f1efec;
-  --muted-foreground: #6b6d73;
+  --surface-muted: #f3f1ed;
+  --muted: #f1efeb;
+  --muted-foreground: #5f636d;
   --popover: #ffffff;
-  --popover-foreground: #1c1d21;
-  --accent: #fff1e9;
-  --accent-foreground: #9d3e16;
-  --secondary: #f1efec;
-  --secondary-foreground: #34363b;
-  --input: #ddd9d4;
-  --border: #e2ded9;
-  --ring: #e56b2f;
-  --primary: #e56b2f;
+  --popover-foreground: #181b24;
+  --accent: #f3f1ed;
+  --accent-foreground: #181b24;
+  --secondary: #f1efeb;
+  --secondary-foreground: #2c2f38;
+  --input: #d9d5cf;
+  --border: #e6e2dc;
+  --ring: #3a4d8f;
+  /* Saffron, darkened for 4.5:1 with white text. Only for primary committed actions. */
+  --primary: #b85d0c;
   --primary-foreground: #ffffff;
-  --destructive: #c24141;
-  --chart-consultations: #7c5cd6;
-  --chart-orders: var(--primary);
-  --chart-payments: #1f9d6b;
-  --chart-customers: #3b82c4;
-  --chart-content: #8b5cc9;
-  --chart-success: #1f9d6b;
-  --chart-pending: #d99a1f;
-  --chart-failed: #c24141;
-  --chart-neutral: #9a9ca3;
-  --chart-teal: #1f9a94;
-  --chart-chat: #3b82c4;
-  --chart-voice: #1f9d6b;
-  --chart-video: #7c5cd6;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #34363b;
-  --sidebar-primary: #e56b2f;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff1e9;
-  --sidebar-accent-foreground: #9d3e16;
-  --sidebar-border: #e5e1dc;
-  --sidebar-ring: #e56b2f;
+  --conversion-500: #b85d0c;
+  --conversion-600: #9e4f09;
+  --conversion: var(--conversion-500);
+  --destructive: #c03a3a;
+  --success: #1d7f52;
+  --warning: #b46a07;
+  --error: #c03a3a;
+  --info: #2f5bb7;
+  /* Readable text on the soft status pill fills. */
+  --success-ink: #17603f;
+  --warning-ink: #7f4a05;
+  --danger-ink: #992d2d;
+  --info-ink: #244a96;
+  --accent-gold: var(--gold-500);
+  /* Admin shell */
+  --admin-topbar-height: 4rem;
+  --admin-nav: #0b1633;
+  --admin-nav-raised: #13204a;
+  --admin-nav-foreground: #c5cad8;
+  --admin-nav-muted: #8a91a8;
+  --admin-nav-border: rgb(255 255 255 / 0.08);
+  /* Restrained chart palette: indigo family + gold + saffron, semantic green/red, neutral slate. */
+  --chart-consultations: #3a4d8f;
+  --chart-orders: #d0802c;
+  --chart-payments: #2f8a63;
+  --chart-customers: #7083c4;
+  --chart-content: #b38a3e;
+  --chart-success: #2f8a63;
+  --chart-pending: #d2a144;
+  --chart-failed: #c24a4a;
+  --chart-neutral: #a6a9b1;
+  --chart-teal: #4c8a8c;
+  --chart-chat: #3a4d8f;
+  --chart-voice: #b38a3e;
+  --chart-video: #7083c4;
+  --sidebar: var(--admin-nav);
+  --sidebar-foreground: var(--admin-nav-foreground);
+  --sidebar-primary: var(--gold-400);
+  --sidebar-primary-foreground: var(--midnight-950);
+  --sidebar-accent: rgb(255 255 255 / 0.06);
+  --sidebar-accent-foreground: #fff8e7;
+  --sidebar-border: var(--admin-nav-border);
+  --sidebar-ring: var(--gold-400);
   --radius: 0.75rem;
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
   min-height: 100svh;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "cv11", "ss01";
 }
 
 [data-theme="admin"] h1,
@@ -855,6 +884,11 @@ h4 {
 [data-theme="admin"]::-webkit-scrollbar-thumb:hover,
 [data-theme="admin"] ::-webkit-scrollbar-thumb:hover {
   background: color-mix(in oklch, var(--foreground), transparent 70%);
+}
+
+/* Search inputs embedded in a framed row (quick nav, combobox) draw no outline of their own. */
+[data-theme="admin"] [data-admin-bare-input]:focus-visible {
+  outline: none;
 }
 
 /* Tab strips may scroll horizontally on compact screens without exposing scrollbar chrome. */

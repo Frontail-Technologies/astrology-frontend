@@ -1,4 +1,4 @@
-import { AdminConsultationDetailView } from "@/features/admin/components/admin-consultation-detail-view";
+import { AdminConsultationDetailView } from "@/features/admin/components/consultations/admin-consultation-detail-view";
 
 export default async function AdminConsultationDetailPage({
   params,

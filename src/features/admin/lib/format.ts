@@ -52,3 +52,37 @@ export function formatCompactINR(rupees: number) {
     maximumFractionDigits: 1,
   }).format(rupees);
 }
+
+/** Medium date + short time (12 Oct 2026, 4:30 pm). */
+export function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+}
+
+/** Like `formatDateTime`, but renders `fallback` for a missing value. */
+export function formatOptionalDateTime(value: string | null | undefined, fallback = "—") {
+  return value ? formatDateTime(value) : fallback;
+}
+
+/** Medium date only (12 Oct 2026). */
+export function formatDateOnly(value: string) {
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(value));
+}
+
+/** Long date only (12 October 2026). */
+export function formatDateLong(value: string) {
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "long" }).format(new Date(value));
+}
+
+/** Wall-clock "HH:MM[:SS]" (birth time, no time zone) → "1:30 am"; anything else is returned as given. */
+export function formatClockTime(value: string) {
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(value.trim());
+  if (!match) return value;
+  const hours = Number(match[1]);
+  if (hours > 23) return value;
+  return `${hours % 12 || 12}:${match[2]} ${hours < 12 ? "am" : "pm"}`;
+}
+
+/** Whole seconds → "4m 05s". */
+export function formatDuration(seconds: number) {
+  return `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, "0")}s`;
+}

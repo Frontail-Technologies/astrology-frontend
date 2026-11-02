@@ -1,4 +1,4 @@
-import { AdminCustomerDetailView } from "@/features/admin/components/admin-customer-detail-view";
+import { AdminCustomerDetailView } from "@/features/admin/components/customers/admin-customer-detail-view";
 
 export default async function AdminCustomerDetailPage({
   params,

@@ -15,7 +15,6 @@ import {
 } from "@tanstack/react-table/legacy";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -32,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type AdminDataTableProps<TData extends RowData> = {
   columns: ColumnDef<TData, any>[];
@@ -39,6 +39,13 @@ type AdminDataTableProps<TData extends RowData> = {
   emptyState: ReactNode;
   toolbar?: (table: TanStackTable<TData>) => ReactNode;
   initialColumnVisibility?: VisibilityState;
+  /** Rendered above the toolbar inside the card (list title row). */
+  header?: ReactNode;
+  /** Rendered under the table inside the card (pagination). */
+  footer?: ReactNode;
+  /** Keep the column header visible while the table body scrolls (the body scrolls inside the card). */
+  stickyHeader?: boolean;
+  className?: string;
 };
 
 type SortingState = Array<{ id: string; desc: boolean }>;
@@ -58,7 +65,7 @@ export function AdminDataTableColumnVisibility<TData extends RowData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 shrink-0 bg-surface hover:bg-surface-muted">
+        <Button variant="outline" size="sm" className="h-9 min-h-9 shrink-0 bg-surface font-medium text-foreground/80 hover:bg-muted">
           <Columns3 aria-hidden="true" />
           Columns
         </Button>
@@ -80,12 +87,20 @@ export function AdminDataTableColumnVisibility<TData extends RowData>({
   );
 }
 
+/**
+ * Admin table card: optional header row and toolbar, a header row on a quiet tint, comfortable 52px rows with
+ * hover, an optional sticky header and a footer slot. An `actions` column is pinned to the right edge.
+ */
 export function AdminDataTable<TData extends RowData>({
   columns,
   data,
   emptyState,
   toolbar,
   initialColumnVisibility = {},
+  header,
+  footer,
+  stickyHeader = false,
+  className,
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);
@@ -100,17 +115,26 @@ export function AdminDataTable<TData extends RowData>({
   });
 
   return (
-    <Card className="min-w-0 overflow-hidden shadow-sm">
-      {toolbar ? <CardContent className="border-b border-border p-3">{toolbar(table)}</CardContent> : null}
-      <div className="max-w-full overflow-x-auto [scrollbar-color:theme(colors.slate.400)_transparent] [scrollbar-width:thin]">
+    <div className={cn("min-w-0 overflow-hidden rounded-xl border border-border bg-surface", className)}>
+      {header}
+      {toolbar ? <div className="border-b border-border px-4 py-3">{toolbar(table)}</div> : null}
+      <div
+        className={cn(
+          "max-w-full overflow-x-auto [scrollbar-width:thin] [&_[data-slot=table-container]]:overflow-visible",
+          stickyHeader && "max-h-[calc(100svh-15rem)] min-h-40 overflow-y-auto",
+        )}
+      >
         <Table className="w-max min-w-full">
-          <TableHeader className="bg-muted">
+          <TableHeader className={cn("bg-muted/70", stickyHeader && "sticky top-0 z-30 bg-muted")}>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+              <TableRow key={headerGroup.id} className="border-border hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={`h-10 px-4 text-xs font-semibold text-muted-foreground ${header.column.id === "actions" ? "sticky right-0 z-20 w-[116px] min-w-[116px] border-l border-border bg-muted pr-4 text-right" : ""}`}
+                    className={cn(
+                      "h-10 px-4 text-xs font-medium text-muted-foreground first:pl-5",
+                      header.column.id === "actions" && "sticky right-0 z-20 w-[96px] min-w-[96px] bg-muted pr-5 text-right",
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
@@ -123,9 +147,15 @@ export function AdminDataTable<TData extends RowData>({
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="group/row border-border hover:bg-muted/45">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={`px-4 py-2.5 align-middle ${cell.column.id === "actions" ? "sticky right-0 z-10 w-[116px] min-w-[116px] border-l border-border bg-surface pr-4" : ""}`}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        "h-[52px] px-4 py-2 align-middle text-sm first:pl-5",
+                        cell.column.id === "actions" && "sticky right-0 z-10 w-[96px] min-w-[96px] bg-surface pr-5 group-hover/row:bg-[color-mix(in_srgb,var(--muted)_45%,var(--surface))]",
+                      )}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -133,7 +163,7 @@ export function AdminDataTable<TData extends RowData>({
               ))
             ) : (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={table.getVisibleLeafColumns().length} className="h-36 text-center">
+                <TableCell colSpan={table.getVisibleLeafColumns().length} className="h-40 whitespace-normal text-center text-sm text-muted-foreground">
                   {emptyState}
                 </TableCell>
               </TableRow>
@@ -141,6 +171,7 @@ export function AdminDataTable<TData extends RowData>({
           </TableBody>
         </Table>
       </div>
-    </Card>
+      {footer ? <div className="border-t border-border px-5 py-3">{footer}</div> : null}
+    </div>
   );
 }

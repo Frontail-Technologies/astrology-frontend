@@ -1,5 +1,7 @@
 import { apiRequest } from "@/lib/api/api-client";
 
+export { ACCEPTED_IMAGE_TYPES } from "./media-constraints";
+
 export type UploadedImage = {
   mediaId: string;
   url: string;
@@ -8,8 +10,6 @@ export type UploadedImage = {
   width: number;
   height: number;
 };
-
-export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function uploadAdminImage(file: File) {
   const body = new FormData();
