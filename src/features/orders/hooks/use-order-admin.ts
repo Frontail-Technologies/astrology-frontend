@@ -3,11 +3,11 @@
 import { useAdminDetail } from "@/features/admin/data/use-admin-detail";
 import { useAdminList } from "@/features/admin/data/use-admin-list";
 import { useAdminMutation } from "@/features/admin/data/use-admin-mutation";
-import { getOrder, listOrders, updateOrderStatus } from "../api/order-admin-api";
+import { getOrder, listOrders, updateOrderStatus, updateOrderTracking } from "../api/order-admin-api";
 import { orderStatusLabels } from "../constants/order-status";
 import { orderKeys } from "../queries/order-query-keys";
 import { orderListConfig } from "../state/order-list-state";
-import type { OrderStatus } from "../types/order-admin";
+import type { OrderStatus, OrderTrackingInput } from "../types/order-admin";
 
 export function useOrderList() {
   return useAdminList(orderListConfig, orderKeys.list, listOrders);
@@ -22,6 +22,15 @@ export function useUpdateOrderStatus(id: string) {
     mutationFn: (status: OrderStatus) => updateOrderStatus(id, status),
     invalidate: [orderKeys.all],
     successMessage: (order) => `Order ${order.orderNumber} is now ${orderStatusLabels[order.status].toLowerCase()}`,
+    toastErrors: false,
+  });
+}
+
+export function useUpdateOrderTracking(id: string) {
+  return useAdminMutation({
+    mutationFn: (input: OrderTrackingInput) => updateOrderTracking(id, input),
+    invalidate: [orderKeys.all],
+    successMessage: "Tracking details saved",
     toastErrors: false,
   });
 }

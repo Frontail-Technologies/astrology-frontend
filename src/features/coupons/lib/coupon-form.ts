@@ -20,6 +20,7 @@ export type CouponFormValues = {
   startsAt: string | null;
   endsAt: string | null;
   active: boolean;
+  listed: boolean;
   scope: CouponScope;
   categoryIds: string[];
   productIds: string[];
@@ -88,6 +89,7 @@ export function formToCouponInput(values: CouponFormValues): CouponInput {
     startsAt: values.startsAt,
     endsAt: values.endsAt,
     active: values.active,
+    listed: values.listed,
     scope: values.scope,
     categoryIds: values.scope === "selected_categories" ? [...new Set(values.categoryIds)] : [],
     productIds: values.scope === "selected_products" ? [...new Set(values.productIds)] : [],
@@ -109,6 +111,7 @@ export function couponToFormValues(coupon: ManagedCoupon | null | undefined): Co
     startsAt: coupon?.startsAt ?? null,
     endsAt: coupon?.endsAt ?? null,
     active: coupon?.active ?? true,
+    listed: coupon?.listed ?? false,
     scope: coupon?.scope ?? "all_products",
     categoryIds: coupon?.categoryIds ?? [],
     productIds: coupon?.productIds ?? [],

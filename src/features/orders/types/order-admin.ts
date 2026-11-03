@@ -22,7 +22,8 @@ export type AdminOrder = {
   discountPaise: number;
   totalPaise: number;
   currency: string;
-  contactEmail: string;
+  /** Phone-only customers (signed up with OTP) have no email. */
+  contactEmail: string | null;
   contactPhone: string;
   shippingName: string;
   shippingAddressLine1: string;
@@ -36,10 +37,18 @@ export type AdminOrder = {
   shippedAt: string | null;
   deliveredAt: string | null;
   cancelledAt: string | null;
+  /** Why the customer cancelled from the app (unpaid orders only). */
+  cancellationReason: string | null;
+  courier: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
   createdAt: string;
   updatedAt: string;
   items: AdminOrderItem[];
-  customer: { id: string; email: string; phone: string | null };
+  customer: { id: string; email: string | null; phone: string | null; name?: string | null };
   /** Next statuses the server state machine allows (server-provided; the server still re-validates). */
   allowedTransitions: OrderStatus[];
 };
+
+/** `PATCH /admin/orders/:id/tracking` body. */
+export type OrderTrackingInput = { courier: string; trackingNumber: string; trackingUrl: string | null };

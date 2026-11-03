@@ -68,6 +68,18 @@ export const poojaEditorSchema: z.ZodType<PoojaFormValues, PoojaFormValues> = z.
     .refine((value) => value === "" || (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= POOJA_LIMITS.maxDurationMinutes), {
       error: `Use whole minutes from 1 to ${POOJA_LIMITS.maxDurationMinutes}.`,
     }),
+  dailyCapacity: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 10_000), { error: "Use a whole number from 1 to 10,000, or leave it empty for no limit." }),
+  bookingLeadDays: z
+    .string()
+    .trim()
+    .refine((value) => /^\d+$/.test(value) && Number(value) <= 60, { error: "Use whole days from 0 to 60." }),
+  bookingWindowDays: z
+    .string()
+    .trim()
+    .refine((value) => /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 365, { error: "Use whole days from 1 to 365." }),
   featured: z.boolean(),
   status: z.enum(poojaStatuses),
   content: contentSchema,

@@ -24,7 +24,7 @@ export type AdminReview = {
   createdAt: string;
   updatedAt: string;
   target: AdminReviewTarget;
-  customer: { id: string; email: string; name: string | null } | null;
+  customer: { id: string; email: string | null; name: string | null } | null;
   astrologer: { id: string; displayName: string; slug: string } | null;
   /** True when the linked consultation completed. */
   verifiedSession: boolean;

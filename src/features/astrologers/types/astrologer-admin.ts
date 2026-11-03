@@ -26,7 +26,17 @@ export type ManagedAstrologer = {
   expertise: AstrologerTaxonomy[];
   specialties: AstrologerTaxonomy[];
   consultationModes: AstrologerModePricing[];
+  /** Sign-in phone of the astrologer's account (admin responses only). */
+  phone: string | null;
+  email: string | null;
+  /** Live status the astrologer sets in the app; "busy" while in a paid session. */
+  availability: AstrologerAvailability;
 };
+
+export type AstrologerAvailability = "online" | "busy" | "offline";
+
+/** `POST /admin/astrologers`: creates a phone sign-in account with a pending, draft profile. */
+export type ProvisionAstrologerInput = { phone: string; displayName: string; country: string; email?: string };
 
 export type AstrologerProfileInput = Partial<{
   displayName: string;

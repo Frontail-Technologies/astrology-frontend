@@ -30,6 +30,10 @@ export type PoojaFormValues = {
   pricePaise: number | null;
   /** Whole minutes as typed; "" = not set. */
   durationMinutes: string;
+  /** Bookings per day as typed; "" = unlimited. */
+  dailyCapacity: string;
+  bookingLeadDays: string;
+  bookingWindowDays: string;
   featured: boolean;
   /** Initial status (create only; later changes go through the status endpoint). */
   status: PoojaStatus;
@@ -109,6 +113,9 @@ export function poojaToFormValues(pooja: ManagedPooja | null | undefined): Pooja
       imageUrl: null,
       pricePaise: null,
       durationMinutes: "",
+      dailyCapacity: "",
+      bookingLeadDays: "2",
+      bookingWindowDays: "60",
       featured: false,
       status: "draft",
       content: emptyPoojaContentForm(),
@@ -124,6 +131,9 @@ export function poojaToFormValues(pooja: ManagedPooja | null | undefined): Pooja
     imageUrl: pooja.imageUrl,
     pricePaise: pooja.pricePaise,
     durationMinutes: pooja.durationMinutes === null ? "" : String(pooja.durationMinutes),
+    dailyCapacity: pooja.dailyCapacity === null || pooja.dailyCapacity === undefined ? "" : String(pooja.dailyCapacity),
+    bookingLeadDays: String(pooja.bookingLeadDays ?? 2),
+    bookingWindowDays: String(pooja.bookingWindowDays ?? 60),
     featured: pooja.featured,
     status: pooja.status,
     content: contentToForm(pooja.content),
@@ -141,6 +151,9 @@ export function formValuesToPoojaInput(values: PoojaFormValues): PoojaInput {
     imageUrl: values.imageUrl,
     pricePaise: values.pricePaise,
     durationMinutes: duration === "" ? null : Number(duration),
+    dailyCapacity: values.dailyCapacity.trim() === "" ? null : Number(values.dailyCapacity.trim()),
+    bookingLeadDays: Number(values.bookingLeadDays.trim()),
+    bookingWindowDays: Number(values.bookingWindowDays.trim()),
     featured: values.featured,
     content: formToContent(values.content),
     status: values.status,

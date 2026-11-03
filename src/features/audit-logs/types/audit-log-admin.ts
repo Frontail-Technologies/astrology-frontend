@@ -2,7 +2,10 @@
 export const auditActionValues = [
   "astrologer.updated",
   "astrologer.status_changed",
+  "astrologer.created",
+  "astrologer.phone_changed",
   "order.status_changed",
+  "order.tracking_updated",
   "pooja_request.status_changed",
   "pooja_request.scheduled",
   "pooja_request.rescheduled",
@@ -62,6 +65,13 @@ export const auditActionValues = [
   "master_data.deleted",
   "payment.refund_recorded",
   "wallet.adjusted",
+  "faq.created",
+  "faq.updated",
+  "faq.deleted",
+  "product_review.moderated",
+  "pooja_package.created",
+  "pooja_package.updated",
+  "pooja_package.deleted",
 ] as const;
 
 export type AuditAction = (typeof auditActionValues)[number];
@@ -90,6 +100,9 @@ export const auditEntityTypeValues = [
   "master_data",
   "payment",
   "wallet",
+  "faq",
+  "product_review",
+  "pooja_package",
 ] as const;
 
 export type AuditEntityType = (typeof auditEntityTypeValues)[number];

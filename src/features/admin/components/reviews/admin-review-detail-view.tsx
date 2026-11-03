@@ -44,7 +44,7 @@ export function AdminReviewDetailView({ reviewId }: { reviewId: string }) {
       {() => {
         const review = detail.data!;
         const targetLabel = review.target.name ?? `an unavailable ${reviewTargetLabels[review.target.type].toLowerCase()}`;
-        const customerLabel = review.customer ? (review.customer.name ?? review.customer.email) : "a deleted customer";
+        const customerLabel = review.customer ? (review.customer.name ?? review.customer.email ?? "a customer") : "a deleted customer";
         return (
           <div className="space-y-5">
             <AdminPageHeader
@@ -150,8 +150,8 @@ export function AdminReviewDetailView({ reviewId }: { reviewId: string }) {
                 <AdminSectionCard title="Customer">
                   {review.customer ? (
                     <div className="divide-y divide-border">
-                      <DetailRow label="Name" value={<Link className="hover:underline" href={`/admin/customers/${review.customer.id}`}>{review.customer.name ?? review.customer.email}</Link>} />
-                      <DetailRow label="Email" value={<span className="break-all">{review.customer.email}</span>} />
+                      <DetailRow label="Name" value={<Link className="hover:underline" href={`/admin/customers/${review.customer.id}`}>{review.customer.name ?? review.customer.email ?? "View customer"}</Link>} />
+                      {review.customer.email ? <DetailRow label="Email" value={<span className="break-all">{review.customer.email}</span>} /> : null}
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">This customer account no longer exists.</p>

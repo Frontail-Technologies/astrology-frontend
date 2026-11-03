@@ -1,3 +1,4 @@
+export type ConsultationRequestKind = "standard" | "instant";
 export type ConsultationStatus = "requested" | "accepted" | "scheduled" | "in_progress" | "completed" | "cancelled" | "rejected";
 
 /** `GET /admin/consultations` item and detail (backend `toAdminConsultation`). */
@@ -5,6 +6,8 @@ export type AdminConsultation = {
   id: string;
   consultationMode: { code: "chat" | "voice" | "video"; name: string };
   status: ConsultationStatus;
+  /** "instant": the customer tapped Chat now / Call now; "standard": booked for later. */
+  requestKind: ConsultationRequestKind;
   concern: string | null;
   pricePaise: number;
   durationMinutes: number | null;

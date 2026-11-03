@@ -25,6 +25,9 @@ export const auditEntityLabels: Record<AuditEntityType, string> = {
   master_data: "Master data",
   payment: "Payment",
   wallet: "Wallet",
+  faq: "FAQ",
+  product_review: "Product review",
+  pooja_package: "Pooja package",
 };
 
 /** Action prefixes that are not entity type names. */
@@ -36,6 +39,8 @@ const VERB_LABELS: Record<string, string> = {
   admin_replied: "Admin replied",
   internal_note_added: "Internal note added",
   refund_recorded: "Refund recorded",
+  phone_changed: "Sign-in phone changed",
+  tracking_updated: "Tracking updated",
 };
 
 const humanize = (text: string) => {
@@ -103,6 +108,7 @@ const ID_ROUTES: Partial<Record<AuditEntityType, string>> = {
   store_category: "/admin/store/categories",
   product: "/admin/store/products",
   payment: "/admin/payments",
+  product_review: "/admin/product-reviews",
 };
 
 const MASTER_DATA_ENTITIES = new Set(["languages", "countries", "states", "cities", "expertise", "specialties", "tags", "consultation-modes", "pooja-categories"]);
@@ -125,6 +131,11 @@ export function auditEntityHref(log: Pick<AdminAuditLog, "entityType" | "entityI
       return `/admin/master-data/${entity}/${encodeURIComponent(key)}/edit`;
     }
     return null;
+  }
+  if (type === "faq") return log.entityId ? `/admin/faqs/${log.entityId}/edit` : null;
+  if (type === "pooja_package") {
+    const poojaId = field(log.after, "poojaId") ?? field(log.before, "poojaId");
+    return typeof poojaId === "string" && poojaId ? `/admin/poojas/${poojaId}` : null;
   }
   if (type === "wallet") {
     const userId = field(log.after, "userId") ?? field(log.before, "userId");

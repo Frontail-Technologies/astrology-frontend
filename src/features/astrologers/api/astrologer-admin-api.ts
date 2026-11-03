@@ -1,6 +1,6 @@
 import { adminGet, adminList, adminSend, encodeId } from "@/features/admin/data/admin-api";
 import { apiRequest } from "@/lib/api/api-client";
-import type { AstrologerProfileInput, AstrologerStatusInput, AstrologerStatusResult, AstrologerTaxonomy, ManagedAstrologer } from "../types/astrologer-admin";
+import type { AstrologerProfileInput, AstrologerStatusInput, AstrologerStatusResult, AstrologerTaxonomy, ManagedAstrologer, ProvisionAstrologerInput } from "../types/astrologer-admin";
 
 export function listAstrologers(query: Record<string, string | number>, signal?: AbortSignal) {
   return adminList<ManagedAstrologer>("/astrologers", query, signal);
@@ -12,6 +12,16 @@ export function getAstrologer(id: string, signal?: AbortSignal) {
 
 export function updateAstrologerProfile(id: string, input: AstrologerProfileInput) {
   return adminSend<ManagedAstrologer>(`/astrologers/${encodeId(id)}`, "PATCH", input);
+}
+
+/** Creates the astrologer's phone sign-in account with a pending, draft profile (409 when the phone or email is taken). */
+export function provisionAstrologer(input: ProvisionAstrologerInput) {
+  return adminSend<ManagedAstrologer>("/astrologers", "POST", input);
+}
+
+/** Changes the phone the astrologer signs in with (409 PHONE_ALREADY_REGISTERED). */
+export function updateAstrologerPhone(id: string, phone: string) {
+  return adminSend<ManagedAstrologer>(`/astrologers/${encodeId(id)}/phone`, "PATCH", { phone });
 }
 
 /** The server refuses publishing an unverified astrologer (ASTROLOGER_NOT_VERIFIED). */

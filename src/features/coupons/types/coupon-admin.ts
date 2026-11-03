@@ -20,6 +20,8 @@ export type ManagedCoupon = {
   startsAt: string | null;
   endsAt: string | null;
   active: boolean;
+  /** Shown on the offers screen of the customer app (unlisted codes still work when typed). */
+  listed: boolean;
   scope: CouponScope;
   /** `#RRGGBB` or null. */
   color: string | null;
@@ -44,6 +46,7 @@ export type CouponInput = {
   startsAt: string | null;
   endsAt: string | null;
   active: boolean;
+  listed: boolean;
   scope: CouponScope;
   categoryIds: string[];
   productIds: string[];

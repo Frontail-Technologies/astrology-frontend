@@ -78,7 +78,7 @@ export function AdminWalletsView() {
         <article key={wallet.id} className="rounded-xl border border-border bg-surface p-4">
           <div className="flex items-start justify-between gap-3">
             <CustomerIdentity customer={wallet} href={`/admin/wallets/${wallet.userId}`} size="md" />
-            <AdminRowActions label={`Actions for ${wallet.email}`} actions={walletActions(wallet)} className="-mr-1.5 shrink-0" />
+            <AdminRowActions label={`Actions for ${wallet.email ?? wallet.phone ?? "this wallet"}`} actions={walletActions(wallet)} className="-mr-1.5 shrink-0" />
           </div>
           <div className="mt-3 flex items-center justify-between gap-2">
             <p className="text-xs tabular-nums text-muted-foreground">Last activity {formatDateTime(wallet.updatedAt)}</p>
@@ -156,7 +156,7 @@ export function AdminWalletDetailView({ customerId }: { customerId: string }) {
               backLabel="Wallets"
               meta={
                 <>
-                  <span className="break-all">{wallet.email}</span>
+                  <span className="break-all">{wallet.email ?? wallet.phone ?? "Customer"}</span>
                   <span className="tabular-nums">Last activity {formatDateTime(wallet.updatedAt)}</span>
                 </>
               }

@@ -6,10 +6,10 @@ import { useAdminDetail } from "@/features/admin/data/use-admin-detail";
 import { useAdminList } from "@/features/admin/data/use-admin-list";
 import { useAdminMutation } from "@/features/admin/data/use-admin-mutation";
 import { isUuid } from "@/features/admin/data/admin-list-state";
-import { getAstrologer, listAstrologers, listPublicCities, listPublicCountries, listPublicLanguages, listTaxonomy, updateAstrologerProfile, updateAstrologerStatus } from "../api/astrologer-admin-api";
+import { getAstrologer, listAstrologers, listPublicCities, listPublicCountries, listPublicLanguages, listTaxonomy, provisionAstrologer, updateAstrologerPhone, updateAstrologerProfile, updateAstrologerStatus } from "../api/astrologer-admin-api";
 import { astrologerKeys } from "../queries/astrologer-query-keys";
 import { astrologerListConfig } from "../state/astrologer-list-state";
-import type { AstrologerProfileInput, AstrologerStatusInput } from "../types/astrologer-admin";
+import type { AstrologerProfileInput, AstrologerStatusInput, ProvisionAstrologerInput } from "../types/astrologer-admin";
 
 export function useAstrologerList() {
   return useAdminList(astrologerListConfig, astrologerKeys.list, listAstrologers);
@@ -17,6 +17,24 @@ export function useAstrologerList() {
 
 export function useAstrologerDetail(id: string) {
   return useAdminDetail(astrologerKeys.detail(id), (signal) => getAstrologer(id, signal), Boolean(id));
+}
+
+export function useProvisionAstrologer() {
+  return useAdminMutation({
+    mutationFn: (input: ProvisionAstrologerInput) => provisionAstrologer(input),
+    invalidate: [astrologerKeys.all],
+    successMessage: "Astrologer account created",
+    toastErrors: false,
+  });
+}
+
+export function useUpdateAstrologerPhone(id: string) {
+  return useAdminMutation({
+    mutationFn: (phone: string) => updateAstrologerPhone(id, phone),
+    invalidate: [astrologerKeys.all],
+    successMessage: "Sign-in phone updated",
+    toastErrors: false,
+  });
 }
 
 export function useUpdateAstrologerProfile(id: string) {

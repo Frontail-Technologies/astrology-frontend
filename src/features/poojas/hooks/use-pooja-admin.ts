@@ -5,10 +5,46 @@ import { useQuery } from "@tanstack/react-query";
 import { useAdminDetail } from "@/features/admin/data/use-admin-detail";
 import { useAdminList } from "@/features/admin/data/use-admin-list";
 import { useAdminMutation } from "@/features/admin/data/use-admin-mutation";
-import { createPooja, deletePooja, getPooja, listPoojaCategories, listPoojas, updatePooja, updatePoojaStatus } from "../api/pooja-admin-api";
+import {
+  createPooja,
+  createPoojaPackage,
+  deletePooja,
+  deletePoojaPackage,
+  getPooja,
+  listPoojaCategories,
+  listPoojaPackages,
+  listPoojas,
+  updatePooja,
+  updatePoojaPackage,
+  updatePoojaStatus,
+} from "../api/pooja-admin-api";
 import { poojaKeys } from "../queries/pooja-query-keys";
 import { poojaListConfig } from "../state/pooja-list-state";
-import type { PoojaInput, PoojaStatusInput } from "../types/pooja-admin";
+import type { PoojaInput, PoojaPackageInput, PoojaStatusInput } from "../types/pooja-admin";
+
+export function usePoojaPackages(poojaId: string) {
+  return useAdminDetail(poojaKeys.packages(poojaId), (signal) => listPoojaPackages(poojaId, signal), Boolean(poojaId));
+}
+
+/** Creates a package, or updates `packageId` when given. */
+export function useSavePoojaPackage(poojaId: string) {
+  return useAdminMutation({
+    mutationFn: ({ packageId, input }: { packageId?: string; input: PoojaPackageInput }) =>
+      packageId ? updatePoojaPackage(poojaId, packageId, input) : createPoojaPackage(poojaId, input),
+    invalidate: [poojaKeys.packages(poojaId)],
+    successMessage: "Package saved",
+    toastErrors: false,
+  });
+}
+
+export function useDeletePoojaPackage(poojaId: string) {
+  return useAdminMutation({
+    mutationFn: (packageId: string) => deletePoojaPackage(poojaId, packageId),
+    invalidate: [poojaKeys.packages(poojaId)],
+    successMessage: (result) => (result.deactivated ? "Package is used by bookings, so it was deactivated instead" : "Package deleted"),
+    toastErrors: false,
+  });
+}
 
 export function usePoojaList() {
   return useAdminList(poojaListConfig, poojaKeys.list, listPoojas);

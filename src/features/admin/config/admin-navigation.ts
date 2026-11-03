@@ -42,6 +42,7 @@ export const adminNavigation = [
       { href: "/admin/store/categories", label: "Categories", icon: "categories" as const, description: "How the store is organised" },
       { href: "/admin/orders", label: "Orders", icon: "orders" as const, description: "Fulfilment from payment to delivery" },
       { href: "/admin/coupons", label: "Coupons", icon: "coupons" as const, description: "Discount codes and redemptions" },
+      { href: "/admin/product-reviews", label: "Product Reviews", icon: "productReviews" as const, description: "Reviews customers leave on delivered products" },
     ],
   },
   {
@@ -50,6 +51,7 @@ export const adminNavigation = [
       { href: "/admin/horoscopes", label: "Horoscopes", icon: "horoscopes" as const, description: "Daily, weekly and monthly horoscopes" },
       { href: "/admin/articles", label: "Articles", icon: "articles" as const, description: "Editorial articles and publishing" },
       { href: "/admin/banners", label: "Banners", icon: "banners" as const, description: "Promotional banners across the site" },
+      { href: "/admin/faqs", label: "FAQs", icon: "faqs" as const, description: "Help answers shown in the customer app" },
       { href: "/admin/master-data", label: "Master Data", icon: "masterData" as const, description: "Shared lists used across the platform" },
     ],
   },

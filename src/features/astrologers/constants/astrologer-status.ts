@@ -1,4 +1,4 @@
-import type { AstrologerMode, AstrologerVerificationStatus, AstrologerVisibilityStatus } from "../types/astrologer-admin.ts";
+import type { AstrologerAvailability, AstrologerMode, AstrologerVerificationStatus, AstrologerVisibilityStatus } from "../types/astrologer-admin.ts";
 
 export const astrologerModes = ["chat", "voice", "video"] as const satisfies readonly AstrologerMode[];
 export const astrologerModeLabels: Record<AstrologerMode, string> = { chat: "Chat", voice: "Voice call", video: "Video call" };
@@ -11,3 +11,14 @@ export const visibilityVariants: Record<AstrologerVisibilityStatus, "muted" | "o
 
 /** Returned when publishing an unverified astrologer or un-verifying a published one. */
 export const ASTROLOGER_NOT_VERIFIED = "ASTROLOGER_NOT_VERIFIED";
+
+/** Live availability the astrologer sets in the app (read-only for admins). */
+export const availabilityLabels: Record<AstrologerAvailability, string> = { online: "Online", busy: "In a session", offline: "Offline" };
+export const availabilityVariants: Record<AstrologerAvailability, "online" | "pending" | "muted"> = { online: "online", busy: "pending", offline: "muted" };
+
+/** Inline guidance for provisioning and phone-change conflicts. */
+export const ASTROLOGER_IDENTITY_HINTS: Record<string, string> = {
+  PHONE_ALREADY_REGISTERED: "This phone number already belongs to another account.",
+  EMAIL_ALREADY_REGISTERED: "This email already belongs to another account.",
+  IDENTITY_ALREADY_REGISTERED: "The phone, email or profile link is already in use.",
+};

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { CalendarClock, Eye, MessagesSquare, Timer, UserRound } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 
-import { chatSessionEndReasonLabel, chatSessionStatusLabels, chatSessionStatusVariants } from "@/features/chat-sessions/constants/chat-session-status";
+import { chatSessionEndReasonLabel, chatSessionModeLabels, chatSessionStatusLabels, chatSessionStatusVariants } from "@/features/chat-sessions/constants/chat-session-status";
 import { useChatSessionDetail, useChatSessionList } from "@/features/chat-sessions/hooks/use-chat-session-admin";
 import type { AdminChatSession } from "@/features/chat-sessions/types/chat-session-admin";
 import { formatDuration, formatINR, formatOptionalDateTime } from "../../lib/format";
@@ -40,7 +40,9 @@ export function AdminChatSessionsView() {
             <Link href={`/admin/chat-sessions/${row.original.id}`} className="block font-medium tabular-nums hover:underline">
               {formatINR(row.original.chargedPaise)} charged
             </Link>
-            <p className="text-xs tabular-nums text-muted-foreground">{formatOptionalDateTime(row.original.startedAt, "Not started")}</p>
+            <p className="text-xs tabular-nums text-muted-foreground">
+              {chatSessionModeLabels[row.original.mode ?? "chat"]} · {formatOptionalDateTime(row.original.startedAt, "Not started")}
+            </p>
           </div>
         ),
       },
@@ -71,7 +73,10 @@ export function AdminChatSessionsView() {
       dateRange
       idFilterLabels={{ customerUserId: "Customer", astrologerId: "Astrologer", consultationId: "Consultation" }}
       columns={columns}
-      filters={[{ key: "status", allLabel: "All statuses", options: chatSessionStatusLabels }]}
+      filters={[
+        { key: "status", allLabel: "All statuses", options: chatSessionStatusLabels },
+        { key: "mode", allLabel: "Chat or voice", options: chatSessionModeLabels },
+      ]}
       emptyLabel="No paid chat sessions yet"
       emptyDescription="Sessions appear when a paid chat consultation starts billing."
       emptyIcon={Timer}
@@ -123,6 +128,13 @@ export function AdminChatSessionDetailView({ sessionId }: { sessionId: string })
               <div className="min-w-0 space-y-5">
                 <AdminSectionCard title="Billing">
                   <div className="divide-y divide-border">
+                    <DetailRow label="Type" value={chatSessionModeLabels[session.mode ?? "chat"]} />
+                    {session.call ? (
+                      <DetailRow
+                        label="Connected now"
+                        value={[session.call.customerConnected ? "Customer" : null, session.call.astrologerConnected ? "Astrologer" : null].filter(Boolean).join(" and ") || "Nobody"}
+                      />
+                    ) : null}
                     <DetailRow label="Rate" value={<span className="tabular-nums">{formatINR(session.pricePerMinutePaise)} per minute</span>} />
                     <DetailRow label="Billed in steps of" value={<span className="tabular-nums">{session.billingUnitSeconds} seconds</span>} />
                     <DetailRow label="Billable time" value={<span className="tabular-nums">{formatDuration(session.billableSeconds)}</span>} />

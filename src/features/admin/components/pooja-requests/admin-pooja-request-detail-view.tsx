@@ -157,6 +157,26 @@ export function AdminPoojaRequestDetailView({ requestId }: { requestId: string }
                     </address>
                   </AdminSectionCard>
                 </div>
+                {request.packageName || request.devotees?.length || request.gotra ? (
+                  <AdminSectionCard title="Sankalp">
+                    <div className="divide-y divide-border">
+                      {request.packageName ? <DetailRow label="Package" value={request.packageName} /> : null}
+                      {request.gotra ? <DetailRow label="Gotra" value={request.gotra} /> : null}
+                    </div>
+                    {request.devotees?.length ? (
+                      <div className="mt-3 border-t border-border pt-3">
+                        <p className="mb-2 text-[13px] text-muted-foreground">Names in the sankalp</p>
+                        <ol className="flex flex-wrap gap-1.5">
+                          {request.devotees.map((name, index) => (
+                            <li key={`${index}-${name}`} className="inline-flex h-7 items-center rounded-full border border-border bg-muted px-2.5 text-[13px] font-medium">
+                              {name}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ) : null}
+                  </AdminSectionCard>
+                ) : null}
                 <Paragraph title="Intention (sankalp)" text={request.intent} />
                 <Paragraph title="Customer notes" text={request.notes} />
                 <AdminSectionCard title="Timeline">

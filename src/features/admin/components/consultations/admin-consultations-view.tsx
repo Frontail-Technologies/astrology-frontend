@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { CalendarClock, Eye, UserRound } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 
-import { consultationModeLabels, consultationStatusLabels, consultationStatusVariants } from "@/features/consultations/constants/consultation-status";
+import { consultationModeLabels, consultationRequestKindLabels, consultationStatusLabels, consultationStatusVariants } from "@/features/consultations/constants/consultation-status";
 import { useConsultationList } from "@/features/consultations/hooks/use-consultation-admin";
 import type { AdminConsultation } from "@/features/consultations/types/consultation-admin";
 import { personPrimaryLabel } from "@/features/customers/lib/customer-display";
@@ -45,7 +45,10 @@ export function AdminConsultationsView() {
             <Link href={`/admin/astrologers/${row.original.astrologer.id}`} className="block truncate text-sm font-medium hover:underline">
               {row.original.astrologer.displayName}
             </Link>
-            <p className="truncate text-xs text-muted-foreground">{row.original.consultationMode.name}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {row.original.consultationMode.name}
+              {row.original.requestKind === "instant" ? " · Instant" : ""}
+            </p>
           </div>
         ),
       },
@@ -86,6 +89,7 @@ export function AdminConsultationsView() {
       filters={[
         { key: "status", allLabel: "All statuses", options: consultationStatusLabels },
         { key: "mode", allLabel: "All modes", options: consultationModeLabels },
+        { key: "requestKind", allLabel: "Instant or scheduled", options: consultationRequestKindLabels },
       ]}
       emptyLabel="No consultations yet"
       emptyDescription="Consultations appear here when customers book an astrologer."

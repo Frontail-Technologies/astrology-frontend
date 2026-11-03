@@ -18,6 +18,7 @@ import { AdminSectionCard } from "../shared/admin-section-card";
 import { AdminDetailFrame } from "../shared/admin-server-list";
 import { AdminStatusBadge } from "../shared/admin-status-badge";
 import { PoojaStatusControl } from "./pooja-status-control";
+import { PoojaPackagesCard } from "./pooja-packages-card";
 
 const Empty = () => <p className="text-sm text-muted-foreground">Not written yet.</p>;
 
@@ -171,6 +172,7 @@ export function AdminPoojaDetailView({ poojaId }: { poojaId: string }) {
             />
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
               <div className="min-w-0 space-y-5">
+                <PoojaPackagesCard poojaId={pooja.id} />
                 <PoojaContentPanels pooja={pooja} />
               </div>
               <AdminDetailStickyRail>
@@ -184,6 +186,8 @@ export function AdminPoojaDetailView({ poojaId }: { poojaId: string }) {
                     <DetailRow label="Duration" value={pooja.durationMinutes === null ? "Varies" : `${pooja.durationMinutes} min`} />
                     <DetailRow label="Primary category" value={pooja.category.name} />
                     <DetailRow label="Featured" value={pooja.featured ? "Yes" : "No"} />
+                    <DetailRow label="Bookings per day" value={<span className="tabular-nums">{pooja.dailyCapacity ?? "No limit"}</span>} />
+                    <DetailRow label="Bookable dates" value={<span className="tabular-nums">{`${pooja.bookingLeadDays === 0 ? "From today" : `From ${pooja.bookingLeadDays} day${pooja.bookingLeadDays === 1 ? "" : "s"} ahead`}, up to ${pooja.bookingWindowDays} days`}</span>} />
                   </div>
                   <Button asChild variant="outline" size="sm" className="mt-4 w-full bg-surface">
                     <Link href={`/admin/pooja-requests?pooja=${pooja.id}`}>

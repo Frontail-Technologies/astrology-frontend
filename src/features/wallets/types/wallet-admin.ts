@@ -19,7 +19,7 @@ export type AdminWalletTransaction = {
   createdAt: string;
 };
 
-export type AdminWallet = { id: string; userId: string; balancePaise: number; email: string; phone: string | null; createdAt: string; updatedAt: string };
+export type AdminWallet = { id: string; userId: string; balancePaise: number; email: string | null; phone: string | null; createdAt: string; updatedAt: string };
 export type AdminWalletDetail = AdminWallet & { currency: string; transactions: AdminPage<AdminWalletTransaction> };
 
 export type WalletAdjustmentInput = { direction: "credit" | "debit"; amountPaise: number; reason: string; reference?: string | null; idempotencyKey: string };

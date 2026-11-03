@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { Eye, Pencil, Sparkles } from "lucide-react";
+import { Eye, Pencil, Plus, Sparkles } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { astrologerModeLabels, verificationLabels, verificationVariants, visibilityLabels, visibilityVariants } from "@/features/astrologers/constants/astrologer-status";
+import { Button } from "@/components/ui/button";
+import {
+  astrologerModeLabels,
+  availabilityLabels,
+  availabilityVariants,
+  verificationLabels,
+  verificationVariants,
+  visibilityLabels,
+  visibilityVariants,
+} from "@/features/astrologers/constants/astrologer-status";
 import { useAstrologerList } from "@/features/astrologers/hooks/use-astrologer-admin";
 import type { ManagedAstrologer } from "@/features/astrologers/types/astrologer-admin";
 import { formatINR, getInitials } from "../../lib/format";
@@ -60,12 +69,23 @@ function AstrologerIdentity({ astrologer, linked = false }: { astrologer: Manage
   );
 }
 
+function NewAstrologerButton() {
+  return (
+    <Button asChild variant="conversion" size="sm">
+      <Link href="/admin/astrologers/new">
+        <Plus aria-hidden="true" />
+        New astrologer
+      </Link>
+    </Button>
+  );
+}
+
 const rowActions = (astrologer: ManagedAstrologer) => [
   { label: "View profile", icon: Eye, href: `/admin/astrologers/${astrologer.id}` },
   { label: "Edit profile", icon: Pencil, href: `/admin/astrologers/${astrologer.id}/edit` },
 ];
 
-/** Astrologers list. Astrologers onboard through their own account, so there is no create action here. */
+/** Astrologers list. Admins create the phone sign-in account; the profile is verified and published from its page. */
 export function AdminAstrologersView() {
   const list = useAstrologerList();
   const columns = useMemo<ColumnDef<ManagedAstrologer>[]>(
@@ -82,6 +102,12 @@ export function AdminAstrologersView() {
         ),
       },
       { id: "status", header: "Status", enableSorting: false, cell: ({ row }) => <StatusPills astrologer={row.original} /> },
+      {
+        id: "availability",
+        header: "Availability",
+        enableSorting: false,
+        cell: ({ row }) => <AdminStatusBadge status={row.original.availability} labels={availabilityLabels} variants={availabilityVariants} />,
+      },
       { id: "pricing", header: "Pricing", enableSorting: false, cell: ({ row }) => <span className="text-sm tabular-nums text-muted-foreground">{pricingSummary(row.original)}</span> },
       { id: "languages", header: "Languages", enableSorting: false, cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.languages.join(", ") || "Not set"}</span> },
       { id: "experience", header: "Experience", enableSorting: false, cell: ({ row }) => <span className="whitespace-nowrap text-sm tabular-nums text-muted-foreground">{experienceLabel(row.original.experienceYears)}</span> },
@@ -104,8 +130,9 @@ export function AdminAstrologersView() {
   return (
     <AdminServerList
       title="Astrologers"
-      description="Astrologers join from their own account. Review, verify and publish them here."
+      description="Create astrologer accounts, then verify and publish their profiles."
       noun="astrologers"
+      primaryAction={<NewAstrologerButton />}
       list={list}
       columns={columns}
       searchPlaceholder="Search by name or profile link…"
@@ -115,16 +142,18 @@ export function AdminAstrologersView() {
       ]}
       initialColumnVisibility={{ languages: false, experience: false }}
       emptyLabel="No astrologers yet"
-      emptyDescription="Astrologers appear here once they sign up and submit their profile for review."
+      emptyDescription="Create an account with the astrologer's mobile number to get started."
       emptyIcon={Sparkles}
+      emptyAction={<NewAstrologerButton />}
       renderMobileCard={(astrologer) => (
         <article key={astrologer.id} className="rounded-xl border border-border bg-surface p-4">
           <div className="flex items-start justify-between gap-3">
             <AstrologerIdentity astrologer={astrologer} linked />
             <AdminRowActions label={`Actions for ${astrologer.displayName}`} actions={rowActions(astrologer)} className="-mr-1.5 shrink-0" />
           </div>
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
             <StatusPills astrologer={astrologer} />
+            <AdminStatusBadge status={astrologer.availability} labels={availabilityLabels} variants={availabilityVariants} />
           </div>
           <p className="mt-2 text-xs tabular-nums text-muted-foreground">
             {experienceLabel(astrologer.experienceYears)} · {pricingSummary(astrologer)}

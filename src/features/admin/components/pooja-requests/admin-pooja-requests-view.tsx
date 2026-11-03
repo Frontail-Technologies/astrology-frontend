@@ -72,7 +72,9 @@ export function AdminPoojaRequestsView() {
             <Link href={`/admin/pooja-requests/${row.original.id}`} className="font-medium text-foreground hover:underline">
               {row.original.poojaName}
             </Link>
-            <p className="text-xs text-muted-foreground tabular-nums">Requested {formatDateTime(row.original.createdAt)}</p>
+            <p className="text-xs text-muted-foreground tabular-nums">
+              {row.original.packageName ? `${row.original.packageName} · ` : ""}Requested {formatDateTime(row.original.createdAt)}
+            </p>
           </div>
         ),
       },
@@ -139,6 +141,7 @@ export function AdminPoojaRequestsView() {
               </Link>
               <p className="truncate text-sm text-muted-foreground">
                 {request.customerName} · {request.city}
+                {request.packageName ? ` · ${request.packageName}` : ""}
               </p>
             </div>
             <AdminStatusBadge status={request.status} labels={poojaRequestStatusLabels} variants={poojaRequestStatusVariants} />

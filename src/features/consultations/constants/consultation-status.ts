@@ -1,4 +1,4 @@
-import type { ConsultationStatus } from "../types/consultation-admin.ts";
+import type { ConsultationRequestKind, ConsultationStatus } from "../types/consultation-admin.ts";
 
 export const consultationStatusLabels: Record<ConsultationStatus, string> = {
   requested: "Requested",
@@ -28,3 +28,6 @@ export const CONSULTATION_OVERRIDE_HINTS: Record<string, string> & Record<(typeo
   INVALID_CONSULTATION_TRANSITION: "The server does not allow this transition from the current status.",
   CONSULTATION_STATUS_CONFLICT: "The consultation changed while you were working. Close this dialog to reload it, then try again.",
 };
+
+/** How the consultation was requested. */
+export const consultationRequestKindLabels: Record<ConsultationRequestKind, string> = { instant: "Instant", standard: "Scheduled" };

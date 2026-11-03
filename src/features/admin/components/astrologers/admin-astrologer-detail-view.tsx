@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import {
   ASTROLOGER_NOT_VERIFIED,
   astrologerModeLabels,
+  availabilityLabels,
+  availabilityVariants,
   verificationLabels,
   verificationVariants,
   visibilityLabels,
@@ -26,6 +28,7 @@ import { AdminDetailFrame } from "../shared/admin-server-list";
 import { AdminStatusBadge, AdminStatusPill } from "../shared/admin-status-badge";
 import { useConfirmAction } from "../shared/use-confirm-action";
 import { AstrologerRelatedPanels } from "./astrologer-related-panels";
+import { AstrologerSignInCard } from "./astrologer-sign-in-card";
 
 type StatusAction = {
   key: string;
@@ -218,10 +221,12 @@ export function AdminAstrologerDetailView({ astrologerId }: { astrologerId: stri
                   <div className="divide-y divide-border">
                     <DetailRow label="Verification" value={<AdminStatusBadge status={astrologer.verificationStatus} labels={verificationLabels} variants={verificationVariants} />} />
                     <DetailRow label="Visibility" value={<AdminStatusBadge status={astrologer.visibilityStatus} labels={visibilityLabels} variants={visibilityVariants} />} />
+                    <DetailRow label="Availability" value={<AdminStatusBadge status={astrologer.availability} labels={availabilityLabels} variants={availabilityVariants} />} />
                     <DetailRow label="Featured" value={astrologer.featured ? "Yes" : "No"} />
                     <DetailRow label="Last updated" value={<span className="tabular-nums">{formatDateTime(astrologer.updatedAt)}</span>} />
                   </div>
                 </AdminSectionCard>
+                <AstrologerSignInCard astrologer={astrologer} />
                 <AstrologerRelatedPanels astrologerId={astrologerId} />
               </AdminDetailStickyRail>
             </div>

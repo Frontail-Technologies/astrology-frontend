@@ -88,6 +88,7 @@ describe("coupon payload", () => {
       startsAt: null,
       endsAt: "2026-12-31T18:29:59.000Z",
       active: true,
+      listed: true,
       scope: "selected_categories",
       color: "#467DA8",
       createdAt: "2026-10-01T00:00:00.000Z",

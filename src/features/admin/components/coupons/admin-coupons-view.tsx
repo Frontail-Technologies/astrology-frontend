@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { Check, Copy, Eye, Pencil, Plus, Ticket } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
+import { AdminStatusPill } from "../shared/admin-status-badge";
 
 import { Button } from "@/components/ui/button";
 import { couponActiveLabels, couponDateStateLabels, couponDiscountTypeLabels } from "@/features/coupons/constants/coupon-status";
@@ -59,7 +60,21 @@ export function AdminCouponsView() {
       { id: "scope", header: "Applies to", enableSorting: false, cell: ({ row }) => <span className="text-sm text-muted-foreground">{scopeText(row.original)}</span> },
       { id: "usage", header: "Usage", enableSorting: false, cell: ({ row }) => <span className="whitespace-nowrap text-sm text-muted-foreground tabular-nums">{usageText(row.original)}</span> },
       { id: "validity", header: "Validity", enableSorting: false, cell: ({ row }) => <span className="whitespace-nowrap text-sm text-muted-foreground tabular-nums">{validityText(row.original)}</span> },
-      { id: "status", header: "Status", enableSorting: false, cell: ({ row }) => <CouponStateBadge coupon={row.original} /> },
+      {
+        id: "status",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <CouponStateBadge coupon={row.original} />
+            {row.original.listed ? (
+              <AdminStatusPill tone="neutral" dot={false}>
+                In app
+              </AdminStatusPill>
+            ) : null}
+          </div>
+        ),
+      },
       {
         id: "actions",
         header: () => <span>Actions</span>,
@@ -113,6 +128,11 @@ export function AdminCouponsView() {
               </div>
               <div className="flex items-center gap-1">
                 <CouponStateBadge coupon={coupon} />
+                {coupon.listed ? (
+                  <AdminStatusPill tone="neutral" dot={false}>
+                    In app
+                  </AdminStatusPill>
+                ) : null}
                 <AdminRowActions
                   label={`Actions for ${coupon.code}`}
                   actions={[

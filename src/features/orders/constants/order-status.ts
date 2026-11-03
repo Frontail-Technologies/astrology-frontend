@@ -11,3 +11,14 @@ export const orderTransitionCopy: Record<OrderStatus, string> = {
   delivered: "Marks the order as delivered. This is final.",
   cancelled: "Cancels the order. This is final; refund any payment separately as a manual refund.",
 };
+
+/** Couriers offered in the tracking form; the API stores free text (2–80 characters), so "Other…" is allowed. */
+export const orderCourierLabels: Readonly<Record<string, string>> = {
+  Delhivery: "Delhivery",
+  "Blue Dart": "Blue Dart",
+  DTDC: "DTDC",
+  "India Post": "India Post",
+  "Ekart Logistics": "Ekart Logistics",
+  "Xpressbees": "Xpressbees",
+  "Shadowfax": "Shadowfax",
+};

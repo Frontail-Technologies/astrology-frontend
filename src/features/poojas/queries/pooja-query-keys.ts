@@ -7,6 +7,7 @@ const keys = createAdminQueryKeys("poojas");
 export const poojaKeys = {
   ...keys,
   list: (state: AdminListState<PoojaListFilter, never>) => keys.list(state),
+  packages: (poojaId: string) => [...keys.all, "packages", poojaId] as const,
   /** Public master data (active categories only); not admin-scoped. */
   categories: () => ["master-data", "pooja-categories"] as const,
 };

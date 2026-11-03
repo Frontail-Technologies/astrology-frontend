@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { XCircle } from "lucide-react";
+import { personPrimaryLabel } from "@/features/customers/lib/customer-display";
+import { OrderTrackingCard } from "./order-tracking-card";
 
 import { Button } from "@/components/ui/button";
 import { orderStatusLabels, orderStatusVariants, orderTransitionCopy } from "@/features/orders/constants/order-status";
@@ -51,7 +53,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
               meta={
                 <>
                   <AdminStatusBadge status={order.status} labels={orderStatusLabels} variants={orderStatusVariants} />
-                  <span className="break-all">{order.customer.email}</span>
+                  <span className="break-all">{personPrimaryLabel(order.customer)}</span>
                   <span className="tabular-nums">Placed {formatOptionalDateTime(order.placedAt ?? order.createdAt)}</span>
                 </>
               }
@@ -124,7 +126,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
                     {order.shippingCountry}
                   </address>
                   <div className="mt-3 divide-y divide-border border-t border-border">
-                    <DetailRow label="Email" value={<span className="break-all">{order.contactEmail}</span>} />
+                    <DetailRow label="Email" value={order.contactEmail ? <span className="break-all">{order.contactEmail}</span> : "Not given"} />
                     <DetailRow label="Phone" value={<span className="tabular-nums">{order.contactPhone}</span>} />
                   </div>
                 </AdminSectionCard>
@@ -142,9 +144,10 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
                   </ol>
                   {next.length === 0 ? <p className="mt-3 text-[13px] text-muted-foreground">This order is complete. No further status changes are possible.</p> : null}
                 </AdminSectionCard>
+                <OrderTrackingCard order={order} />
                 <AdminSectionCard title="Customer">
-                  <p className="break-all text-sm font-medium">{order.customer.email}</p>
-                  {order.customer.phone ? <p className="text-[13px] tabular-nums text-muted-foreground">{order.customer.phone}</p> : null}
+                  <p className="break-all text-sm font-medium">{personPrimaryLabel(order.customer)}</p>
+                  {order.customer.email && order.customer.phone ? <p className="text-[13px] tabular-nums text-muted-foreground">{order.customer.phone}</p> : null}
                   <Link href={`/admin/customers/${order.customer.id}`} className="mt-2 inline-block text-[13px] font-medium text-muted-foreground hover:text-foreground hover:underline">
                     View customer
                   </Link>

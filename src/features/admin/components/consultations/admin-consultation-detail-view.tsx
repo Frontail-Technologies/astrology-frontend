@@ -20,7 +20,7 @@ import { AdminDetailStickyRail } from "../shared/admin-detail-sticky-rail";
 import { AdminPageHeader } from "../shared/admin-page-header";
 import { AdminSectionCard } from "../shared/admin-section-card";
 import { AdminDetailFrame } from "../shared/admin-server-list";
-import { AdminStatusBadge } from "../shared/admin-status-badge";
+import { AdminStatusBadge, AdminStatusPill } from "../shared/admin-status-badge";
 import { useConfirmAction } from "../shared/use-confirm-action";
 import { ConsultationRelatedPanels } from "./consultation-related-panels";
 
@@ -58,6 +58,11 @@ export function AdminConsultationDetailView({ consultationId }: { consultationId
               meta={
                 <>
                   <AdminStatusBadge status={consultation.status} labels={consultationStatusLabels} variants={consultationStatusVariants} />
+                  {consultation.requestKind === "instant" ? (
+                    <AdminStatusPill tone="neutral" dot={false}>
+                      Instant
+                    </AdminStatusPill>
+                  ) : null}
                   <span>
                     {customerLabel} with {consultation.astrologer.displayName}
                   </span>
@@ -86,6 +91,7 @@ export function AdminConsultationDetailView({ consultationId }: { consultationId
                       }
                     />
                     <DetailRow label="Mode" value={consultation.consultationMode.name} />
+                    <DetailRow label="Requested as" value={consultation.requestKind === "instant" ? "Instant (Chat now / Call now)" : "Scheduled booking"} />
                     <DetailRow label="Price" value={<span className="tabular-nums">{formatINR(consultation.pricePaise)}</span>} />
                     <DetailRow label="Session length" value={consultation.durationMinutes ? `${consultation.durationMinutes} min` : "Not set"} />
                   </div>

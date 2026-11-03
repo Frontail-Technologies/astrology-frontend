@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Controller, useFieldArray, useWatch, type UseFormReturn } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, CheckSquare, CircleDollarSign, FileText, Flame, Link2, ListChecks, Plus, ScrollText, Sparkles, Star, Tags, X } from "lucide-react";
+import { ArrowDown, ArrowUp, CalendarCheck, CheckSquare, CircleDollarSign, FileText, Flame, Link2, ListChecks, Plus, ScrollText, Sparkles, Star, Tags, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +42,7 @@ const sections: AdminEditorSection[] = [
   { id: "identity", label: "Identity", icon: Flame },
   { id: "categories", label: "Categories", icon: Tags },
   { id: "service", label: "Service & pricing", icon: CircleDollarSign },
+  { id: "booking", label: "Booking", icon: CalendarCheck },
   { id: "overview", label: "Overview", icon: FileText },
   { id: "quick-facts", label: "Quick facts", icon: ListChecks },
   { id: "ritual", label: "Ritual process", icon: ScrollText },
@@ -207,6 +208,20 @@ function PoojaEditorForm({
         ) : (
           <p className="text-[13px] text-muted-foreground">Publish, suspend or move back to draft from the pooja’s page (currently {poojaStatusLabels[pooja.status].toLowerCase()}).</p>
         )}
+      </AdminFormSection>
+
+      <AdminFormSection id="booking" title="Booking" description="Which dates customers can choose in the app. Packages and their prices are managed on the pooja's page.">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <AdminFormField label="Bookings per day" description="Leave empty for no limit." error={fieldError(errors, "dailyCapacity")}>
+            {(control) => <Input {...control} inputMode="numeric" placeholder="No limit" className="tabular-nums" {...form.register("dailyCapacity")} />}
+          </AdminFormField>
+          <AdminFormField label="Earliest booking" description="Days from today (0–60)." error={fieldError(errors, "bookingLeadDays")}>
+            {(control) => <Input {...control} inputMode="numeric" className="tabular-nums" {...form.register("bookingLeadDays")} />}
+          </AdminFormField>
+          <AdminFormField label="Booking window" description="Days ahead customers can book (1–365)." error={fieldError(errors, "bookingWindowDays")}>
+            {(control) => <Input {...control} inputMode="numeric" className="tabular-nums" {...form.register("bookingWindowDays")} />}
+          </AdminFormField>
+        </div>
       </AdminFormSection>
 
       <AdminFormSection id="overview" title="Overview" description="Optional eyebrow and paragraphs shown under the hero.">

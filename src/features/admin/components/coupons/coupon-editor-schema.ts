@@ -31,6 +31,7 @@ export const couponEditorSchema: z.ZodType<CouponFormValues, CouponFormValues> =
     startsAt: z.string().nullable(),
     endsAt: z.string().nullable(),
     active: z.boolean(),
+    listed: z.boolean(),
     scope: z.enum(couponScopes),
     categoryIds: z.array(z.string()).max(COUPON_LIMITS.maxCategories, { error: `Select at most ${COUPON_LIMITS.maxCategories} categories.` }),
     productIds: z.array(z.string()).max(COUPON_LIMITS.maxProducts, { error: `Select at most ${COUPON_LIMITS.maxProducts} products.` }),

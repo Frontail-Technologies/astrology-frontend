@@ -250,6 +250,19 @@ function CouponEditorForm({
             </div>
           )}
         />
+        <Controller
+          name="listed"
+          control={form.control}
+          render={({ field }) => (
+            <div className="flex items-center justify-between gap-4 rounded-md border border-border p-3">
+              <div>
+                <Label htmlFor="coupon-listed">Show in the app</Label>
+                <p className="text-xs text-muted-foreground">Listed on the offers screen of the customer app. Unlisted codes still work when a customer types them.</p>
+              </div>
+              <Switch id="coupon-listed" checked={field.value} onCheckedChange={field.onChange} disabled={pending} />
+            </div>
+          )}
+        />
       </AdminFormSection>
 
       <AdminFormSection id="discount" title="Discount">

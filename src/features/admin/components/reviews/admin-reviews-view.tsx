@@ -25,7 +25,7 @@ export function ReviewRating({ rating }: { rating: number }) {
 }
 
 const targetName = (review: AdminReview) => review.target.name ?? "Unavailable";
-const customerName = (review: AdminReview) => review.customer?.name ?? review.customer?.email ?? "Deleted customer";
+const customerName = (review: AdminReview) => (review.customer ? (review.customer.name ?? review.customer.email ?? "Customer") : "Deleted customer");
 
 /** Reviews moderation queue: server search (title, body) with status tabs and type/rating filters. */
 export function AdminReviewsView() {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { Eye, ShoppingBag, UserRound } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
+import { personPrimaryLabel } from "@/features/customers/lib/customer-display";
 
 import { orderStatusLabels, orderStatusVariants } from "@/features/orders/constants/order-status";
 import { useOrderList } from "@/features/orders/hooks/use-order-admin";
@@ -39,7 +40,7 @@ export function AdminOrdersView() {
             <Link href={`/admin/orders/${row.original.id}`} className="block font-medium tabular-nums hover:underline">
               {row.original.orderNumber}
             </Link>
-            <p className="truncate text-xs text-muted-foreground">{row.original.customer.email}</p>
+            <p className="truncate text-xs text-muted-foreground">{personPrimaryLabel(row.original.customer)}</p>
           </div>
         ),
       },
@@ -84,7 +85,7 @@ export function AdminOrdersView() {
               <Link href={`/admin/orders/${order.id}`} className="block font-medium tabular-nums hover:underline">
                 {order.orderNumber}
               </Link>
-              <p className="truncate text-xs text-muted-foreground">{order.customer.email}</p>
+              <p className="truncate text-xs text-muted-foreground">{personPrimaryLabel(order.customer)}</p>
             </div>
             <AdminRowActions label={`Actions for ${order.orderNumber}`} actions={rowActions(order)} className="-mr-1.5 shrink-0" />
           </div>

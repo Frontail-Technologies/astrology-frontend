@@ -25,6 +25,12 @@ export type ManagedPoojaRequest = {
   intent: string | null;
   /** Snapshot at request time. */
   poojaName: string;
+  /** Package chosen in the app (snapshot of its name); null for requests without packages. */
+  packageId: string | null;
+  packageName: string | null;
+  /** Names in the sankalp, as entered by the customer. */
+  devotees: string[];
+  gotra: string | null;
   pricePaise: number | null;
   currency: "INR" | null;
   acceptedAt: string | null;
