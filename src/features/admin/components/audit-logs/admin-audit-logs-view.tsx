@@ -201,7 +201,6 @@ export function AdminAuditLogsView() {
         idFilterLabels={{ actorUserId: "Actor", entityId: "Record" }}
         idFilterName={(key, rows) => (key === "actorUserId" ? (rows[0]?.actor?.name ?? rows[0]?.actor?.email) : rows[0]?.entityLabel)}
         extraActiveCount={(actionFilter ? 1 : 0) + (entityFilter ? 1 : 0)}
-        initialColumnVisibility={{ ip: false }}
         emptyLabel="No audit entries yet"
         emptyDescription="Changes made by admins appear here automatically."
         emptyIcon={ScrollText}

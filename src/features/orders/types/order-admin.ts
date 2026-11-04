@@ -42,6 +42,8 @@ export type AdminOrder = {
   courier: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
+  /** Delivery estimate shown to the customer (YYYY-MM-DD). */
+  estimatedDeliveryDate: string | null;
   createdAt: string;
   updatedAt: string;
   items: AdminOrderItem[];
@@ -51,4 +53,4 @@ export type AdminOrder = {
 };
 
 /** `PATCH /admin/orders/:id/tracking` body. */
-export type OrderTrackingInput = { courier: string; trackingNumber: string; trackingUrl: string | null };
+export type OrderTrackingInput = { courier: string; trackingNumber: string; trackingUrl: string | null; estimatedDeliveryDate?: string | null };

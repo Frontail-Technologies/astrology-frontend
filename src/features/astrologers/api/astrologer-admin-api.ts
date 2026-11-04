@@ -1,5 +1,6 @@
 import { adminGet, adminList, adminSend, encodeId } from "@/features/admin/data/admin-api";
-import { apiRequest } from "@/lib/api/api-client";
+import { apiDownload, apiRequest } from "@/lib/api/api-client";
+import type { AstrologerDocument, AstrologerDocumentReview, AstrologerDocumentUpload } from "../types/astrologer-document-admin";
 import type { AstrologerProfileInput, AstrologerStatusInput, AstrologerStatusResult, AstrologerTaxonomy, ManagedAstrologer, ProvisionAstrologerInput } from "../types/astrologer-admin";
 
 export function listAstrologers(query: Record<string, string | number>, signal?: AbortSignal) {
@@ -47,4 +48,30 @@ export function listPublicCountries(signal?: AbortSignal) {
 
 export function listPublicCities(stateId: string, signal?: AbortSignal) {
   return apiRequest<PublicLocationOption[]>(`/master-data/states/${encodeId(stateId)}/cities`, { authenticated: false, signal });
+}
+
+export function listAstrologerDocuments(id: string, signal?: AbortSignal) {
+  return adminGet<AstrologerDocument[]>(`/astrologers/${encodeId(id)}/documents`, { signal });
+}
+
+/** Multipart upload to private storage; the server checks the real file type (PDF, JPEG, PNG, WebP). */
+export function uploadAstrologerDocument(id: string, input: AstrologerDocumentUpload) {
+  const body = new FormData();
+  body.append("idType", input.idType);
+  body.append("side", input.side);
+  body.append("file", input.file);
+  return apiRequest<AstrologerDocument>(`/admin/astrologers/${encodeId(id)}/documents`, { method: "POST", body });
+}
+
+export function reviewAstrologerDocument(id: string, documentId: string, input: AstrologerDocumentReview) {
+  return adminSend<AstrologerDocument>(`/astrologers/${encodeId(id)}/documents/${encodeId(documentId)}/status`, "PATCH", input);
+}
+
+export function deleteAstrologerDocument(id: string, documentId: string) {
+  return adminSend<{ deleted: true }>(`/astrologers/${encodeId(id)}/documents/${encodeId(documentId)}`, "DELETE");
+}
+
+/** Downloads the private file. Every call is recorded in the audit log on the server. */
+export function downloadAstrologerDocument(id: string, documentId: string) {
+  return apiDownload(`/admin/astrologers/${encodeId(id)}/documents/${encodeId(documentId)}/file`);
 }

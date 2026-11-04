@@ -36,6 +36,8 @@ import { AdminMoneyInput } from "../shared/admin-money-input";
 import { AdminDetailFrame } from "../shared/admin-server-list";
 import { AdminSelectField } from "../shared/admin-select-field";
 import { AdminStatusBadge } from "../shared/admin-status-badge";
+import { nakshatraNames, tithiNames } from "@/features/poojas/constants/panchang-names";
+import { PanchangChoiceField } from "./panchang-choice-field";
 import { poojaEditorSchema } from "./pooja-editor-schema";
 
 const sections: AdminEditorSection[] = [
@@ -221,6 +223,19 @@ function PoojaEditorForm({
           <AdminFormField label="Booking window" description="Days ahead customers can book (1–365)." error={fieldError(errors, "bookingWindowDays")}>
             {(control) => <Input {...control} inputMode="numeric" className="tabular-nums" {...form.register("bookingWindowDays")} />}
           </AdminFormField>
+        </div>
+        <div className="grid gap-4 border-t border-border pt-4">
+          <p className="text-[13px] text-muted-foreground">
+            Auspicious days: the app marks a date when its tithi or nakshatra (at sunrise, at the temple) is one you choose here. Leave both empty to mark none. Choose these with your priests; the app shows them as given.
+          </p>
+          <div className="grid gap-1.5">
+            <Label>Auspicious tithis</Label>
+            <Controller control={form.control} name="preferredTithis" render={({ field }) => <PanchangChoiceField label="Auspicious tithis" options={tithiNames} value={field.value} onChange={field.onChange} disabled={pending} />} />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Auspicious nakshatras</Label>
+            <Controller control={form.control} name="preferredNakshatras" render={({ field }) => <PanchangChoiceField label="Auspicious nakshatras" options={nakshatraNames} value={field.value} onChange={field.onChange} disabled={pending} />} />
+          </div>
         </div>
       </AdminFormSection>
 

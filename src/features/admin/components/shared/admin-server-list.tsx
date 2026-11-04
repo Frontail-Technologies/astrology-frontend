@@ -65,7 +65,6 @@ export function AdminServerList<T extends RowData>({
   idFilterLabels = {},
   idFilterName,
   extraActiveCount = 0,
-  initialColumnVisibility,
   emptyLabel,
   emptyDescription,
   emptyIcon,
@@ -102,7 +101,6 @@ export function AdminServerList<T extends RowData>({
   idFilterName?: (key: string, rows: T[]) => string | null | undefined;
   /** Active filters rendered through `toolbarExtras`, added to the mobile "Filters" badge count. */
   extraActiveCount?: number;
-  initialColumnVisibility?: Record<string, boolean>;
   emptyLabel: string;
   /** Next step shown under `emptyLabel` when the list is empty without filters. */
   emptyDescription?: string;
@@ -331,7 +329,6 @@ export function AdminServerList<T extends RowData>({
             <AdminDataTable
               columns={columns}
               data={items}
-              initialColumnVisibility={initialColumnVisibility}
               header={header}
               toolbar={desktopToolbar}
               stickyHeader

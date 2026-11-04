@@ -165,7 +165,6 @@ export function AdminArticlesView() {
         { key: "category", allLabel: "All categories", options: categoryOptions },
         { key: "tag", allLabel: tags.isPending ? "Loading tags…" : "All tags", options: tagOptions },
       ]}
-      initialColumnVisibility={{ tags: false, updated: false }}
       emptyLabel="No articles yet"
       emptyDescription="Write the first article. New articles stay as drafts until you publish them."
       emptyIcon={Newspaper}

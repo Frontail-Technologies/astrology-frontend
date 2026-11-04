@@ -75,7 +75,6 @@ export function AdminSupportView() {
         { key: "priority", allLabel: "All priorities", options: ticketPriorityLabels },
         { key: "category", allLabel: "All categories", options: ticketCategoryLabels },
       ]}
-      initialColumnVisibility={{ category: false }}
       emptyLabel="No support tickets yet"
       emptyDescription="Tickets appear here when customers contact support from their account."
       emptyIcon={LifeBuoy}

@@ -6,10 +6,18 @@ import { useAdminDetail } from "@/features/admin/data/use-admin-detail";
 import { useAdminList } from "@/features/admin/data/use-admin-list";
 import { useAdminMutation } from "@/features/admin/data/use-admin-mutation";
 import { isUuid } from "@/features/admin/data/admin-list-state";
+import {
+  deleteAstrologerDocument,
+  downloadAstrologerDocument,
+  listAstrologerDocuments,
+  reviewAstrologerDocument,
+  uploadAstrologerDocument,
+} from "../api/astrologer-admin-api";
 import { getAstrologer, listAstrologers, listPublicCities, listPublicCountries, listPublicLanguages, listTaxonomy, provisionAstrologer, updateAstrologerPhone, updateAstrologerProfile, updateAstrologerStatus } from "../api/astrologer-admin-api";
 import { astrologerKeys } from "../queries/astrologer-query-keys";
 import { astrologerListConfig } from "../state/astrologer-list-state";
 import type { AstrologerProfileInput, AstrologerStatusInput, ProvisionAstrologerInput } from "../types/astrologer-admin";
+import type { AstrologerDocumentReview, AstrologerDocumentUpload } from "../types/astrologer-document-admin";
 
 export function useAstrologerList() {
   return useAdminList(astrologerListConfig, astrologerKeys.list, listAstrologers);
@@ -85,4 +93,40 @@ export function useAstrologerPicker(enabled: boolean) {
     queryFn: ({ signal }) => listAstrologers({ page: 1, limit: 100, verificationStatus: "verified" }, signal),
     enabled,
   });
+}
+
+export function useAstrologerDocuments(id: string) {
+  return useAdminDetail(astrologerKeys.documents(id), (signal) => listAstrologerDocuments(id, signal), Boolean(id));
+}
+
+export function useUploadAstrologerDocument(id: string) {
+  return useAdminMutation({
+    mutationFn: (input: AstrologerDocumentUpload) => uploadAstrologerDocument(id, input),
+    invalidate: [astrologerKeys.documents(id)],
+    successMessage: "Document uploaded",
+    toastErrors: false,
+  });
+}
+
+export function useReviewAstrologerDocument(id: string) {
+  return useAdminMutation({
+    mutationFn: ({ documentId, input }: { documentId: string; input: AstrologerDocumentReview }) => reviewAstrologerDocument(id, documentId, input),
+    invalidate: [astrologerKeys.documents(id)],
+    successMessage: (result) => (result.status === "approved" ? "Document approved" : result.status === "rejected" ? "Document rejected" : "Document moved back to review"),
+    toastErrors: false,
+  });
+}
+
+export function useDeleteAstrologerDocument(id: string) {
+  return useAdminMutation({
+    mutationFn: (documentId: string) => deleteAstrologerDocument(id, documentId),
+    invalidate: [astrologerKeys.documents(id)],
+    successMessage: "Document deleted",
+    toastErrors: false,
+  });
+}
+
+/** Fetches a private document for viewing (each call is audited on the server). */
+export function fetchAstrologerDocumentFile(id: string, documentId: string) {
+  return downloadAstrologerDocument(id, documentId);
 }

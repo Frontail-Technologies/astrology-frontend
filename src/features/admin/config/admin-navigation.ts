@@ -51,6 +51,7 @@ export const adminNavigation = [
       { href: "/admin/horoscopes", label: "Horoscopes", icon: "horoscopes" as const, description: "Daily, weekly and monthly horoscopes" },
       { href: "/admin/articles", label: "Articles", icon: "articles" as const, description: "Editorial articles and publishing" },
       { href: "/admin/banners", label: "Banners", icon: "banners" as const, description: "Promotional banners across the site" },
+      { href: "/admin/sign-compatibility", label: "Sign Compatibility", icon: "compatibility" as const, description: "Editorial compatibility for each pair of signs" },
       { href: "/admin/faqs", label: "FAQs", icon: "faqs" as const, description: "Help answers shown in the customer app" },
       { href: "/admin/master-data", label: "Master Data", icon: "masterData" as const, description: "Shared lists used across the platform" },
     ],

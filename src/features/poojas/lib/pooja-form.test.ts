@@ -43,6 +43,8 @@ const pooja: ManagedPooja = {
   dailyCapacity: 5,
   bookingLeadDays: 3,
   bookingWindowDays: 45,
+  preferredTithis: ["Shukla Ekadashi"],
+  preferredNakshatras: [],
   createdAt: "2026-10-01T00:00:00.000Z",
   updatedAt: "2026-10-02T00:00:00.000Z",
   category: { id: "c-primary", name: "Prosperity", slug: "prosperity" },

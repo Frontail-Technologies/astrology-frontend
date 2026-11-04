@@ -112,7 +112,6 @@ export function AdminCouponsView() {
         { key: "dateState", allLabel: "Any dates", options: couponDateStateLabels },
         { key: "discountType", allLabel: "All discount types", options: couponDiscountTypeLabels },
       ]}
-      initialColumnVisibility={{ scope: false }}
       emptyLabel="No coupons yet"
       emptyDescription="Create a coupon code to offer a discount on store orders or consultations."
       emptyIcon={Ticket}

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { BadgeCheck, Ban, EyeOff, FileClock, Pencil, Star, StarOff, Undo2, XCircle, type LucideIcon } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   ASTROLOGER_NOT_VERIFIED,
@@ -17,7 +16,7 @@ import {
 } from "@/features/astrologers/constants/astrologer-status";
 import { useAstrologerDetail, useAstrologerStatusUpdate } from "@/features/astrologers/hooks/use-astrologer-admin";
 import type { AstrologerStatusInput, ManagedAstrologer } from "@/features/astrologers/types/astrologer-admin";
-import { formatDateTime, formatINR, getInitials } from "../../lib/format";
+import { formatDateTime, formatINR } from "../../lib/format";
 import { AdminConfirmDialog } from "../shared/admin-confirm-dialog";
 import { DetailRow } from "../shared/admin-detail-row";
 import { AdminDetailStickyRail } from "../shared/admin-detail-sticky-rail";
@@ -27,6 +26,8 @@ import { AdminSectionCard } from "../shared/admin-section-card";
 import { AdminDetailFrame } from "../shared/admin-server-list";
 import { AdminStatusBadge, AdminStatusPill } from "../shared/admin-status-badge";
 import { useConfirmAction } from "../shared/use-confirm-action";
+import { AstrologerAvatar } from "./astrologer-avatar";
+import { AstrologerDocumentsCard } from "./astrologer-documents-card";
 import { AstrologerRelatedPanels } from "./astrologer-related-panels";
 import { AstrologerSignInCard } from "./astrologer-sign-in-card";
 
@@ -153,9 +154,7 @@ export function AdminAstrologerDetailView({ astrologerId }: { astrologerId: stri
               <div className="min-w-0 space-y-5">
                 <AdminSectionCard title="Profile">
                   <div className="flex items-start gap-4">
-                    <Avatar className="size-14 shrink-0">
-                      <AvatarFallback className="bg-accent text-base font-semibold text-sidebar-primary">{getInitials(astrologer.displayName)}</AvatarFallback>
-                    </Avatar>
+                    <AstrologerAvatar name={astrologer.displayName} imageUrl={astrologer.profileImageUrl} className="size-16" fallbackClassName="text-base" />
                     <div className="min-w-0 space-y-0.5">
                       <p className="text-lg font-semibold">{astrologer.displayName}</p>
                       <p className="text-sm text-muted-foreground">
@@ -170,6 +169,8 @@ export function AdminAstrologerDetailView({ astrologerId }: { astrologerId: stri
                     <p className="mt-4 text-sm text-muted-foreground">No bio yet.</p>
                   )}
                 </AdminSectionCard>
+
+                <AstrologerDocumentsCard astrologerId={astrologer.id} />
 
                 <AdminSectionCard title="Consultation pricing" flush>
                   {astrologer.consultationModes.length === 0 ? (

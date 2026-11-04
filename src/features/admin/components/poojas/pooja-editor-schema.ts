@@ -80,6 +80,8 @@ export const poojaEditorSchema: z.ZodType<PoojaFormValues, PoojaFormValues> = z.
     .string()
     .trim()
     .refine((value) => /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 365, { error: "Use whole days from 1 to 365." }),
+  preferredTithis: z.array(z.string()).max(30),
+  preferredNakshatras: z.array(z.string()).max(27),
   featured: z.boolean(),
   status: z.enum(poojaStatuses),
   content: contentSchema,

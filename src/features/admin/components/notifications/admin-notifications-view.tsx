@@ -144,7 +144,6 @@ export function AdminNotificationsView() {
         { key: "channel", allLabel: "All channels", options: notificationChannelLabels },
         { key: "status", allLabel: "All statuses", options: notificationTemplateStatusLabels },
       ]}
-      initialColumnVisibility={{ variables: false }}
       emptyLabel="No notification templates yet"
       emptyDescription="Create a template for an event, such as a payment or a consultation update."
       emptyIcon={BellRing}

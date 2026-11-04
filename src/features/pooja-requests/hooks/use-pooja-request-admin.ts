@@ -3,10 +3,10 @@
 import { useAdminDetail } from "@/features/admin/data/use-admin-detail";
 import { useAdminList } from "@/features/admin/data/use-admin-list";
 import { useAdminMutation } from "@/features/admin/data/use-admin-mutation";
-import { getPoojaRequest, listPoojaRequests, schedulePoojaRequest, updatePoojaRequestStatus } from "../api/pooja-request-admin-api";
+import { assignPoojaRequest, getPoojaRequest, listPoojaRequests, schedulePoojaRequest, updatePoojaRequestStatus } from "../api/pooja-request-admin-api";
 import { poojaRequestKeys } from "../queries/pooja-request-query-keys";
 import { poojaRequestListConfig } from "../state/pooja-request-list-state";
-import type { PoojaRequestScheduleInput, PoojaRequestStatusInput } from "../types/pooja-request-admin";
+import type { PoojaRequestAssignmentInput, PoojaRequestScheduleInput, PoojaRequestStatusInput } from "../types/pooja-request-admin";
 
 export function usePoojaRequestList() {
   return useAdminList(poojaRequestListConfig, poojaRequestKeys.list, listPoojaRequests);
@@ -30,6 +30,15 @@ export function usePoojaRequestSchedule(id: string) {
     mutationFn: (input: PoojaRequestScheduleInput) => schedulePoojaRequest(id, input),
     invalidate: [poojaRequestKeys.all],
     successMessage: "Schedule saved",
+    toastErrors: false,
+  });
+}
+
+export function usePoojaRequestAssignment(id: string) {
+  return useAdminMutation({
+    mutationFn: (input: PoojaRequestAssignmentInput) => assignPoojaRequest(id, input),
+    invalidate: [poojaRequestKeys.all],
+    successMessage: "Assignment saved",
     toastErrors: false,
   });
 }

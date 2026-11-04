@@ -54,6 +54,20 @@ function PoojaFilter({ value, onChange }: { value: string | null; onChange: (val
   );
 }
 
+/** Who performs the pooja, and whether the team must act (a chosen pandit declined or never answered). */
+function PanditCell({ request }: { request: ManagedPoojaRequest }) {
+  if (request.assignedAstrologer) {
+    return (
+      <div className="min-w-32">
+        <p className="text-sm">{request.assignedAstrologer.displayName}</p>
+        <p className="text-xs text-muted-foreground">{request.panditRespondBy ? "Waiting for their answer" : request.assignmentSource === "customer" ? "Chosen by customer" : "Assigned by team"}</p>
+      </div>
+    );
+  }
+  if (request.returnedToTeamAt && request.canAssign) return <span className="inline-flex h-6 items-center rounded-full bg-warning/15 px-2 text-xs font-medium">Needs a pandit</span>;
+  return <span className="text-sm text-muted-foreground">Not assigned</span>;
+}
+
 export function AdminPoojaRequestsView() {
   const list = usePoojaRequestList();
   const { apply } = list;
@@ -92,6 +106,7 @@ export function AdminPoojaRequestsView() {
       { id: "city", header: "City", enableSorting: false, cell: ({ row }) => <span className="text-sm text-muted-foreground">{`${row.original.city}, ${row.original.state}`}</span> },
       { id: "when", header: "Date", enableSorting: false, cell: ({ row }) => <span className="whitespace-nowrap text-sm text-muted-foreground tabular-nums">{whenText(row.original)}</span> },
       { id: "amount", header: "Amount", enableSorting: false, cell: ({ row }) => <span className="whitespace-nowrap text-sm font-medium tabular-nums">{amountText(row.original)}</span> },
+      { id: "pandit", header: "Pandit", enableSorting: false, cell: ({ row }) => <PanditCell request={row.original} /> },
       { id: "status", header: "Status", enableSorting: false, cell: ({ row }) => <AdminStatusBadge status={row.original.status} labels={poojaRequestStatusLabels} variants={poojaRequestStatusVariants} /> },
       {
         id: "actions",
@@ -126,9 +141,11 @@ export function AdminPoojaRequestsView() {
       columns={columns}
       searchPlaceholder="Customer name, phone or email…"
       searchMaxLength={320}
-      filters={[{ key: "status", allLabel: "All statuses", options: poojaRequestStatusLabels }]}
+      filters={[
+        { key: "status", allLabel: "All statuses", options: poojaRequestStatusLabels },
+        { key: "needsPandit", allLabel: "Any pandit state", options: { true: "Needs a pandit" } },
+      ]}
       dateRange
-      initialColumnVisibility={{ city: false }}
       emptyLabel="No pooja requests yet"
       emptyDescription="Requests appear here when customers ask for a published pooja."
       emptyIcon={ClipboardList}

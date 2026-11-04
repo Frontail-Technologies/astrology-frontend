@@ -1,7 +1,7 @@
 import type { AdminListConfig } from "../../admin/data/admin-list-state.ts";
 import { poojaRequestStatusLabels } from "../constants/pooja-request-status.ts";
 
-export type PoojaRequestListFilter = "status" | "pooja";
+export type PoojaRequestListFilter = "status" | "pooja" | "needsPandit";
 
 export const POOJA_FILTER_MAX_LENGTH = 180;
 
@@ -23,5 +23,5 @@ export const poojaRequestListConfig: AdminListConfig<PoojaRequestListFilter, nev
   searchParam: "customer",
   searchMaxLength: 320,
   dateRange: true,
-  filters: { status: Object.keys(poojaRequestStatusLabels), pooja: isPoojaFilterText },
+  filters: { status: Object.keys(poojaRequestStatusLabels), pooja: isPoojaFilterText, needsPandit: ["true"] },
 };

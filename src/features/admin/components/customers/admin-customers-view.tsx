@@ -81,7 +81,6 @@ export function AdminCustomersView() {
       searchPlaceholder="Search by name, email or phone…"
       searchMaxLength={200}
       filters={[{ key: "status", allLabel: "All statuses", options: customerStatusLabels }]}
-      initialColumnVisibility={{ contact: false }}
       emptyLabel="No customers yet"
       emptyDescription="Customers appear here as soon as they create an account on the site."
       emptyIcon={Users}

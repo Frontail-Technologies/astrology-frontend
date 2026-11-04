@@ -13,4 +13,5 @@ export const astrologerKeys = {
   /** Public languages / countries / cities of a state for the profile editor pickers. */
   publicList: (entity: "languages" | "countries") => ["master-data", entity] as const,
   publicCities: (stateId: string) => ["master-data", "states", stateId, "cities"] as const,
+  documents: (id: string) => [...keys.all, "documents", id] as const,
 };

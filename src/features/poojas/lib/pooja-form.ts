@@ -34,6 +34,8 @@ export type PoojaFormValues = {
   dailyCapacity: string;
   bookingLeadDays: string;
   bookingWindowDays: string;
+  preferredTithis: string[];
+  preferredNakshatras: string[];
   featured: boolean;
   /** Initial status (create only; later changes go through the status endpoint). */
   status: PoojaStatus;
@@ -116,6 +118,8 @@ export function poojaToFormValues(pooja: ManagedPooja | null | undefined): Pooja
       dailyCapacity: "",
       bookingLeadDays: "2",
       bookingWindowDays: "60",
+      preferredTithis: [],
+      preferredNakshatras: [],
       featured: false,
       status: "draft",
       content: emptyPoojaContentForm(),
@@ -134,6 +138,8 @@ export function poojaToFormValues(pooja: ManagedPooja | null | undefined): Pooja
     dailyCapacity: pooja.dailyCapacity === null || pooja.dailyCapacity === undefined ? "" : String(pooja.dailyCapacity),
     bookingLeadDays: String(pooja.bookingLeadDays ?? 2),
     bookingWindowDays: String(pooja.bookingWindowDays ?? 60),
+    preferredTithis: pooja.preferredTithis ?? [],
+    preferredNakshatras: pooja.preferredNakshatras ?? [],
     featured: pooja.featured,
     status: pooja.status,
     content: contentToForm(pooja.content),
@@ -154,6 +160,8 @@ export function formValuesToPoojaInput(values: PoojaFormValues): PoojaInput {
     dailyCapacity: values.dailyCapacity.trim() === "" ? null : Number(values.dailyCapacity.trim()),
     bookingLeadDays: Number(values.bookingLeadDays.trim()),
     bookingWindowDays: Number(values.bookingWindowDays.trim()),
+    preferredTithis: values.preferredTithis,
+    preferredNakshatras: values.preferredNakshatras,
     featured: values.featured,
     content: formToContent(values.content),
     status: values.status,

@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import { Eye, Pencil, Plus, Sparkles } from "lucide-react";
 import type { LegacyColumnDef as ColumnDef } from "@tanstack/react-table/legacy";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   astrologerModeLabels,
@@ -18,10 +17,11 @@ import {
 } from "@/features/astrologers/constants/astrologer-status";
 import { useAstrologerList } from "@/features/astrologers/hooks/use-astrologer-admin";
 import type { ManagedAstrologer } from "@/features/astrologers/types/astrologer-admin";
-import { formatINR, getInitials } from "../../lib/format";
+import { formatINR } from "../../lib/format";
 import { AdminRowActionLink } from "../shared/admin-row-action-link";
 import { AdminRowActions } from "../shared/admin-row-actions";
 import { AdminServerList } from "../shared/admin-server-list";
+import { AstrologerAvatar } from "./astrologer-avatar";
 import { AdminStatusBadge, AdminStatusPill } from "../shared/admin-status-badge";
 
 function pricingSummary(astrologer: ManagedAstrologer) {
@@ -52,9 +52,7 @@ function AstrologerIdentity({ astrologer, linked = false }: { astrologer: Manage
   const expertise = astrologer.expertise.map((item) => item.name).join(", ");
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <Avatar className="size-8 shrink-0">
-        <AvatarFallback className="bg-accent text-xs font-semibold text-sidebar-primary">{getInitials(astrologer.displayName)}</AvatarFallback>
-      </Avatar>
+      <AstrologerAvatar name={astrologer.displayName} imageUrl={astrologer.profileImageUrl} />
       <div className="min-w-0">
         {linked ? (
           <Link href={`/admin/astrologers/${astrologer.id}`} className="block truncate font-medium text-foreground hover:underline">
@@ -140,7 +138,6 @@ export function AdminAstrologersView() {
         { key: "verificationStatus", allLabel: "All verification", options: verificationLabels },
         { key: "visibilityStatus", allLabel: "All visibility", options: visibilityLabels },
       ]}
-      initialColumnVisibility={{ languages: false, experience: false }}
       emptyLabel="No astrologers yet"
       emptyDescription="Create an account with the astrologer's mobile number to get started."
       emptyIcon={Sparkles}

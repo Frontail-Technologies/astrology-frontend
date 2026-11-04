@@ -16,7 +16,7 @@ export function adminList<T>(path: string, query: Query, signal?: AbortSignal) {
   return adminGet<AdminPage<T>>(path, { query, signal });
 }
 
-export function adminSend<T>(path: string, method: "POST" | "PATCH" | "DELETE", body?: unknown) {
+export function adminSend<T>(path: string, method: "POST" | "PUT" | "PATCH" | "DELETE", body?: unknown) {
   return apiRequest<T>(`/admin${path}`, { method, ...(body !== undefined ? { body } : {}) });
 }
 

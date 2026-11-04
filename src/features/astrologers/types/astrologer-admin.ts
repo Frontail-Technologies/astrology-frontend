@@ -21,6 +21,8 @@ export type ManagedAstrologer = {
   verificationStatus: AstrologerVerificationStatus;
   visibilityStatus: AstrologerVisibilityStatus;
   featured: boolean;
+  /** Opted in to being chosen as pandit when customers book poojas. */
+  performsPoojas: boolean;
   createdAt: string;
   updatedAt: string;
   expertise: AstrologerTaxonomy[];
@@ -49,6 +51,7 @@ export type AstrologerProfileInput = Partial<{
   consultationModes: AstrologerModePricing[];
   expertiseIds: string[];
   specialtyIds: string[];
+  performsPoojas: boolean;
 }>;
 
 export type AstrologerStatusInput = {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AlertTriangle, Boxes, FilePen, PackageCheck, PackagePlus, PackageSearch, Star, Tags } from "lucide-react";
+import { StoreSalesCharts } from "./store-sales-charts";
 
 import { Button } from "@/components/ui/button";
 import { catalogStatusLabels, catalogStatusVariants } from "@/features/store/constants/store-status";
@@ -63,6 +64,8 @@ export function AdminStoreOverview() {
           icon={AlertTriangle}
         />
       </div>
+
+      <StoreSalesCharts />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <AdminSectionCard

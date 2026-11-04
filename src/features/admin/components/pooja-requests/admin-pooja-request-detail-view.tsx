@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, UserRoundCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,9 +14,11 @@ import {
   poojaRequestTransitionLabels,
   poojaRequestTransitionOrder,
 } from "@/features/pooja-requests/constants/pooja-request-status";
-import { usePoojaRequestDetail, usePoojaRequestSchedule, usePoojaRequestStatusUpdate } from "@/features/pooja-requests/hooks/use-pooja-request-admin";
+import { useAstrologerPicker } from "@/features/astrologers/hooks/use-astrologer-admin";
+import { usePoojaRequestAssignment, usePoojaRequestDetail, usePoojaRequestSchedule, usePoojaRequestStatusUpdate } from "@/features/pooja-requests/hooks/use-pooja-request-admin";
 import type { ManagedPoojaRequest } from "@/features/pooja-requests/types/pooja-request-admin";
 import { formatDateOnly, formatDateTime, formatINR, formatOptionalDateTime } from "../../lib/format";
+import { AdminCombobox } from "../shared/admin-combobox";
 import { AdminConfirmDialog } from "../shared/admin-confirm-dialog";
 import { AdminDateTimeInput } from "../shared/admin-datetime-input";
 import { DetailRow } from "../shared/admin-detail-row";
@@ -81,6 +83,62 @@ function ScheduleAction({ request }: { request: ManagedPoojaRequest }) {
         <ConflictHint code={schedule.error?.code} />
       </AdminConfirmDialog>
     </>
+  );
+}
+
+/** Who performs the pooja. Only verified astrologers are offered; the chosen astrologer sees it in their app schedule. */
+function AssignmentCard({ request }: { request: ManagedPoojaRequest }) {
+  const assign = usePoojaRequestAssignment(request.id);
+  const confirm = useConfirmAction<"assign">(assign);
+  const [choice, setChoice] = useState<string | null>(null);
+  const astrologers = useAstrologerPicker(confirm.dialogProps.open);
+  const current = request.assignedAstrologer;
+  const open = () => {
+    setChoice(request.assignedAstrologerUserId);
+    confirm.open("assign");
+  };
+  return (
+    <AdminSectionCard title="Performing astrologer">
+      <div className="grid gap-3">
+        <p className="text-sm">{current ? <span className="font-medium">{current.displayName}</span> : <span className="text-muted-foreground">Not assigned yet</span>}</p>
+        {current ? <p className="text-xs text-muted-foreground">{request.assignmentSource === "customer" ? "Chosen by the customer while booking" : "Assigned by the team"}{request.assignedAt ? ` · ${formatDateTime(request.assignedAt)}` : ""}</p> : null}
+        {request.panditRespondBy ? <p className="rounded-[calc(var(--radius)-2px)] bg-muted p-2 text-xs">Waiting for the pandit to accept. If they don&apos;t answer by {formatDateTime(request.panditRespondBy)}, it comes back to the team.</p> : null}
+        {!current && request.returnedToTeamAt && request.canAssign ? (
+          <p className="rounded-[calc(var(--radius)-2px)] border border-warning/30 bg-warning/10 p-2 text-xs">
+            The customer&apos;s chosen pandit {request.returnReason === "declined" ? "declined" : "didn't answer in time"} ({formatDateTime(request.returnedToTeamAt)}). Assign another pandit; the customer has been told.
+          </p>
+        ) : null}
+        <Button type="button" size="sm" variant="outline" className="w-full justify-start bg-surface" disabled={!request.canAssign || assign.isPending} onClick={open}>
+          <UserRoundCheck aria-hidden="true" />
+          {current ? "Change astrologer" : "Assign astrologer"}
+        </Button>
+        {!request.canAssign ? <p className="text-xs text-muted-foreground">Closed requests can&apos;t be reassigned.</p> : null}
+      </div>
+      <AdminConfirmDialog
+        {...confirm.dialogProps}
+        title={current ? "Change performing astrologer?" : "Assign an astrologer?"}
+        description="The astrologer is notified and sees the pooja, date and sankalp names in their app. Customer contact details stay private."
+        confirmLabel={choice ? "Save assignment" : "Remove assignment"}
+        confirmDisabled={choice === request.assignedAstrologerUserId}
+        onConfirm={() => assign.mutate({ astrologerUserId: choice }, { onSuccess: confirm.close })}
+      >
+        <div className="grid gap-1.5">
+          <Label>Astrologer</Label>
+          <AdminCombobox
+            value={choice}
+            onValueChange={setChoice}
+            options={(astrologers.data?.items ?? []).map((astrologer) => ({ value: astrologer.userId, label: astrologer.displayName }))}
+            selectedLabel={current && choice === current.userId ? current.displayName : undefined}
+            loading={astrologers.isPending}
+            placeholder="Choose an astrologer"
+            searchPlaceholder="Search astrologers…"
+            clearable
+          />
+          <p className="text-xs text-muted-foreground">Only verified astrologers are listed. Clear the choice to remove the assignment.</p>
+        </div>
+        {assign.error?.code === "POOJA_REQUEST_NOT_ASSIGNABLE" ? <p className="rounded-[calc(var(--radius)-2px)] border border-warning/30 bg-warning/10 p-3 text-sm">This request is closed, so its astrologer can no longer change.</p> : null}
+      </AdminConfirmDialog>
+    </AdminSectionCard>
   );
 }
 
@@ -195,6 +253,7 @@ export function AdminPoojaRequestDetailView({ requestId }: { requestId: string }
                 <AdminSectionCard title="Next steps">
                   <RequestActions request={request} />
                 </AdminSectionCard>
+                <AssignmentCard request={request} />
                 <AdminSectionCard title="Summary">
                   <div className="divide-y divide-border">
                     <DetailRow label="Amount" value={<span className="tabular-nums">{request.pricePaise === null ? "On request" : formatINR(request.pricePaise)}</span>} />

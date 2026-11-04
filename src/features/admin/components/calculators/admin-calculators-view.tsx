@@ -144,7 +144,6 @@ export function AdminCalculatorsView() {
         { key: "status", allLabel: "All statuses", options: calculatorStatusLabels },
         { key: "featured", allLabel: "Featured or not", options: calculatorFeaturedLabels },
       ]}
-      initialColumnVisibility={{ sortOrder: false, keywords: false }}
       emptyLabel="No calculators yet"
       emptyDescription="Add a calculator to list it in the public catalog. New ones start as “Coming soon”."
       emptyIcon={Calculator}

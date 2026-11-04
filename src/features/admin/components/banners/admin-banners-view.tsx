@@ -154,7 +154,6 @@ export function AdminBannersView() {
         { key: "status", allLabel: "All statuses", options: bannerStatusLabels },
         { key: "dateState", allLabel: "Any schedule", options: bannerDateStateLabels },
       ]}
-      initialColumnVisibility={{ link: false }}
       emptyLabel="No banners yet"
       emptyDescription="Create a banner, choose where it shows, then publish it."
       emptyIcon={Images}

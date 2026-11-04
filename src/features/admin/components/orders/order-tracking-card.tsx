@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { orderCourierLabels } from "@/features/orders/constants/order-status";
 import { useUpdateOrderTracking } from "@/features/orders/hooks/use-order-admin";
 import type { AdminOrder } from "@/features/orders/types/order-admin";
+import { formatDateOnly } from "../../lib/format";
 import { AdminConfirmDialog } from "../shared/admin-confirm-dialog";
 import { DetailRow } from "../shared/admin-detail-row";
 import { AdminSectionCard } from "../shared/admin-section-card";
@@ -29,7 +30,8 @@ export function OrderTrackingCard({ order }: { order: AdminOrder }) {
   const [courier, setCourier] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingUrl, setTrackingUrl] = useState("");
-  const ids = { courier: useId(), number: useId(), url: useId() };
+  const [eta, setEta] = useState("");
+  const ids = { courier: useId(), number: useId(), url: useId(), eta: useId() };
   const hasTracking = Boolean(order.courier && order.trackingNumber);
   const cancelled = order.status === "cancelled";
   const urlValid = trackingUrl.trim() === "" || httpUrl(trackingUrl.trim());
@@ -40,6 +42,7 @@ export function OrderTrackingCard({ order }: { order: AdminOrder }) {
     setCourier(order.courier ?? "");
     setTrackingNumber(order.trackingNumber ?? "");
     setTrackingUrl(order.trackingUrl ?? "");
+    setEta(order.estimatedDeliveryDate ?? "");
     setOpen(true);
   };
 
@@ -59,6 +62,7 @@ export function OrderTrackingCard({ order }: { order: AdminOrder }) {
         <div className="divide-y divide-border">
           <DetailRow label="Courier" value={order.courier} />
           <DetailRow label="Tracking number" value={<span className="font-mono text-[13px]">{order.trackingNumber}</span>} />
+          <DetailRow label="Expected delivery" value={order.estimatedDeliveryDate ? formatDateOnly(order.estimatedDeliveryDate) : "Not set"} />
           {order.trackingUrl ? (
             <DetailRow
               label="Tracking link"
@@ -91,7 +95,7 @@ export function OrderTrackingCard({ order }: { order: AdminOrder }) {
         confirmDisabled={!valid}
         onConfirm={() =>
           mutation.mutate(
-            { courier: courier.trim(), trackingNumber: trackingNumber.trim(), trackingUrl: trackingUrl.trim() || null },
+            { courier: courier.trim(), trackingNumber: trackingNumber.trim(), trackingUrl: trackingUrl.trim() || null, estimatedDeliveryDate: eta || null },
             { onSuccess: () => setOpen(false) },
           )
         }
@@ -117,6 +121,11 @@ export function OrderTrackingCard({ order }: { order: AdminOrder }) {
             <Label htmlFor={ids.url}>Tracking link (optional)</Label>
             <Input id={ids.url} type="url" value={trackingUrl} onChange={(event) => setTrackingUrl(event.target.value)} maxLength={500} placeholder="https://" disabled={mutation.isPending} />
             {!urlValid ? <p className="text-xs text-destructive">Enter a full link starting with https://</p> : null}
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={ids.eta}>Expected delivery (optional)</Label>
+            <Input id={ids.eta} type="date" value={eta} onChange={(event) => setEta(event.target.value)} className="tabular-nums" disabled={mutation.isPending} />
+            <p className="text-xs text-muted-foreground">Shown to the customer as &ldquo;Expected by&rdquo; on their order.</p>
           </div>
         </div>
       </AdminConfirmDialog>

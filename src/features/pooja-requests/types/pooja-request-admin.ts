@@ -43,7 +43,22 @@ export type ManagedPoojaRequest = {
   allowedTransitions: PoojaRequestStatusTarget[];
   /** True for accepted (schedule) and scheduled (reschedule) requests. */
   canSchedule: boolean;
+  /** Astrologer (pandit) the team assigned to perform the pooja. */
+  assignedAstrologerUserId: string | null;
+  assignedAstrologer: { userId: string; displayName: string; slug: string } | null;
+  /** Assignment can change until the pooja is completed, cancelled or rejected. */
+  canAssign: boolean;
+  /** "customer" when the customer chose the pandit while booking; "admin" when the team assigned them. */
+  assignmentSource: "customer" | "admin" | null;
+  assignedAt: string | null;
+  /** Set when a customer-chosen pandit declined or did not answer in time; the team must assign someone. */
+  returnedToTeamAt: string | null;
+  returnReason: "declined" | "no_response" | null;
+  /** While a customer-chosen pandit has not answered: when the request returns to the team. */
+  panditRespondBy: string | null;
 };
+
+export type PoojaRequestAssignmentInput = { astrologerUserId: string | null };
 
 export type PoojaRequestStatusInput = { status: PoojaRequestStatusTarget };
 export type PoojaRequestScheduleInput = { scheduledStartAt: string };

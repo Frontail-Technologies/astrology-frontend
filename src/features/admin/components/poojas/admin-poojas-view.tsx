@@ -108,7 +108,6 @@ export function AdminPoojasView() {
         { key: "status", allLabel: "All statuses", options: poojaStatusLabels },
         { key: "featured", allLabel: "Featured or not", options: poojaFeaturedLabels },
       ]}
-      initialColumnVisibility={{ duration: false }}
       emptyLabel="No poojas yet"
       emptyDescription="Create the first pooja. It starts as a draft until you publish it."
       emptyIcon={Flame}

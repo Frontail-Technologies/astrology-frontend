@@ -86,6 +86,20 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   return parseResponse<T>(response);
 }
 
+/**
+ * Authenticated binary download (private files such as astrologer ID documents). Errors are JSON envelopes and
+ * surface as `ApiError`, like `apiRequest`; the caller owns the returned Blob (for example `URL.createObjectURL`).
+ */
+export async function apiDownload(path: string, retryAfterRefresh = true): Promise<Blob> {
+  const tokens = getStoredTokens();
+  const headers = new Headers();
+  if (tokens) headers.set("authorization", `Bearer ${tokens.accessToken}`);
+  const response = await fetch(`${API_URL}${path}`, { headers, cache: "no-store" });
+  if (response.status === 401 && retryAfterRefresh && await refreshSession()) return apiDownload(path, false);
+  if (!response.ok) return parseResponse<never>(response);
+  return response.blob();
+}
+
 export function apiLogin(email: string, password: string) {
   return apiRequest<StoredAuthResult>("/auth/login", {
     method: "POST",

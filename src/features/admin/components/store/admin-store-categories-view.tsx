@@ -98,7 +98,6 @@ export function AdminStoreCategoriesView() {
       columns={columns}
       searchPlaceholder="Search categories…"
       filters={[{ key: "active", allLabel: "Active and inactive", options: categoryActiveLabels }]}
-      initialColumnVisibility={{ updated: false }}
       emptyLabel="No store categories yet"
       emptyDescription="Create a category first, then add products to it."
       emptyIcon={Tags}

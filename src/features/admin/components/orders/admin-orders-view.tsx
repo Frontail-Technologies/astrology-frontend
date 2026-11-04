@@ -74,7 +74,6 @@ export function AdminOrdersView() {
       columns={columns}
       searchPlaceholder="Search by order number…"
       filters={[{ key: "status", allLabel: "All statuses", options: orderStatusLabels }]}
-      initialColumnVisibility={{ items: false }}
       emptyLabel="No orders yet"
       emptyDescription="Orders appear here when customers check out from the store."
       emptyIcon={ShoppingBag}

@@ -94,7 +94,6 @@ export function AdminEarningsView() {
       idFilterName={(key, rows) => (key === "astrologerId" ? rows[0]?.astrologer?.displayName : null)}
       columns={columns}
       filters={[{ key: "status", allLabel: "All statuses", options: earningStatusLabels }]}
-      initialColumnVisibility={{ fee: false }}
       emptyLabel="No earnings yet"
       emptyDescription="Earnings are recorded automatically when paid consultations are billed."
       emptyIcon={Coins}

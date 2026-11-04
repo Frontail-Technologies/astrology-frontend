@@ -98,7 +98,6 @@ export function AdminChatsView() {
         { key: "status", allLabel: "All chats", options: chatStatusLabels },
         { key: "flagged", allLabel: "Any flag status", options: chatFlagFilterLabels },
       ]}
-      initialColumnVisibility={{ unread: false }}
       emptyLabel="No chats yet"
       emptyDescription="Chats start when a customer's chat consultation begins."
       emptyIcon={MessagesSquare}

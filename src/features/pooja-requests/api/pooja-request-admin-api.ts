@@ -1,5 +1,5 @@
 import { adminGet, adminList, adminSend, encodeId } from "@/features/admin/data/admin-api";
-import type { ManagedPoojaRequest, PoojaRequestScheduleInput, PoojaRequestStatusInput } from "../types/pooja-request-admin";
+import type { ManagedPoojaRequest, PoojaRequestAssignmentInput, PoojaRequestScheduleInput, PoojaRequestStatusInput } from "../types/pooja-request-admin";
 
 export function listPoojaRequests(query: Record<string, string | number>, signal?: AbortSignal) {
   return adminList<ManagedPoojaRequest>("/pooja-requests", query, signal);
@@ -17,4 +17,9 @@ export function updatePoojaRequestStatus(id: string, input: PoojaRequestStatusIn
 /** Schedules an accepted request or reschedules a scheduled one (the customer is notified). */
 export function schedulePoojaRequest(id: string, input: PoojaRequestScheduleInput) {
   return adminSend<ManagedPoojaRequest>(`/pooja-requests/${encodeId(id)}/schedule`, "PATCH", input);
+}
+
+/** Assigns (or clears, with null) the astrologer who performs the pooja; the astrologer is notified. 400 if not an approved astrologer, 409 POOJA_REQUEST_NOT_ASSIGNABLE once closed. */
+export function assignPoojaRequest(id: string, input: PoojaRequestAssignmentInput) {
+  return adminSend<ManagedPoojaRequest>(`/pooja-requests/${encodeId(id)}/assignment`, "PATCH", input);
 }

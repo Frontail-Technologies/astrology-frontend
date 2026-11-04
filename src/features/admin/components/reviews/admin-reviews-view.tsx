@@ -121,7 +121,6 @@ export function AdminReviewsView() {
       ]}
       idFilterLabels={{ astrologerId: "Astrologer", poojaId: "Pooja", productId: "Product" }}
       idFilterName={(_key, rows) => rows[0]?.target.name}
-      initialColumnVisibility={{ date: false }}
       emptyLabel="No reviews yet"
       emptyDescription="Reviews appear here as customers submit them."
       emptyIcon={MessageSquareText}

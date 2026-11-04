@@ -225,7 +225,6 @@ export function AdminMasterDataDirectory({ entity }: { entity: MasterDataEntity 
         const parentId = key === "countryId" ? rows[0]?.countryId : rows[0]?.stateId;
         return parentId ? parentNames.get(parentId) : null;
       }}
-      initialColumnVisibility={{ sortOrder: false, description: false }}
       emptyLabel={`No ${meta.plural.toLowerCase()} yet`}
       emptyDescription={canCreate ? `Add the first ${meta.singular.toLowerCase()} to use it in pickers.` : undefined}
       emptyIcon={Database}

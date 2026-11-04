@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { paiseToRupeesInput, rupeesToPaise } from "@/features/admin/lib/money";
@@ -25,6 +26,7 @@ import type { AstrologerMode, AstrologerProfileInput, ManagedAstrologer } from "
 import { usePublicStates } from "@/features/master-data/hooks/use-master-data-admin";
 import { cn } from "@/lib/utils";
 import { AdminCombobox } from "../shared/admin-combobox";
+import { AdminImageField } from "../shared/admin-image-field";
 import { AdminFormError, AdminFormField, AdminFormSection } from "../shared/admin-form-section";
 import { AdminPageHeader } from "../shared/admin-page-header";
 import { AdminDetailFrame } from "../shared/admin-server-list";
@@ -216,6 +218,7 @@ function EditorForm({ astrologer }: { astrologer: ManagedAstrologer }) {
   const [languages, setLanguages] = useState<string[]>(astrologer.languages);
   const [expertiseIds, setExpertiseIds] = useState(astrologer.expertise.map((item) => item.id));
   const [specialtyIds, setSpecialtyIds] = useState(astrologer.specialties.map((item) => item.id));
+  const [performsPoojas, setPerformsPoojas] = useState(astrologer.performsPoojas ?? false);
   const [modes, setModes] = useState<Record<AstrologerMode, ModeDraft>>(() => {
     const drafts = {} as Record<AstrologerMode, ModeDraft>;
     for (const mode of astrologerModes) {
@@ -258,6 +261,7 @@ function EditorForm({ astrologer }: { astrologer: ManagedAstrologer }) {
       consultationModes,
       expertiseIds,
       specialtyIds,
+      performsPoojas,
     };
     mutation.mutate(input, { onSuccess: () => router.push(detailHref) });
   };
@@ -295,10 +299,16 @@ function EditorForm({ astrologer }: { astrologer: ManagedAstrologer }) {
             <AdminFormField label="Bio" description="A few short paragraphs about their practice and approach." error={fieldError("bio")}>
               {(control) => <Textarea {...control} rows={6} value={bio} onChange={(event) => setBio(event.target.value)} maxLength={5000} />}
             </AdminFormField>
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_12rem]">
-              <AdminFormField label="Profile photo link" description="A web address starting with https://" error={fieldError("profileImageUrl")}>
-                {(control) => <Input {...control} type="url" value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="https://…" />}
-              </AdminFormField>
+            <AdminImageField
+              label="Profile photo"
+              description="A clear, front-facing photo. JPEG, PNG or WebP; it is cropped to a square on cards."
+              value={imageUrl.trim() || null}
+              onChange={(value) => setImageUrl(value ?? "")}
+              error={fieldError("profileImageUrl")}
+              aspect="square"
+              allowUrl
+            />
+            <div className="grid gap-4 sm:grid-cols-[12rem]">
               <AdminFormField label="Experience (years)" required error={fieldError("experienceYears")}>
                 {(control) => <Input {...control} inputMode="numeric" className="tabular-nums" value={experience} onChange={(event) => setExperience(event.target.value)} />}
               </AdminFormField>
@@ -311,6 +321,16 @@ function EditorForm({ astrologer }: { astrologer: ManagedAstrologer }) {
               }}
               error={languagesError ?? fieldError("languages")}
             />
+          </AdminFormSection>
+
+          <AdminFormSection title="Poojas" description="Astrologers can also turn this on themselves in the app.">
+            <div className="flex items-center justify-between gap-4 rounded-[calc(var(--radius)-2px)] border border-border p-3">
+              <div>
+                <Label htmlFor="astrologer-performs-poojas">Performs poojas</Label>
+                <p className="text-xs text-muted-foreground">Customers can choose this astrologer as their pandit when booking a pooja. The request goes to them to accept within 24 hours.</p>
+              </div>
+              <Switch id="astrologer-performs-poojas" checked={performsPoojas} onCheckedChange={setPerformsPoojas} />
+            </div>
           </AdminFormSection>
 
           <AdminFormSection title="Consultation modes and pricing" description="Turn on the modes they offer. Prices are in rupees.">

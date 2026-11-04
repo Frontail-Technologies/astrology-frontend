@@ -130,7 +130,6 @@ export function AdminStoreProductsView() {
         />
       }
       extraActiveCount={categoryId ? 1 : 0}
-      initialColumnVisibility={{ updated: false }}
       emptyLabel="No products yet"
       emptyDescription="Add a product, then publish it when it is priced and ready to sell."
       emptyIcon={Package}

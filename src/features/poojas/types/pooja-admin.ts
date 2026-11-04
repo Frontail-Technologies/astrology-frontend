@@ -40,6 +40,9 @@ export type ManagedPooja = {
   bookingLeadDays: number;
   /** How far ahead customers can book, in days. */
   bookingWindowDays: number;
+  /** Dates with one of these tithis or nakshatras are marked auspicious in the app's booking calendar. */
+  preferredTithis: string[];
+  preferredNakshatras: string[];
   createdAt: string;
   updatedAt: string;
   /** Primary category. */
@@ -63,6 +66,8 @@ export type PoojaInput = {
   dailyCapacity: number | null;
   bookingLeadDays: number;
   bookingWindowDays: number;
+  preferredTithis: string[];
+  preferredNakshatras: string[];
   status?: PoojaStatus;
 };
 
