@@ -71,6 +71,7 @@ export const adminNavigation = [
       { href: "/admin/support", label: "Support Tickets", icon: "support" as const, description: "Customer requests and replies" },
       { href: "/admin/notifications", label: "Notifications", icon: "notifications" as const, description: "Notification templates" },
       { href: "/admin/settings", label: "Settings", icon: "settings" as const, description: "Platform configuration" },
+      { href: "/admin/admins", label: "Admins", icon: "admins" as const, description: "Who can sign in to this admin panel" },
       { href: "/admin/audit-logs", label: "Audit Log", icon: "auditLogs" as const, description: "Every recorded admin action" },
     ],
   },

@@ -16,6 +16,8 @@ type AdminAuthContextValue = {
   ready: boolean;
   login(email: string, password: string): Promise<void>;
   logout(): Promise<void>;
+  /** Re-reads the signed-in admin (e.g. after changing a temporary password). */
+  reload(): Promise<void>;
 };
 
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
@@ -66,9 +68,12 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     await logoutMutation.mutateAsync();
   }, [logoutMutation]);
+  const reload = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: adminSessionKey });
+  }, [queryClient]);
   const user = sessionQuery.data ?? null;
   const ready = hydrated && (!hasSession || sessionQuery.isSuccess || sessionQuery.isError);
-  const value = useMemo(() => ({ user, ready, login, logout }), [login, logout, ready, user]);
+  const value = useMemo(() => ({ user, ready, login, logout, reload }), [login, logout, reload, ready, user]);
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
 }

@@ -12,11 +12,14 @@ export function AdminBarChart({
   horizontal = false,
   className = "h-[220px]",
   emptyLabel = "No data for this period",
+  labelWidth = 96,
 }: {
   rows: DistributionRow[];
   horizontal?: boolean;
   className?: string;
   emptyLabel?: string;
+  /** Horizontal bars: room for the category labels (names need more than the default). */
+  labelWidth?: number;
 }) {
   if (rows.every((row) => row.value === 0)) {
     return <AdminChartEmpty label={emptyLabel} />;
@@ -37,7 +40,7 @@ export function AdminBarChart({
         {horizontal ? (
           <>
             <XAxis type="number" tickLine={false} axisLine={false} allowDecimals={false} />
-            <YAxis dataKey="label" type="category" tickLine={false} axisLine={false} width={96} />
+            <YAxis dataKey="label" type="category" tickLine={false} axisLine={false} width={labelWidth} />
           </>
         ) : (
           <>

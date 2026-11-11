@@ -38,6 +38,7 @@ import { AdminInsightCard } from "../shared/admin-insight-card";
 import { AdminKpiCard } from "../shared/admin-kpi-card";
 import { AdminErrorState } from "../shared/admin-list-states";
 import { AdminStatusPill } from "../shared/admin-status-badge";
+import { DashboardBreakdown } from "./dashboard-breakdown";
 import type { AdminTone } from "../shared/admin-tone";
 
 /** Shown on hover/focus only: the API counts "today" and "this month" in UTC. */
@@ -176,12 +177,13 @@ function TrendHeadline({ label, value }: { label: string; value: string }) {
 function RevenueTrend({ data, granularity }: { data: readonly RevenueBucket[]; granularity: AdminGranularity }) {
   const total = sum(data, (row) => row.paidChatGrossRevenuePaise + row.storeOrderRevenuePaise);
   return (
-    <>
+    <div className="flex h-full flex-col">
       <TrendHeadline label="Chat and store revenue in this range" value={formatINR(total)} />
+      <div className="min-h-[260px] flex-1">
       <AdminCountSeriesChart
         data={data}
         granularity={granularity}
-        className="h-[260px]"
+        className="h-full min-h-[260px]"
         emptyLabel="No revenue in this range yet"
         series={[
           { key: "paidChatGrossRevenuePaise", label: "Paid chat", format: "paise", color: "var(--chart-consultations)" },
@@ -189,7 +191,8 @@ function RevenueTrend({ data, granularity }: { data: readonly RevenueBucket[]; g
           { key: "walletTopupsPaise", label: "Wallet top-ups", format: "paise", color: "var(--chart-neutral)" },
         ]}
       />
-    </>
+      </div>
+    </div>
   );
 }
 
@@ -197,13 +200,14 @@ function ActivityTrend({ data, granularity }: { data: readonly ActivityBucket[];
   const consultations = sum(data, (row) => row.consultationsCreated);
   const orders = sum(data, (row) => row.ordersPlaced);
   return (
-    <>
+    <div className="flex h-full flex-col">
       <TrendHeadline label="Consultations and orders in this range" value={`${number.format(consultations)} · ${number.format(orders)}`} />
+      <div className="min-h-[260px] flex-1">
       <AdminCountSeriesChart
         data={data}
         kind="bar"
         granularity={granularity}
-        className="h-[260px]"
+        className="h-full min-h-[260px]"
         emptyLabel="No activity in this range yet"
         series={[
           { key: "consultationsCreated", label: "Consultations", format: "count", color: "var(--chart-consultations)" },
@@ -212,7 +216,8 @@ function ActivityTrend({ data, granularity }: { data: readonly ActivityBucket[];
           { key: "paymentsFailed", label: "Payments failed", format: "count", color: "var(--chart-failed)" },
         ]}
       />
-    </>
+      </div>
+    </div>
   );
 }
 
@@ -250,7 +255,7 @@ function NeedsAttention({ s }: { s: DashboardSummary }) {
   return (
     <AdminInsightCard
       title="Needs attention"
-      className="order-first self-start xl:order-none"
+      className="order-first xl:order-none"
       flush
       action={items.length ? <span className="text-xs font-medium tabular-nums text-muted-foreground">{items.length} {items.length === 1 ? "item" : "items"}</span> : null}
     >
@@ -496,10 +501,13 @@ export function AdminDashboardView() {
         <KpiRow s={s} />
       )}
 
-      <div className="grid items-start gap-4 xl:grid-cols-3">
+      {/* Stretch: the Trends card grows to the Needs attention list's height and its chart fills the space. */}
+      <div className="grid gap-4 xl:grid-cols-3">
         <TrendCard />
         {s ? <NeedsAttention s={s} /> : summary.error ? null : <Skeleton className="order-first h-40 rounded-xl xl:order-none" />}
       </div>
+
+      <DashboardBreakdown />
 
       <RecentActivity />
 

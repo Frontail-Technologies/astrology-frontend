@@ -20,6 +20,9 @@ import {
   percentOf,
   toDayBuckets,
   toRecentActivity,
+  paymentOutcomeRows,
+  rebucketDaily,
+  topAstrologerRows,
 } from "./insights-view-models.ts";
 
 const zeroSummary: DashboardSummary = {
@@ -261,3 +264,37 @@ describe("reports URL state", () => {
     assert.deepEqual(consultationReportQuery({ from: "a", to: "b" }, { mode: null, status: "completed", astrologerId: null }), { from: "a", to: "b", status: "completed" });
   });
 });
+
+describe("dashboard chart rows", () => {
+  it("ranks the busiest astrologers and drops idle ones", () => {
+    const rows = topAstrologerRows([
+      { astrologerId: "a", displayName: "Asha", consultations: 3, completed: 1 },
+      { astrologerId: "b", displayName: "Bhanu", consultations: 0, completed: 0 },
+      { astrologerId: "c", displayName: "Chitra", consultations: 3, completed: 2 },
+      { astrologerId: "d", displayName: "Dev", consultations: 5, completed: 5 },
+    ], 2);
+    assert.deepEqual(rows.map((row) => [row.label, row.value]), [["Dev", 5], ["Chitra", 3]]);
+    assert.deepEqual(topAstrologerRows(null), []);
+  });
+
+  it("maps payment outcomes", () => {
+    const rows = paymentOutcomeRows({ successfulPayments: { count: 9, amountPaise: 900 }, failedPayments: { count: 2, amountPaise: null } });
+    assert.deepEqual(rows.map((row) => [row.key, row.value, row.tone]), [["succeeded", 9, "green"], ["failed", 2, "red"]]);
+  });
+});
+
+describe("rebucketDaily", () => {
+  const days = [
+    { date: "2026-11-02", created: 1, completed: 0 },
+    { date: "2026-11-05", created: 2, completed: 1 },
+    { date: "2026-11-09", created: 4, completed: 3 },
+  ];
+  it("keeps days as they are", () => {
+    assert.equal(rebucketDaily(days, "day").length, 3);
+  });
+  it("sums into Monday-start weeks and months", () => {
+    assert.deepEqual(rebucketDaily(days, "week").map((row) => [row.date, row.created, row.completed]), [["2026-11-02", 3, 1], ["2026-11-09", 4, 3]]);
+    assert.deepEqual(rebucketDaily(days, "month").map((row) => [row.bucketStart, row.created]), [["2026-11-01T00:00:00.000Z", 7]]);
+  });
+});
+

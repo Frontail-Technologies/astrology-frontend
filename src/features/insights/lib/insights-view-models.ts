@@ -255,3 +255,44 @@ export function contentTableRows(report: ContentReport): ContentTableRow[] {
     },
   ];
 }
+
+/** Dashboard: the busiest astrologers in the range by consultations (ties broken by completed), as bar rows. */
+export function topAstrologerRows(performance: readonly { astrologerId: string; displayName: string; consultations: number; completed: number }[] | null | undefined, limit = 6): InsightRow[] {
+  return [...(performance ?? [])]
+    .filter((row) => row.consultations > 0)
+    .sort((a, b) => b.consultations - a.consultations || b.completed - a.completed || a.displayName.localeCompare(b.displayName))
+    .slice(0, limit)
+    .map((row) => ({ key: row.astrologerId, label: row.displayName, value: row.consultations, tone: "blue" as InsightTone }));
+}
+
+/** Dashboard: succeeded vs failed payments in the range (status colours: they are outcomes, not series). */
+export function paymentOutcomeRows(finance: Pick<FinanceReport, "successfulPayments" | "failedPayments"> | null | undefined): InsightRow[] {
+  return [
+    { key: "succeeded", label: "Succeeded", value: toCount(finance?.successfulPayments.count), tone: "green" },
+    { key: "failed", label: "Failed", value: toCount(finance?.failedPayments.count), tone: "red" },
+  ];
+}
+
+/**
+ * Sums daily points (`{ date: "YYYY-MM-DD", ...counts }`) into the chart's granularity so long ranges read as weeks
+ * (starting Monday) or months instead of spiky days. Adds `bucketStart` for the series chart.
+ */
+export function rebucketDaily<T extends { date: string }>(series: readonly T[] | null | undefined, granularity: "day" | "week" | "month"): (T & { bucketStart: string })[] {
+  if (granularity === "day") return toDayBuckets(series);
+  const buckets = new Map<string, Record<string, unknown>>();
+  for (const point of series ?? []) {
+    const day = new Date(`${point.date}T00:00:00.000Z`);
+    if (granularity === "week") day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7));
+    else day.setUTCDate(1);
+    const start = day.toISOString().slice(0, 10);
+    const bucket = buckets.get(start) ?? { date: start };
+    for (const [key, value] of Object.entries(point)) {
+      if (key !== "date" && typeof value === "number") bucket[key] = (Number(bucket[key]) || 0) + value;
+    }
+    buckets.set(start, bucket);
+  }
+  return [...buckets.values()]
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+    .map((bucket) => ({ ...(bucket as T), bucketStart: `${String(bucket.date)}T00:00:00.000Z` }));
+}
+

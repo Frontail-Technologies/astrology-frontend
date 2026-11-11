@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, KeyRound, LogOut } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -173,10 +173,18 @@ export function AdminSidebar() {
           <AdminAvatar email={user?.email} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-medium text-ivory-50" title={user?.email ?? undefined}>
-              {user?.email ?? "Signed in"}
+              {user?.displayName || user?.email || "Signed in"}
             </p>
             <p className="text-[11px] text-[var(--admin-nav-muted)]">Administrator</p>
           </div>
+          <Link
+            href="/admin/change-password"
+            className="grid size-9 shrink-0 place-items-center rounded-md text-[var(--admin-nav-muted)] outline-none transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            aria-label="Change password"
+            title="Change password"
+          >
+            <KeyRound className="size-4" aria-hidden="true" />
+          </Link>
           <button
             type="button"
             className="grid size-9 shrink-0 place-items-center rounded-md text-[var(--admin-nav-muted)] outline-none transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring"

@@ -55,6 +55,10 @@ export type ApiUser = {
   phone: string | null;
   role: "customer" | "astrologer" | "admin";
   status: "active" | "suspended";
+  /** Admin accounts: name shown in the console. */
+  displayName?: string | null;
+  /** Admins given a temporary password must choose their own before using the console. */
+  mustChangePassword?: boolean;
   createdAt: string;
   updatedAt: string;
 };
